@@ -662,19 +662,19 @@ html,body{width:100%;height:100vh;background:#000;overflow:hidden;font-family:'I
 // STATE
 // ══════════════════════════════════════════
 const S = {
-  boy:   '[Your name]',
-  girl:  "[Partner's name]",
-  title: 'life of [name] & [name]',
+  boy:   'Premal',
+  girl:  'Shivani',
+  title: 'life of premal & shivani',
   color: '#f5c518',
-  tagline: 'The greatest love story of all time',
-  loc:   '[your fav location]',
-  milestones:     ['1 month', '3 months', '5 months', '6 months'],
-  milestonePhotos:[null, null, null, null],
-  heroPhoto:   null,
-  popularPhotos:[null,null,null,null,null],
-  recentPhotos: [null,null,null,null,null],
-  playerPhoto: null,
-  creditsPhoto: null,
+  tagline: 'A love story written by fate, directed by God.',
+  loc:   'Canada',
+  milestones:     ['1 month', '3 months', '6 months', '10 months'],
+  milestonePhotos:['images/ms1.jpg','images/ms2.jpg','images/ms3.jpg','images/ms4.jpg'],
+  heroPhoto:   'images/hero.jpg',
+  popularPhotos:['images/p1.jpg','images/p2.jpg','images/p3.jpg','images/p4.jpg','images/p5.jpg'],
+  recentPhotos: ['images/r1.jpg','images/r2.jpg','images/r3.jpg','images/r4.jpg','images/r5.jpg'],
+  playerPhoto: 'images/player.jpg',
+  creditsPhoto: 'images/credits.jpg',
 };
 
 const CREDITS = [
@@ -699,6 +699,40 @@ const CREDITS = [
 
 // scene durations (ms)
 const DURATIONS = [3200, 5800, 8000, 6200, 11000];
+
+// ══════════════════════════════════════════
+// NETFLIX TA-DUM AUDIO (Scene 1)
+// Generated via Web Audio API — matches the iconic sound
+// ══════════════════════════════════════════
+function playTaDum() {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const master = ctx.createGain();
+    master.gain.setValueAtTime(0.7, ctx.currentTime);
+    master.connect(ctx.destination);
+
+    function tone(freq, start, dur, vol, type='sine') {
+      const osc = ctx.createOscillator();
+      const g   = ctx.createGain();
+      osc.type = type;
+      osc.frequency.setValueAtTime(freq, ctx.currentTime + start);
+      g.gain.setValueAtTime(0, ctx.currentTime + start);
+      g.gain.linearRampToValueAtTime(vol, ctx.currentTime + start + 0.02);
+      g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + start + dur);
+      osc.connect(g); g.connect(master);
+      osc.start(ctx.currentTime + start);
+      osc.stop(ctx.currentTime + start + dur + 0.05);
+    }
+
+    // "Ta" — low thud
+    tone(55,  0,    0.5, 0.9, 'sawtooth');
+    tone(110, 0,    0.4, 0.5, 'sine');
+    // "Dum" — deep resonant hit
+    tone(40,  0.55, 1.4, 1.0, 'sawtooth');
+    tone(80,  0.55, 1.2, 0.6, 'sine');
+    tone(160, 0.55, 0.8, 0.3, 'sine');
+  } catch(e) {}
+}
 
 // ══════════════════════════════════════════
 // SCENE CONTROL
@@ -732,6 +766,7 @@ function startPlay() {
   playing = true;
   document.getElementById('play-btn').textContent = '⏸ Pause';
   goTo(0);
+  playTaDum();
   scheduleNext();
 }
 function stopPlay() {
@@ -973,6 +1008,7 @@ document.addEventListener('keydown', e => {
   document.getElementById('c-title').value  = S.title;
   document.getElementById('c-tagline').value= S.tagline;
   document.getElementById('c-loc').value    = S.loc;
+  document.getElementById('c-color').value  = S.color;
 
   // build hero text
   document.getElementById('hero-title-el').textContent = S.title;
@@ -986,6 +1022,8 @@ document.addEventListener('keydown', e => {
   buildTiles('popular-tiles', S.popularPhotos);
   buildTiles('recent-tiles',  S.recentPhotos);
   buildCredits();
+  // load all real photos
+  applyAll();
 })();
 </script>
 </body>
