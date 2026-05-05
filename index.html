@@ -2,354 +2,513 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Premal & Shivani — Our Story</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<title>Premal & Shivani</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,400;1,700&family=Cormorant+Garamond:ital,wght@1,300;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,700&family=Cormorant+Garamond:ital,wght@1,300&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-/* ── reset ── */
-*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
-html,body{width:100%;height:100vh;background:#000;overflow:hidden;
-  font-family:'Inter',sans-serif;color:#fff;-webkit-font-smoothing:antialiased}
+/* ── base ── */
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
 
-/* ══════════════════════════════════════════
-   STAGE & SCENES
-   FIX: scenes must NOT override position:absolute with position:relative
-        — that collapses them to 0 height.
-   All layout-only properties (flex, bg, overflow) are safe to set on scenes.
-══════════════════════════════════════════ */
-#stage{position:relative;width:100%;height:100vh}
-
-.scene{
-  position:absolute;   /* fills #stage via inset */
-  inset:0;
-  opacity:0;
-  pointer-events:none;
-  transition:opacity .85s ease;
-  /* each scene can add display:flex etc via its own rule — just NOT position */
-}
-.scene.active{opacity:1;pointer-events:all}
-
-/* ══════════════════════════════════════════
-   SCENE 1 · INTRO
-══════════════════════════════════════════ */
-#s-intro{
-  background:#000;
-  display:flex;align-items:center;justify-content:center;
-  flex-direction:column;overflow:hidden
+:root {
+  /* Safari-safe full viewport height */
+  --vh: 100vh;
 }
 
-/* YouTube fullscreen background */
-#yt-bg{
-  position:absolute;inset:0;pointer-events:none;z-index:1;
-  opacity:0;transition:opacity .6s;overflow:hidden
-}
-#yt-bg iframe{
-  position:absolute;
-  width:300%;height:300%;   /* oversized to hide letterbox */
-  top:50%;left:50%;
-  transform:translate(-50%,-50%);
-  pointer-events:none
+html {
+  height: -webkit-fill-available;
 }
 
-/* tap-to-begin overlay */
-#tap-cover{
-  position:absolute;inset:0;z-index:10;
-  display:flex;flex-direction:column;
-  align-items:center;justify-content:center;
-  cursor:pointer;gap:28px
-}
-.tap-n{width:clamp(80px,11vw,130px)}
-
-.tap-ring{
-  width:72px;height:72px;border-radius:50%;
-  border:2px solid rgba(255,255,255,.22);
-  display:flex;align-items:center;justify-content:center;
-  animation:ringPulse 2s ease-in-out infinite
-}
-@keyframes ringPulse{
-  0%,100%{box-shadow:0 0 0 0 rgba(229,9,20,.35)}
-  50%    {box-shadow:0 0 0 20px rgba(229,9,20,0)}
-}
-.tap-label{
-  font-size:clamp(10px,1.1vw,13px);letter-spacing:.22em;
-  color:rgba(255,255,255,.45);text-transform:uppercase;
-  animation:tapBlink 2.2s ease-in-out infinite
-}
-@keyframes tapBlink{0%,100%{opacity:.45}50%{opacity:1}}
-
-/* ══════════════════════════════════════════
-   SCENE 2 · WHO'S WATCHING
-══════════════════════════════════════════ */
-#s-profiles{
-  background:#000;
-  display:flex;flex-direction:column;
-  align-items:center;justify-content:center;
-  overflow:hidden;gap:0
-}
-/* big red ground glow — works because #s-profiles is position:absolute */
-#s-profiles::before{
-  content:'';
-  position:absolute;bottom:-28%;left:50%;
-  transform:translateX(-50%);
-  width:170%;height:72%;
-  background:radial-gradient(ellipse at center bottom,
-    #d50000 0%,#aa0000 12%,#6b0000 28%,#2a0000 48%,transparent 68%);
-  border-radius:50%;pointer-events:none;opacity:.95;z-index:0
+body {
+  width: 100%;
+  height: 100vh;
+  height: -webkit-fill-available;
+  background: #000;
+  overflow: hidden;
+  font-family: 'Inter', sans-serif;
+  color: #fff;
+  -webkit-font-smoothing: antialiased;
+  /* prevent double-tap zoom on mobile */
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
-.whos-title{
-  font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:300;
-  font-size:clamp(24px,3.2vw,44px);color:#fff;
-  margin-bottom:clamp(32px,4vh,52px);letter-spacing:.01em;
-  position:relative;z-index:2
+/* ── stage + scenes ── */
+#stage {
+  position: relative;
+  width: 100%;
+  height: 100%;
 }
 
-.profiles-row{
-  display:flex;gap:clamp(18px,2.8vw,36px);
-  margin-bottom:clamp(28px,3.5vh,44px);
-  position:relative;z-index:2
+.scene {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .75s ease;
+  overflow: hidden;
+}
+.scene.active {
+  opacity: 1;
+  pointer-events: all;
 }
 
-.profile-item{
-  display:flex;flex-direction:column;align-items:center;gap:10px;
-  cursor:pointer;transition:transform .22s
-}
-.profile-item:hover{transform:scale(1.07)}
-.profile-item:hover .profile-photo{outline:3px solid rgba(255,255,255,.9)}
 
-.profile-photo{
-  width:clamp(96px,12.5vw,152px);height:clamp(96px,12.5vw,152px);
-  border-radius:5px;overflow:hidden;background:#1c1c1c;
-  flex-shrink:0;transition:outline .18s
-}
-.profile-photo img{width:100%;height:100%;object-fit:cover;display:block}
-
-.profile-label{
-  font-size:clamp(11px,1.3vw,15px);
-  color:rgba(255,255,255,.82);font-weight:400;letter-spacing:.02em
+/* ════════════════════════════════
+   S1 · INTRO
+════════════════════════════════ */
+#s-intro {
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.manage-btn{
-  position:relative;z-index:2;
-  font-family:'Inter',sans-serif;font-size:clamp(9px,1vw,13px);font-weight:500;
-  color:#fff;background:transparent;
-  border:1.5px solid rgba(255,255,255,.6);
-  padding:9px 24px;letter-spacing:.18em;text-transform:uppercase;cursor:default
+/* local MP4 video — fills scene */
+#intro-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity .4s;
+  pointer-events: none;
 }
 
-/* ══════════════════════════════════════════
-   SCENE 3 · NETFLIX HOME (per milestone)
-══════════════════════════════════════════ */
-#s-home{
-  background:#141414;
-  display:flex;flex-direction:column;overflow:hidden
+/* tap overlay */
+#tap-cover {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 28px;
+  cursor: pointer;
 }
 
-/* floating nav buttons */
-.home-back-btn{
-  position:absolute;top:clamp(10px,1.6vh,20px);left:clamp(12px,1.8vw,22px);
-  z-index:50;background:rgba(0,0,0,.6);border:1px solid rgba(255,255,255,.25);
-  color:#fff;font-family:'Inter',sans-serif;
-  font-size:clamp(11px,1.1vw,14px);font-weight:500;
-  padding:7px 14px;border-radius:4px;cursor:pointer;
-  letter-spacing:.04em;backdrop-filter:blur(8px);
-  transition:background .18s
+.tap-n {
+  width: clamp(80px, 14vw, 140px);
 }
-.home-back-btn:hover{background:rgba(255,255,255,.13)}
 
-.home-credits-btn{
-  position:absolute;top:clamp(10px,1.6vh,20px);right:clamp(12px,1.8vw,22px);
-  z-index:50;background:#e50914;border:none;
-  color:#fff;font-family:'Inter',sans-serif;
-  font-size:clamp(11px,1.1vw,14px);font-weight:600;
-  padding:7px 16px;border-radius:4px;cursor:pointer;
-  letter-spacing:.04em;transition:background .18s
+.tap-ring {
+  width: 68px; height: 68px;
+  border-radius: 50%;
+  border: 2px solid rgba(255,255,255,.2);
+  display: flex; align-items: center; justify-content: center;
+  animation: pulse 2s ease-in-out infinite;
 }
-.home-credits-btn:hover{background:#c40812}
+@keyframes pulse {
+  0%,100% { box-shadow: 0 0 0 0 rgba(229,9,20,.4); }
+  50%      { box-shadow: 0 0 0 18px rgba(229,9,20,0); }
+}
 
-/* nav bar */
-.nf-nav{
-  position:absolute;top:0;left:0;right:0;z-index:10;
-  display:flex;align-items:center;
-  padding:clamp(10px,1.8vh,22px) clamp(24px,3.2vw,52px);
-  background:linear-gradient(to bottom,rgba(0,0,0,.95) 0%,transparent 100%);
-  gap:clamp(14px,2vw,28px)
+.tap-label {
+  font-size: clamp(10px, 2.5vw, 13px);
+  letter-spacing: .22em;
+  color: rgba(255,255,255,.45);
+  text-transform: uppercase;
+  animation: blink 2s ease-in-out infinite;
 }
-.nf-wordmark{
-  font-family:'Inter',sans-serif;font-weight:800;letter-spacing:-.03em;
-  font-size:clamp(20px,2.8vw,34px);color:#e50914;flex-shrink:0
+@keyframes blink { 0%,100%{opacity:.45} 50%{opacity:1} }
+
+
+/* ════════════════════════════════
+   S2 · WHO'S WATCHING
+════════════════════════════════ */
+#s-profiles {
+  background: #000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
 }
-.nf-nav-links{display:flex;gap:clamp(10px,1.5vw,20px);list-style:none}
-.nf-nav-links li a{
-  color:rgba(255,255,255,.68);text-decoration:none;
-  font-size:clamp(10px,1.1vw,14px);font-weight:400;white-space:nowrap
+
+/* red ground glow */
+#s-profiles::before {
+  content: '';
+  position: absolute;
+  bottom: -30%; left: 50%;
+  transform: translateX(-50%);
+  width: 170%; height: 70%;
+  background: radial-gradient(ellipse at center bottom,
+    #cc0000 0%, #990000 14%, #550000 30%, transparent 65%);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
 }
-.nf-nav-links li:first-child a{color:#fff;font-weight:500}
+
+.whos-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-weight: 300;
+  font-size: clamp(22px, 5vw, 44px);
+  color: #fff;
+  margin-bottom: clamp(28px, 5vh, 50px);
+  letter-spacing: .01em;
+  position: relative; z-index: 2;
+}
+
+.profiles-row {
+  display: flex;
+  gap: clamp(14px, 4vw, 36px);
+  margin-bottom: clamp(24px, 4vh, 44px);
+  position: relative; z-index: 2;
+}
+
+.profile-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  transition: transform .2s;
+}
+/* desktop hover */
+@media (hover: hover) {
+  .profile-item:hover { transform: scale(1.07); }
+  .profile-item:hover .profile-photo { outline: 3px solid #fff; }
+}
+/* mobile tap */
+.profile-item:active { transform: scale(0.96); }
+
+.profile-photo {
+  width: clamp(80px, 18vw, 150px);
+  height: clamp(80px, 18vw, 150px);
+  border-radius: 5px;
+  overflow: hidden;
+  background: #1c1c1c;
+  flex-shrink: 0;
+}
+.profile-photo img {
+  width: 100%; height: 100%;
+  object-fit: cover; object-position: center top;
+  display: block;
+}
+
+.profile-label {
+  font-size: clamp(10px, 2.5vw, 14px);
+  color: rgba(255,255,255,.82);
+  font-weight: 400;
+  letter-spacing: .02em;
+}
+
+.manage-btn {
+  position: relative; z-index: 2;
+  font-family: 'Inter', sans-serif;
+  font-size: clamp(9px, 2vw, 12px);
+  font-weight: 500;
+  color: #fff;
+  background: transparent;
+  border: 1.5px solid rgba(255,255,255,.6);
+  padding: 9px 24px;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  cursor: default;
+}
+
+
+/* ════════════════════════════════
+   S3 · NETFLIX HOME
+════════════════════════════════ */
+#s-home {
+  background: #141414;
+  display: flex;
+  flex-direction: column;
+}
+
+/* floating buttons */
+.home-back-btn,
+.home-credits-btn {
+  position: absolute;
+  top: max(12px, env(safe-area-inset-top, 12px));
+  z-index: 50;
+  font-family: 'Inter', sans-serif;
+  font-size: clamp(11px, 2.5vw, 14px);
+  font-weight: 600;
+  padding: 8px 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  border: none;
+  transition: opacity .2s;
+}
+.home-back-btn:active,
+.home-credits-btn:active { opacity: .7; }
+
+.home-back-btn {
+  left: max(14px, env(safe-area-inset-left, 14px));
+  background: rgba(0,0,0,.65);
+  border: 1px solid rgba(255,255,255,.3);
+  color: #fff;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.home-credits-btn {
+  right: max(14px, env(safe-area-inset-right, 14px));
+  background: #e50914;
+  color: #fff;
+}
+
+/* nav */
+.nf-nav {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  padding: clamp(12px,2vh,22px) clamp(20px,4vw,52px);
+  background: linear-gradient(to bottom, rgba(0,0,0,.95), transparent);
+  gap: clamp(12px,2vw,24px);
+}
+.nf-logo {
+  font-family: 'Inter', sans-serif;
+  font-weight: 800;
+  font-size: clamp(18px,4vw,32px);
+  color: #e50914;
+  letter-spacing: -.03em;
+  flex-shrink: 0;
+}
+.nf-links {
+  display: flex;
+  gap: clamp(8px,1.5vw,18px);
+  list-style: none;
+  flex-wrap: nowrap;
+}
+.nf-links li a {
+  color: rgba(255,255,255,.65);
+  text-decoration: none;
+  font-size: clamp(9px,1.8vw,13px);
+  white-space: nowrap;
+}
+.nf-links li:first-child a { color: #fff; font-weight: 500; }
 
 /* hero */
-.nf-hero{position:relative;width:100%;height:54vh;min-height:250px;flex-shrink:0}
-
-.nf-hero-bg{
-  position:absolute;inset:0;
-  background:linear-gradient(120deg,#0d1117 0%,#1a2035 40%,#0f3460 70%,#1a1a2e 100%)
+.nf-hero {
+  position: relative;
+  width: 100%;
+  height: 52%;
+  min-height: 220px;
+  flex-shrink: 0;
 }
-.nf-hero-bg img{
-  position:absolute;inset:0;
-  width:100%;height:100%;object-fit:cover;display:block
+.nf-hero-bg {
+  position: absolute; inset: 0;
+  background: #0d1117;
 }
-.nf-hero-overlay{
-  position:absolute;inset:0;
+.nf-hero-bg img {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  object-position: center 20%;
+  display: block;
+}
+.nf-hero-overlay {
+  position: absolute; inset: 0;
   background:
-    linear-gradient(to right,rgba(0,0,0,.9) 0%,rgba(0,0,0,.55) 45%,transparent 80%),
-    linear-gradient(to top,#141414 0%,rgba(20,20,20,.15) 35%,transparent 60%)
+    linear-gradient(to right, rgba(0,0,0,.9) 0%, rgba(0,0,0,.5) 50%, transparent 80%),
+    linear-gradient(to top, #141414 0%, transparent 45%);
 }
-.nf-hero-content{
-  position:absolute;
-  bottom:clamp(20px,5.5vh,68px);
-  left:clamp(24px,3.2vw,52px);
-  max-width:min(44%,500px)
+.nf-hero-content {
+  position: absolute;
+  bottom: clamp(16px,4vh,56px);
+  left: clamp(20px,4vw,52px);
+  max-width: min(50%, 440px);
 }
-.nf-series-badge{display:flex;align-items:center;gap:6px;margin-bottom:6px}
-.nf-badge-n{width:15px;height:15px;flex-shrink:0}
-.nf-series-label{
-  font-size:clamp(9px,.85vw,12px);letter-spacing:.24em;
-  color:rgba(255,255,255,.75);font-weight:500;text-transform:uppercase
+@media (max-width: 600px) {
+  .nf-hero-content { max-width: 70%; }
 }
-.nf-hero-title{
-  font-family:'Playfair Display',serif;font-style:italic;font-weight:700;
-  font-size:clamp(28px,4.8vw,66px);color:#f5c518;
-  line-height:1;margin-bottom:10px;text-transform:lowercase
+
+.nf-badge {
+  display: flex; align-items: center; gap: 5px;
+  margin-bottom: 5px;
 }
-.nf-hero-desc{
-  font-size:clamp(10px,1vw,13px);color:rgba(255,255,255,.7);
-  margin-bottom:14px;line-height:1.5;font-weight:300
+.nf-badge svg { width: 14px; height: 14px; flex-shrink: 0; }
+.nf-badge-text {
+  font-size: clamp(8px,1.5vw,11px);
+  letter-spacing: .22em;
+  color: rgba(255,255,255,.75);
+  text-transform: uppercase;
 }
-.nf-hero-btns{display:flex;gap:8px}
-.nf-btn-play{
-  display:flex;align-items:center;gap:7px;
-  background:#fff;color:#000;border:none;border-radius:3px;
-  padding:7px 20px;font-size:clamp(11px,1.2vw,15px);
-  font-weight:700;font-family:'Inter',sans-serif;cursor:default
+
+.nf-hero-title {
+  font-family: 'Playfair Display', serif;
+  font-style: italic;
+  font-weight: 700;
+  font-size: clamp(22px, 5vw, 58px);
+  color: #f5c518;
+  line-height: 1;
+  margin-bottom: 8px;
+  text-transform: lowercase;
 }
-.nf-btn-credits{
-  display:flex;align-items:center;gap:7px;
-  background:rgba(109,109,110,.72);color:#fff;
-  border:none;border-radius:3px;
-  padding:7px 20px;font-size:clamp(11px,1.2vw,15px);
-  font-weight:600;font-family:'Inter',sans-serif;cursor:pointer;
-  transition:background .18s
+.nf-hero-desc {
+  font-size: clamp(9px,1.5vw,13px);
+  color: rgba(255,255,255,.68);
+  margin-bottom: 12px;
+  line-height: 1.5;
+  font-weight: 300;
 }
-.nf-btn-credits:hover{background:rgba(150,150,150,.65)}
+.nf-hero-btns { display: flex; gap: 8px; }
+
+.btn-play, .btn-ec {
+  display: flex; align-items: center; gap: 6px;
+  border: none; border-radius: 3px;
+  padding: clamp(6px,1.2vh,9px) clamp(12px,2vw,18px);
+  font-size: clamp(10px,1.8vw,14px);
+  font-weight: 700;
+  font-family: 'Inter', sans-serif;
+  cursor: pointer;
+  transition: opacity .2s;
+}
+.btn-play:active, .btn-ec:active { opacity: .7; }
+.btn-play { background: #fff; color: #000; }
+.btn-ec   { background: rgba(109,109,110,.75); color: #fff; }
 
 /* tile rows */
-.nf-rows{
-  flex:1;overflow:hidden;
-  padding:clamp(4px,1vh,12px) clamp(24px,3.2vw,52px) clamp(8px,1.5vh,18px);
-  display:flex;flex-direction:column;gap:clamp(6px,1.2vh,18px)
+.nf-rows {
+  flex: 1;
+  overflow: hidden;
+  padding: clamp(4px,1vh,10px) clamp(20px,4vw,52px) clamp(6px,1vh,14px);
+  display: flex;
+  flex-direction: column;
+  gap: clamp(6px,1.5vh,16px);
 }
-.nf-row-label{
-  font-size:clamp(12px,1.4vw,18px);font-weight:500;color:#fff;
-  margin-bottom:clamp(4px,.8vh,10px)
+.row-label {
+  font-size: clamp(11px,2.5vw,17px);
+  font-weight: 500;
+  color: #fff;
+  margin-bottom: clamp(4px,.8vh,8px);
 }
-.nf-tiles{display:flex;gap:clamp(4px,.6vw,8px)}
-.nf-tile{
-  flex:1;aspect-ratio:16/9;border-radius:3px;overflow:hidden;
-  background:#1e1e1e;flex-shrink:0
+.tiles {
+  display: flex;
+  gap: clamp(3px,.6vw,7px);
 }
-.nf-tile img{width:100%;height:100%;object-fit:cover;display:block}
+.tile {
+  flex: 1;
+  aspect-ratio: 3/2;
+  border-radius: 3px;
+  overflow: hidden;
+  background: #1e1e1e;
+  flex-shrink: 0;
+}
+.tile img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  display: block;
+}
 
-/* ══════════════════════════════════════════
-   SCENE 4 · CREDITS
-══════════════════════════════════════════ */
-#s-credits{
-  background:#000;
-  display:flex;align-items:center;
-  padding:0 5% 0 8%;gap:6%;overflow:hidden
+
+/* ════════════════════════════════
+   S4 · CREDITS
+════════════════════════════════ */
+#s-credits {
+  background: #000;
+  display: flex;
+  align-items: center;
+  padding: 0 5% 0 7%;
+  gap: 5%;
 }
 
 /* left photo slideshow */
-.credits-photo-wrap{
-  flex-shrink:0;
-  width:clamp(120px,15vw,190px);
-  height:clamp(120px,15vw,190px);
-  border-radius:8px;overflow:hidden;
-  transform:rotate(-4deg);
-  box-shadow:4px 10px 28px rgba(0,0,0,.65);
-  align-self:center;
-  position:relative
+.credits-photo {
+  flex-shrink: 0;
+  width: clamp(110px,18vw,190px);
+  height: clamp(110px,18vw,190px);
+  border-radius: 8px;
+  overflow: hidden;
+  transform: rotate(-4deg);
+  box-shadow: 4px 10px 28px rgba(0,0,0,.7);
+  align-self: center;
+  position: relative;
 }
-.slide-img{
-  position:absolute;inset:0;
-  width:100%;height:100%;object-fit:cover;
-  opacity:0;transition:opacity 1s ease
+.slide-img {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  opacity: 0;
+  transition: opacity .9s ease;
 }
-.slide-img.on{opacity:1}
+.slide-img.on { opacity: 1; }
 
-/* scrolling credits text */
-.credits-text-wrap{
-  flex:1;overflow:hidden;height:88vh;
-  display:flex;align-items:center;
-  mask-image:linear-gradient(to bottom,
-    transparent 0%,black 15%,black 85%,transparent 100%);
-  -webkit-mask-image:linear-gradient(to bottom,
-    transparent 0%,black 15%,black 85%,transparent 100%)
-}
-.credits-inner{
-  display:flex;flex-direction:column;
-  gap:clamp(10px,1.4vh,16px)
-}
-
-@keyframes creditsScroll{
-  0%  {transform:translateY(70vh)}
-  100%{transform:translateY(-120%)}
+/* scrolling credits */
+.credits-text-wrap {
+  flex: 1;
+  overflow: hidden;
+  height: 85%;
+  display: flex;
+  align-items: center;
+  mask-image: linear-gradient(to bottom,
+    transparent 0%, black 15%, black 85%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom,
+    transparent 0%, black 15%, black 85%, transparent 100%);
 }
 
-.credit-row{display:flex;gap:clamp(14px,2vw,24px);align-items:baseline}
-.c-label{
-  width:clamp(130px,17vw,230px);flex-shrink:0;text-align:right;
-  font-size:clamp(10px,1.1vw,14px);color:rgba(255,255,255,.52);
-  font-weight:300;line-height:1.55
+@keyframes scrollUp {
+  0%   { transform: translateY(65vh); }
+  100% { transform: translateY(-120%); }
 }
-.c-value{
-  font-size:clamp(10px,1.1vw,14px);color:#fff;
-  font-weight:400;line-height:1.55
+
+.credits-inner {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(10px,1.8vh,18px);
+}
+
+.credit-row {
+  display: flex;
+  gap: clamp(12px,2.5vw,24px);
+  align-items: baseline;
+}
+.c-label {
+  width: clamp(120px,18vw,220px);
+  flex-shrink: 0;
+  text-align: right;
+  font-size: clamp(10px,1.8vw,14px);
+  color: rgba(255,255,255,.5);
+  font-weight: 300;
+  line-height: 1.6;
+}
+.c-value {
+  font-size: clamp(10px,1.8vw,14px);
+  color: #fff;
+  font-weight: 400;
+  line-height: 1.6;
 }
 </style>
 </head>
 <body>
 
-<!-- ══════════════════════════════════════════
-     AUDIO — Beete Lamhein from 00:47
-     Drop your mp3 file at:  audio/beete-lamhein.mp3
-══════════════════════════════════════════ -->
-<audio id="credits-audio" preload="auto" style="display:none">
-  <source src="audio/beete-lamhein.mp3" type="audio/mpeg">
+<!-- AUDIO — Beete Lamhein (play from 00:47 on credits) -->
+<audio id="bgm" preload="auto">
+  <source src="audio/Beete Lamhein The Train 320 Kbps.mp3" type="audio/mpeg">
 </audio>
 
-<!-- YouTube IFrame API -->
-<script>
-  function onYouTubeIframeAPIReady() { window._ytLoaded = true; }
-</script>
-<script src="https://www.youtube.com/iframe_api" async></script>
-
-<!-- ══════════════════════════════════════════
-     STAGE
-══════════════════════════════════════════ -->
 <div id="stage">
 
-  <!-- S1: INTRO -->
+  <!-- ── S1: INTRO ── -->
   <div class="scene active" id="s-intro">
-    <div id="yt-bg"></div>
+    <!-- local Netflix intro MP4 -->
+    <video id="intro-video" playsinline webkit-playsinline preload="auto">
+      <source src="netflix-intro.mp4" type="video/mp4">
+    </video>
+    <!-- tap overlay -->
     <div id="tap-cover" onclick="beginExperience()">
-      <svg class="tap-n" viewBox="0 0 111 190" xmlns="http://www.w3.org/2000/svg">
+      <svg class="tap-n" viewBox="0 0 111 190">
         <polygon points="0,0 27,0 27,190 0,190"    fill="#E50914"/>
         <polygon points="84,0 111,0 111,190 84,190" fill="#E50914"/>
         <polygon points="0,0 27,0 111,190 84,190"  fill="#E50914"/>
       </svg>
       <div class="tap-ring">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="#fff">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="#fff">
           <polygon points="5,3 19,12 5,21"/>
         </svg>
       </div>
@@ -357,25 +516,24 @@ html,body{width:100%;height:100vh;background:#000;overflow:hidden;
     </div>
   </div>
 
-  <!-- S2: WHO'S WATCHING -->
+  <!-- ── S2: WHO'S WATCHING ── -->
   <div class="scene" id="s-profiles">
     <p class="whos-title">Who's Watching?</p>
     <div class="profiles-row" id="profiles-row"></div>
     <button class="manage-btn">MANAGE PROFILES</button>
   </div>
 
-  <!-- S3: NETFLIX HOME -->
+  <!-- ── S3: NETFLIX HOME ── -->
   <div class="scene" id="s-home">
     <button class="home-back-btn"    onclick="goTo('profiles')">&#8592; Back</button>
-    <button class="home-credits-btn" onclick="goTo('credits')">View End Credits &#8250;</button>
+    <button class="home-credits-btn" onclick="goTo('credits')">View End Credits</button>
 
     <nav class="nf-nav">
-      <span class="nf-wordmark">NETFLIX</span>
-      <ul class="nf-nav-links">
+      <span class="nf-logo">NETFLIX</span>
+      <ul class="nf-links">
         <li><a href="#">Home</a></li>
         <li><a href="#">TV Shows</a></li>
         <li><a href="#">Movies</a></li>
-        <li><a href="#">New &amp; Popular</a></li>
         <li><a href="#">My List</a></li>
       </ul>
     </nav>
@@ -384,41 +542,43 @@ html,body{width:100%;height:100vh;background:#000;overflow:hidden;
       <div class="nf-hero-bg" id="home-hero-bg"></div>
       <div class="nf-hero-overlay"></div>
       <div class="nf-hero-content">
-        <div class="nf-series-badge">
-          <svg class="nf-badge-n" viewBox="0 0 111 190" xmlns="http://www.w3.org/2000/svg">
+        <div class="nf-badge">
+          <svg viewBox="0 0 111 190">
             <polygon points="0,0 27,0 27,190 0,190"    fill="#E50914"/>
             <polygon points="84,0 111,0 111,190 84,190" fill="#E50914"/>
             <polygon points="0,0 27,0 111,190 84,190"  fill="#E50914"/>
           </svg>
-          <span class="nf-series-label">SERIES</span>
+          <span class="nf-badge-text">SERIES</span>
         </div>
-        <h1 class="nf-hero-title" id="home-title">life of premal &amp; shivani</h1>
-        <p  class="nf-hero-desc"  id="home-desc">A love story written by fate, directed by God.</p>
+        <h1 class="nf-hero-title" id="home-title"></h1>
+        <p  class="nf-hero-desc"  id="home-desc"></p>
         <div class="nf-hero-btns">
-          <button class="nf-btn-play">
-            <svg width="12" height="12" viewBox="0 0 12 12"><path d="M1 0l10 6L1 12V0z" fill="#000"/></svg>
+          <button class="btn-play">
+            <svg width="11" height="11" viewBox="0 0 11 11">
+              <path d="M0 0l11 5.5L0 11V0z" fill="#000"/>
+            </svg>
             Play
           </button>
-          <button class="nf-btn-credits" onclick="goTo('credits')">View End Credits</button>
+          <button class="btn-ec" onclick="goTo('credits')">View End Credits</button>
         </div>
       </div>
     </div>
 
     <div class="nf-rows">
       <div>
-        <div class="nf-row-label">Moments Together</div>
-        <div class="nf-tiles" id="home-popular"></div>
+        <div class="row-label">Moments Together</div>
+        <div class="tiles" id="home-popular"></div>
       </div>
       <div>
-        <div class="nf-row-label">Favourite Memories</div>
-        <div class="nf-tiles" id="home-recent"></div>
+        <div class="row-label">Favourite Memories</div>
+        <div class="tiles" id="home-recent"></div>
       </div>
     </div>
   </div>
 
-  <!-- S4: CREDITS -->
+  <!-- ── S4: CREDITS ── -->
   <div class="scene" id="s-credits">
-    <div class="credits-photo-wrap" id="credits-slideshow"></div>
+    <div class="credits-photo" id="credits-slideshow"></div>
     <div class="credits-text-wrap">
       <div class="credits-inner" id="credits-inner"></div>
     </div>
@@ -427,11 +587,22 @@ html,body{width:100%;height:100vh;background:#000;overflow:hidden;
 </div><!-- /stage -->
 
 <script>
-// ──────────────────────────────────────────
-// DATA
-// ──────────────────────────────────────────
+// ─────────────────────────────────────────
+// Fix Safari 100vh via JS
+// ─────────────────────────────────────────
+function setVH() {
+  document.documentElement.style.setProperty('--vh', window.innerHeight + 'px');
+  document.body.style.height = window.innerHeight + 'px';
+  document.getElementById('stage').style.height = window.innerHeight + 'px';
+}
+setVH();
+window.addEventListener('resize', setVH);
+
+// ─────────────────────────────────────────
+// PHOTO DATA
+// ─────────────────────────────────────────
 const P = {
-  val:   'images/valentine.jpg',  // Valentine's card — 5s opener
+  val:   'images/valentine.jpg',
   aug24: 'images/ms1.jpg',
   sep24: 'images/ms2.jpg',
   oct24a:'images/p1.jpg',
@@ -450,169 +621,145 @@ const P = {
   may25b:'images/r1.jpg',
 };
 
-// Credits slideshow: {src, ms} — valentine shows for 5 000 ms, rest 2 800 ms
-const SLIDESHOW = [
-  {src: P.val,   ms: 5000},
-  {src: P.aug24, ms: 2800},
-  {src: P.sep24, ms: 2800},
-  {src: P.oct24a,ms: 2800},
-  {src: P.dec24, ms: 2800},
-  {src: P.feb25a,ms: 2800},
-  {src: P.feb25b,ms: 2800},
-  {src: P.apr25a,ms: 2800},
-  {src: P.apr25b,ms: 2800},
-  {src: P.apr25c,ms: 2800},
-  {src: P.may25a,ms: 2800},
-  {src: P.apr25g,ms: 2800},
-  {src: P.may25b,ms: 2800},
-];
-
+// Milestones — each has its own hero + tile set
 const MILESTONES = [
   {
-    label:'1 month', photo:P.aug24,
-    heading:'the beginning',
-    desc:'Where it all started. The first chapter of us.',
-    hero:P.aug24,
-    popular:[P.aug24,P.aug24,P.aug24,P.aug24,P.aug24],
-    recent: [P.aug24,P.aug24,P.aug24,P.aug24,P.aug24],
+    label:'1 month',   photo: P.aug24,
+    heading: 'the beginning',
+    desc:    'Where it all started. The first chapter of us.',
+    hero: P.aug24,
+    popular: [P.aug24, P.aug24, P.aug24, P.aug24, P.aug24],
+    recent:  [P.aug24, P.aug24, P.aug24, P.aug24, P.aug24],
   },
   {
-    label:'3 months', photo:P.oct24a,
-    heading:'three months of us',
-    desc:'Growing closer every single day.',
-    hero:P.dec24,
-    popular:[P.aug24,P.sep24,P.oct24a,P.oct24b,P.dec24],
-    recent: [P.oct24b,P.oct24a,P.sep24,P.dec24,P.aug24],
+    label:'3 months',  photo: P.oct24a,
+    heading: 'three months of us',
+    desc:    'Every call, every text — growing closer every day.',
+    hero: P.dec24,
+    popular: [P.aug24, P.sep24, P.oct24a, P.oct24b, P.dec24],
+    recent:  [P.dec24, P.oct24b, P.oct24a, P.sep24, P.aug24],
   },
   {
-    label:'6 months', photo:P.feb25a,
-    heading:'half a year in love',
-    desc:'Six months and still falling harder.',
-    hero:P.feb25b,
-    popular:[P.feb25a,P.feb25b,P.dec24,P.oct24a,P.sep24],
-    recent: [P.feb25b,P.feb25a,P.oct24b,P.dec24,P.aug24],
+    label:'6 months',  photo: P.feb25a,
+    heading: 'half a year in love',
+    desc:    'Six months and still falling harder.',
+    hero: P.feb25b,
+    popular: [P.feb25a, P.feb25b, P.dec24, P.oct24a, P.sep24],
+    recent:  [P.feb25b, P.feb25a, P.oct24b, P.dec24, P.aug24],
   },
   {
-    label:'10 months', photo:P.may25a,
-    heading:'ten months & counting',
-    desc:'Every moment with you is the best one yet.',
-    hero:P.apr25a,
-    popular:[P.apr25a,P.apr25b,P.apr25c,P.apr25d,P.apr25e],
-    recent: [P.apr25f,P.apr25g,P.may25a,P.may25b,P.apr25b],
+    label:'10 months', photo: P.may25a,
+    heading: 'ten months & counting',
+    desc:    'Every moment with you is the best one yet.',
+    hero: P.apr25a,
+    popular: [P.apr25a, P.apr25b, P.apr25c, P.apr25d, P.apr25e],
+    recent:  [P.apr25f, P.apr25g, P.may25a, P.may25b, P.apr25b],
   },
+];
+
+// Credits slideshow — valentine first (5 000 ms), rest 2 800 ms
+const SLIDES = [
+  { src: P.val,   ms: 5000 },
+  { src: P.aug24, ms: 2800 },
+  { src: P.sep24, ms: 2800 },
+  { src: P.oct24a,ms: 2800 },
+  { src: P.dec24, ms: 2800 },
+  { src: P.feb25a,ms: 2800 },
+  { src: P.feb25b,ms: 2800 },
+  { src: P.apr25a,ms: 2800 },
+  { src: P.apr25b,ms: 2800 },
+  { src: P.apr25c,ms: 2800 },
+  { src: P.may25a,ms: 2800 },
+  { src: P.apr25g,ms: 2800 },
+  { src: P.may25b,ms: 2800 },
 ];
 
 const CREDITS_DATA = [
-  ['Directed by',            'God'],
-  ['Cast',                   ''],
-  ['Boyfriend',              'Premal'],
-  ['Girlfriend',             'Shivani'],
-  ['Written by',             'Fate & destiny'],
-  ['Produced by',            'Patience & support'],
-  ['Director of photography','Our camera rolls'],
-  ['Location',               'Canada'],
-  ['Chief editor',           'Our favorite memories'],
-  ['Soundtrack',             'Melodies of us'],
-  ['Executive producers',    'Shared Future Plans'],
-  ['Technical advisor',      'Honest communication'],
-  ['Catering by',            'Midnight cravings'],
-  ['Stunt coordinators',     'Arguments & Fights'],
-  ['Time management',        '"Five more minutes"'],
-  ['Wardrobe designer',      "Each other's hoodies"],
-  ['Chief motivator',        'Family & friends'],
+  ['Directed by',             'God'],
+  ['Cast',                    ''],
+  ['Boyfriend',               'Premal'],
+  ['Girlfriend',              'Shivani'],
+  ['Written by',              'Fate & destiny'],
+  ['Produced by',             'Patience & support'],
+  ['Director of photography', 'Our camera rolls'],
+  ['Location',                'Canada'],
+  ['Chief editor',            'Our favorite memories'],
+  ['Soundtrack',              'Melodies of us'],
+  ['Executive producers',     'Shared Future Plans'],
+  ['Technical advisor',       'Honest communication'],
+  ['Catering by',             'Midnight cravings'],
+  ['Stunt coordinators',      'Arguments & Fights'],
+  ['Time management',         '"Five more minutes"'],
+  ['Wardrobe designer',       "Each other's hoodies"],
+  ['Chief motivator',         'Family & friends'],
 ];
 
-// ──────────────────────────────────────────
+// ─────────────────────────────────────────
 // ROUTING
-// ──────────────────────────────────────────
-let _slideshowTimer = null;
-let _slideIdx       = 0;
-let _hasPlayedIntro = false;
+// ─────────────────────────────────────────
+let _ssTimer = null;
+let _ssIdx   = 0;
 
 function goTo(key) {
-  ['s-intro','s-profiles','s-home','s-credits'].forEach(id => {
-    document.getElementById(id).classList.remove('active');
-  });
+  document.querySelectorAll('.scene').forEach(el => el.classList.remove('active'));
   if (key === 'credits') _startCredits();
   document.getElementById('s-' + key).classList.add('active');
 }
 
-// ──────────────────────────────────────────
-// INTRO — YouTube player
-// ──────────────────────────────────────────
+// ─────────────────────────────────────────
+// S1 · INTRO — local MP4
+// ─────────────────────────────────────────
+let _introStarted = false;
+
 function beginExperience() {
-  if (_hasPlayedIntro) return;
-  _hasPlayedIntro = true;
+  if (_introStarted) return;
+  _introStarted = true;
 
-  // fade out tap cover
   const cover = document.getElementById('tap-cover');
-  cover.style.transition = 'opacity .5s';
+  const vid   = document.getElementById('intro-video');
+
+  // fade out tap overlay
+  cover.style.transition = 'opacity .45s';
   cover.style.opacity = '0';
-  setTimeout(() => cover.remove(), 600);
+  setTimeout(() => { cover.style.display = 'none'; }, 500);
 
-  // show YouTube background
-  const bg = document.getElementById('yt-bg');
-  bg.style.opacity = '1';
+  // show + play video
+  vid.style.opacity = '1';
+  vid.muted = false;
+  vid.volume = 1;
+  vid.play().catch(() => {
+    // If unmuted play blocked (old iOS), play muted
+    vid.muted = true;
+    vid.play().catch(() => {});
+  });
 
-  // create YT player div
-  const div = document.createElement('div');
-  div.id = 'yt-player-el';
-  div.style.cssText = 'width:100%;height:100%';
-  bg.appendChild(div);
-
-  function createYT() {
-    new YT.Player('yt-player-el', {
-      videoId: 'GV3HUDMQ-F8',
-      playerVars:{
-        autoplay:1, controls:0, disablekb:1,
-        fs:0, iv_load_policy:3, modestbranding:1,
-        playsinline:1, rel:0
-      },
-      events:{
-        onReady: e => { try{ e.target.setVolume(100); e.target.playVideo(); }catch(ex){} },
-        onError: () => { bg.style.opacity='0'; }
-      }
-    });
-  }
-
-  if (window.YT && YT.Player) {
-    createYT();
-  } else {
-    // poll until YT API loads (it loads async)
-    let t = 0;
-    const poll = setInterval(() => {
-      t += 100;
-      if (window.YT && YT.Player) { clearInterval(poll); createYT(); }
-      else if (t > 4000)          { clearInterval(poll); bg.style.opacity='0'; }
-    }, 100);
-  }
-
-  // Move to profiles after 5.2 s regardless of YT status
-  setTimeout(() => goTo('profiles'), 5200);
+  // go to profiles when video ends (or after 6s fallback)
+  vid.addEventListener('ended', () => goTo('profiles'), { once: true });
+  setTimeout(() => goTo('profiles'), 6000);
 }
 
-// ──────────────────────────────────────────
-// WHO'S WATCHING — build profiles
-// ──────────────────────────────────────────
+// ─────────────────────────────────────────
+// S2 · WHO'S WATCHING
+// ─────────────────────────────────────────
 function _buildProfiles() {
   document.getElementById('profiles-row').innerHTML = MILESTONES.map((m, i) => `
     <div class="profile-item" onclick="openMilestone(${i})">
       <div class="profile-photo">
-        <img src="${m.photo}" alt="${m.label}">
+        <img src="${m.photo}" alt="${m.label}" loading="eager">
       </div>
       <span class="profile-label">${m.label}</span>
     </div>`).join('');
 }
 
-// ──────────────────────────────────────────
-// NETFLIX HOME — milestone-specific
-// ──────────────────────────────────────────
+// ─────────────────────────────────────────
+// S3 · NETFLIX HOME
+// ─────────────────────────────────────────
 function openMilestone(idx) {
   const m = MILESTONES[idx];
 
   // hero bg
-  const hb = document.getElementById('home-hero-bg');
-  hb.innerHTML = `<img src="${m.hero}" alt="">`;
+  document.getElementById('home-hero-bg').innerHTML =
+    `<img src="${m.hero}" alt="">`;
 
   // text
   document.getElementById('home-title').textContent = m.heading;
@@ -627,13 +774,13 @@ function openMilestone(idx) {
 
 function _buildTiles(id, photos) {
   document.getElementById(id).innerHTML = photos.map(src =>
-    `<div class="nf-tile"><img src="${src}" alt="" loading="lazy"></div>`
+    `<div class="tile"><img src="${src}" alt="" loading="lazy"></div>`
   ).join('');
 }
 
-// ──────────────────────────────────────────
-// CREDITS
-// ──────────────────────────────────────────
+// ─────────────────────────────────────────
+// S4 · CREDITS
+// ─────────────────────────────────────────
 function _buildCreditsList() {
   document.getElementById('credits-inner').innerHTML = CREDITS_DATA.map(([l, v]) =>
     `<div class="credit-row">
@@ -644,56 +791,48 @@ function _buildCreditsList() {
 }
 
 function _buildSlideshowDOM() {
-  document.getElementById('credits-slideshow').innerHTML = SLIDESHOW.map((item, i) =>
-    `<img class="slide-img${i===0?' on':''}" src="${item.src}" alt="">`
-  ).join('');
+  document.getElementById('credits-slideshow').innerHTML =
+    SLIDES.map((s, i) =>
+      `<img class="slide-img${i===0?' on':''}" src="${s.src}" alt="" loading="lazy">`
+    ).join('');
 }
 
 function _startCredits() {
-  // ── scroll reset ──
+  // reset credits scroll
   const inner = document.getElementById('credits-inner');
   inner.style.animation = 'none';
   void inner.offsetHeight;
-  inner.style.animation = 'creditsScroll 20s linear forwards';
+  inner.style.animation = 'scrollUp 20s linear forwards';
 
-  // ── slideshow reset ──
-  clearTimeout(_slideshowTimer);
-  _slideIdx = 0;
+  // reset slideshow
+  clearTimeout(_ssTimer);
+  _ssIdx = 0;
   const imgs = document.querySelectorAll('#credits-slideshow .slide-img');
   imgs.forEach((el, i) => el.classList.toggle('on', i === 0));
-  _scheduleSlideshowStep(imgs);
+  _nextSlide(imgs);
 
-  // ── music ──
-  const audio = document.getElementById('credits-audio');
-  if (audio && audio.readyState > 0) {
+  // play music from 00:47
+  const audio = document.getElementById('bgm');
+  if (audio) {
     audio.currentTime = 47;
-    audio.volume = 0.82;
+    audio.volume = 0.85;
     audio.play().catch(() => {});
-  } else if (audio) {
-    audio.addEventListener('canplay', function onCan() {
-      audio.removeEventListener('canplay', onCan);
-      audio.currentTime = 47;
-      audio.volume = 0.82;
-      audio.play().catch(() => {});
-    });
   }
 }
 
-function _scheduleSlideshowStep(imgs) {
-  if (!imgs || !imgs.length) return;
-  const duration = SLIDESHOW[_slideIdx].ms;
-
-  _slideshowTimer = setTimeout(() => {
-    imgs[_slideIdx].classList.remove('on');
-    _slideIdx = (_slideIdx + 1) % imgs.length;
-    imgs[_slideIdx].classList.add('on');
-    _scheduleSlideshowStep(imgs);
-  }, duration);
+function _nextSlide(imgs) {
+  if (!imgs.length) return;
+  _ssTimer = setTimeout(() => {
+    imgs[_ssIdx].classList.remove('on');
+    _ssIdx = (_ssIdx + 1) % imgs.length;
+    imgs[_ssIdx].classList.add('on');
+    _nextSlide(imgs);
+  }, SLIDES[_ssIdx].ms);
 }
 
-// ──────────────────────────────────────────
+// ─────────────────────────────────────────
 // INIT
-// ──────────────────────────────────────────
+// ─────────────────────────────────────────
 _buildProfiles();
 _buildCreditsList();
 _buildSlideshowDOM();
