@@ -8,180 +8,180 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,400;1,700&family=Cormorant+Garamond:ital,wght@1,300;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
+/* ── reset ── */
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
-html,body{width:100%;height:100vh;background:#000;overflow:hidden;font-family:'Inter',sans-serif;color:#fff;-webkit-font-smoothing:antialiased}
+html,body{width:100%;height:100vh;background:#000;overflow:hidden;
+  font-family:'Inter',sans-serif;color:#fff;-webkit-font-smoothing:antialiased}
 
-/* ─── SCENES ─── */
+/* ══════════════════════════════════════════
+   STAGE & SCENES
+   FIX: scenes must NOT override position:absolute with position:relative
+        — that collapses them to 0 height.
+   All layout-only properties (flex, bg, overflow) are safe to set on scenes.
+══════════════════════════════════════════ */
 #stage{position:relative;width:100%;height:100vh}
-.scene{position:absolute;inset:0;opacity:0;pointer-events:none;transition:opacity .85s ease}
+
+.scene{
+  position:absolute;   /* fills #stage via inset */
+  inset:0;
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .85s ease;
+  /* each scene can add display:flex etc via its own rule — just NOT position */
+}
 .scene.active{opacity:1;pointer-events:all}
 
-/* ══════════════════════════════
+/* ══════════════════════════════════════════
    SCENE 1 · INTRO
-══════════════════════════════ */
+══════════════════════════════════════════ */
 #s-intro{
   background:#000;
   display:flex;align-items:center;justify-content:center;
-  flex-direction:column;gap:32px;
-  overflow:hidden;position:relative
+  flex-direction:column;overflow:hidden
 }
 
+/* YouTube fullscreen background */
 #yt-bg{
-  position:absolute;inset:0;
-  pointer-events:none;z-index:0;
-  opacity:0;transition:opacity .5s
+  position:absolute;inset:0;pointer-events:none;z-index:1;
+  opacity:0;transition:opacity .6s;overflow:hidden
 }
 #yt-bg iframe{
-  width:100%;height:100%;
   position:absolute;
-  /* scale up to fill & hide controls letterbox */
-  transform:scale(1.35);
+  width:300%;height:300%;   /* oversized to hide letterbox */
   top:50%;left:50%;
-  transform:translate(-50%,-50%) scale(1.4)
+  transform:translate(-50%,-50%);
+  pointer-events:none
 }
 
-.n-logo{
-  width:clamp(90px,12vw,150px);
-  position:relative;z-index:2;
-  opacity:0
-}
-.n-logo.show{animation:nIntro 2.8s cubic-bezier(.34,1.4,.64,1) forwards}
-
-@keyframes nIntro{
-  0%  {opacity:0;transform:scale(.06);filter:drop-shadow(0 0 0 #e50914)}
-  25% {opacity:1}
-  60% {transform:scale(1.18);filter:drop-shadow(0 0 70px #e50914cc)}
-  80% {transform:scale(.96)}
-  100%{transform:scale(1);filter:drop-shadow(0 0 28px #e5091444)}
-}
-
-/* Tap to begin overlay */
+/* tap-to-begin overlay */
 #tap-cover{
   position:absolute;inset:0;z-index:10;
   display:flex;flex-direction:column;
   align-items:center;justify-content:center;
-  cursor:pointer;gap:24px
+  cursor:pointer;gap:28px
 }
-.tap-n{
-  width:clamp(90px,12vw,150px)
-}
+.tap-n{width:clamp(80px,11vw,130px)}
+
 .tap-ring{
-  width:80px;height:80px;border-radius:50%;
-  border:2px solid rgba(255,255,255,.25);
+  width:72px;height:72px;border-radius:50%;
+  border:2px solid rgba(255,255,255,.22);
   display:flex;align-items:center;justify-content:center;
   animation:ringPulse 2s ease-in-out infinite
 }
-.tap-ring svg{margin-left:4px}
 @keyframes ringPulse{
-  0%,100%{box-shadow:0 0 0 0 rgba(229,9,20,.3)}
-  50%{box-shadow:0 0 0 18px rgba(229,9,20,0)}
+  0%,100%{box-shadow:0 0 0 0 rgba(229,9,20,.35)}
+  50%    {box-shadow:0 0 0 20px rgba(229,9,20,0)}
 }
 .tap-label{
-  font-size:clamp(11px,1.2vw,14px);
-  letter-spacing:.22em;color:rgba(255,255,255,.5);
-  text-transform:uppercase;
-  animation:blink 2s ease-in-out infinite
+  font-size:clamp(10px,1.1vw,13px);letter-spacing:.22em;
+  color:rgba(255,255,255,.45);text-transform:uppercase;
+  animation:tapBlink 2.2s ease-in-out infinite
 }
-@keyframes blink{0%,100%{opacity:.5}50%{opacity:1}}
+@keyframes tapBlink{0%,100%{opacity:.45}50%{opacity:1}}
 
-/* ══════════════════════════════
+/* ══════════════════════════════════════════
    SCENE 2 · WHO'S WATCHING
-══════════════════════════════ */
+══════════════════════════════════════════ */
 #s-profiles{
   background:#000;
   display:flex;flex-direction:column;
   align-items:center;justify-content:center;
-  position:relative;overflow:hidden;gap:0
+  overflow:hidden;gap:0
 }
-/* red ground glow */
+/* big red ground glow — works because #s-profiles is position:absolute */
 #s-profiles::before{
-  content:'';position:absolute;bottom:-28%;left:50%;
+  content:'';
+  position:absolute;bottom:-28%;left:50%;
   transform:translateX(-50%);
   width:170%;height:72%;
   background:radial-gradient(ellipse at center bottom,
     #d50000 0%,#aa0000 12%,#6b0000 28%,#2a0000 48%,transparent 68%);
-  border-radius:50%;pointer-events:none;opacity:.95
+  border-radius:50%;pointer-events:none;opacity:.95;z-index:0
 }
+
 .whos-title{
   font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:300;
   font-size:clamp(24px,3.2vw,44px);color:#fff;
   margin-bottom:clamp(32px,4vh,52px);letter-spacing:.01em;
   position:relative;z-index:2
 }
+
 .profiles-row{
   display:flex;gap:clamp(18px,2.8vw,36px);
   margin-bottom:clamp(28px,3.5vh,44px);
   position:relative;z-index:2
 }
+
 .profile-item{
   display:flex;flex-direction:column;align-items:center;gap:10px;
-  cursor:pointer;
-  transition:transform .2s
+  cursor:pointer;transition:transform .22s
 }
-.profile-item:hover{transform:scale(1.06)}
-.profile-item:hover .profile-photo{box-shadow:0 0 0 3px #fff}
+.profile-item:hover{transform:scale(1.07)}
+.profile-item:hover .profile-photo{outline:3px solid rgba(255,255,255,.9)}
+
 .profile-photo{
-  width:clamp(96px,12.5vw,156px);height:clamp(96px,12.5vw,156px);
-  border-radius:5px;overflow:hidden;
-  background:#1c1c1c;
-  display:flex;align-items:center;justify-content:center;
-  flex-shrink:0;transition:box-shadow .2s
+  width:clamp(96px,12.5vw,152px);height:clamp(96px,12.5vw,152px);
+  border-radius:5px;overflow:hidden;background:#1c1c1c;
+  flex-shrink:0;transition:outline .18s
 }
 .profile-photo img{width:100%;height:100%;object-fit:cover;display:block}
+
 .profile-label{
   font-size:clamp(11px,1.3vw,15px);
   color:rgba(255,255,255,.82);font-weight:400;letter-spacing:.02em
 }
+
 .manage-btn{
   position:relative;z-index:2;
   font-family:'Inter',sans-serif;font-size:clamp(9px,1vw,13px);font-weight:500;
   color:#fff;background:transparent;
-  border:1.5px solid rgba(255,255,255,.65);
+  border:1.5px solid rgba(255,255,255,.6);
   padding:9px 24px;letter-spacing:.18em;text-transform:uppercase;cursor:default
 }
 
-/* ══════════════════════════════
-   SCENE 3 · NETFLIX HOME
-══════════════════════════════ */
+/* ══════════════════════════════════════════
+   SCENE 3 · NETFLIX HOME (per milestone)
+══════════════════════════════════════════ */
 #s-home{
-  background:#141414;display:flex;flex-direction:column;
-  overflow:hidden;position:relative
+  background:#141414;
+  display:flex;flex-direction:column;overflow:hidden
 }
 
-/* back + credits buttons */
+/* floating nav buttons */
 .home-back-btn{
-  position:absolute;top:clamp(10px,1.5vh,18px);left:clamp(10px,1.5vw,18px);
-  z-index:50;background:rgba(0,0,0,.55);border:1px solid rgba(255,255,255,.25);
-  color:#fff;font-family:'Inter',sans-serif;font-size:clamp(11px,1.1vw,14px);
-  font-weight:500;padding:7px 14px;border-radius:4px;cursor:pointer;
+  position:absolute;top:clamp(10px,1.6vh,20px);left:clamp(12px,1.8vw,22px);
+  z-index:50;background:rgba(0,0,0,.6);border:1px solid rgba(255,255,255,.25);
+  color:#fff;font-family:'Inter',sans-serif;
+  font-size:clamp(11px,1.1vw,14px);font-weight:500;
+  padding:7px 14px;border-radius:4px;cursor:pointer;
   letter-spacing:.04em;backdrop-filter:blur(8px);
-  transition:background .2s
+  transition:background .18s
 }
-.home-back-btn:hover{background:rgba(255,255,255,.12)}
+.home-back-btn:hover{background:rgba(255,255,255,.13)}
 
 .home-credits-btn{
-  position:absolute;top:clamp(10px,1.5vh,18px);right:clamp(10px,1.5vw,18px);
+  position:absolute;top:clamp(10px,1.6vh,20px);right:clamp(12px,1.8vw,22px);
   z-index:50;background:#e50914;border:none;
-  color:#fff;font-family:'Inter',sans-serif;font-size:clamp(11px,1.1vw,14px);
-  font-weight:600;padding:7px 16px;border-radius:4px;cursor:pointer;
-  letter-spacing:.04em;
-  transition:background .2s
+  color:#fff;font-family:'Inter',sans-serif;
+  font-size:clamp(11px,1.1vw,14px);font-weight:600;
+  padding:7px 16px;border-radius:4px;cursor:pointer;
+  letter-spacing:.04em;transition:background .18s
 }
 .home-credits-btn:hover{background:#c40812}
 
-/* nav */
+/* nav bar */
 .nf-nav{
   position:absolute;top:0;left:0;right:0;z-index:10;
   display:flex;align-items:center;
-  padding:clamp(10px,1.6vh,20px) clamp(24px,3.2vw,52px);
+  padding:clamp(10px,1.8vh,22px) clamp(24px,3.2vw,52px);
   background:linear-gradient(to bottom,rgba(0,0,0,.95) 0%,transparent 100%);
   gap:clamp(14px,2vw,28px)
 }
 .nf-wordmark{
-  font-family:'Inter',sans-serif;font-weight:700;letter-spacing:-.03em;
-  font-size:clamp(20px,2.8vw,36px);color:#e50914;flex-shrink:0
+  font-family:'Inter',sans-serif;font-weight:800;letter-spacing:-.03em;
+  font-size:clamp(20px,2.8vw,34px);color:#e50914;flex-shrink:0
 }
-.nf-nav-links{display:flex;gap:clamp(10px,1.5vw,20px);list-style:none;flex-wrap:nowrap}
+.nf-nav-links{display:flex;gap:clamp(10px,1.5vw,20px);list-style:none}
 .nf-nav-links li a{
   color:rgba(255,255,255,.68);text-decoration:none;
   font-size:clamp(10px,1.1vw,14px);font-weight:400;white-space:nowrap
@@ -190,19 +190,20 @@ html,body{width:100%;height:100vh;background:#000;overflow:hidden;font-family:'I
 
 /* hero */
 .nf-hero{position:relative;width:100%;height:54vh;min-height:250px;flex-shrink:0}
-.nf-hero-bg-ph{
+
+.nf-hero-bg{
   position:absolute;inset:0;
   background:linear-gradient(120deg,#0d1117 0%,#1a2035 40%,#0f3460 70%,#1a1a2e 100%)
 }
-.nf-hero-bg-ph img{
-  width:100%;height:100%;object-fit:cover;
-  position:absolute;inset:0;display:block
+.nf-hero-bg img{
+  position:absolute;inset:0;
+  width:100%;height:100%;object-fit:cover;display:block
 }
 .nf-hero-overlay{
   position:absolute;inset:0;
   background:
     linear-gradient(to right,rgba(0,0,0,.9) 0%,rgba(0,0,0,.55) 45%,transparent 80%),
-    linear-gradient(to top,#141414 0%,rgba(20,20,20,.2) 35%,transparent 60%)
+    linear-gradient(to top,#141414 0%,rgba(20,20,20,.15) 35%,transparent 60%)
 }
 .nf-hero-content{
   position:absolute;
@@ -211,15 +212,15 @@ html,body{width:100%;height:100vh;background:#000;overflow:hidden;font-family:'I
   max-width:min(44%,500px)
 }
 .nf-series-badge{display:flex;align-items:center;gap:6px;margin-bottom:6px}
-.nf-badge-n{width:16px;height:16px;flex-shrink:0}
+.nf-badge-n{width:15px;height:15px;flex-shrink:0}
 .nf-series-label{
   font-size:clamp(9px,.85vw,12px);letter-spacing:.24em;
-  color:rgba(255,255,255,.78);font-weight:500;text-transform:uppercase
+  color:rgba(255,255,255,.75);font-weight:500;text-transform:uppercase
 }
 .nf-hero-title{
   font-family:'Playfair Display',serif;font-style:italic;font-weight:700;
-  font-size:clamp(28px,4.8vw,66px);
-  color:#f5c518;line-height:1;margin-bottom:10px;text-transform:lowercase
+  font-size:clamp(28px,4.8vw,66px);color:#f5c518;
+  line-height:1;margin-bottom:10px;text-transform:lowercase
 }
 .nf-hero-desc{
   font-size:clamp(10px,1vw,13px);color:rgba(255,255,255,.7);
@@ -238,14 +239,14 @@ html,body{width:100%;height:100vh;background:#000;overflow:hidden;font-family:'I
   border:none;border-radius:3px;
   padding:7px 20px;font-size:clamp(11px,1.2vw,15px);
   font-weight:600;font-family:'Inter',sans-serif;cursor:pointer;
-  transition:background .2s
+  transition:background .18s
 }
-.nf-btn-credits:hover{background:rgba(150,150,150,.7)}
+.nf-btn-credits:hover{background:rgba(150,150,150,.65)}
 
-/* rows */
+/* tile rows */
 .nf-rows{
   flex:1;overflow:hidden;
-  padding:clamp(4px,1vh,10px) clamp(24px,3.2vw,52px) clamp(8px,1.5vh,16px);
+  padding:clamp(4px,1vh,12px) clamp(24px,3.2vw,52px) clamp(8px,1.5vh,18px);
   display:flex;flex-direction:column;gap:clamp(6px,1.2vh,18px)
 }
 .nf-row-label{
@@ -255,104 +256,121 @@ html,body{width:100%;height:100vh;background:#000;overflow:hidden;font-family:'I
 .nf-tiles{display:flex;gap:clamp(4px,.6vw,8px)}
 .nf-tile{
   flex:1;aspect-ratio:16/9;border-radius:3px;overflow:hidden;
-  background:#222;flex-shrink:0;position:relative
+  background:#1e1e1e;flex-shrink:0
 }
 .nf-tile img{width:100%;height:100%;object-fit:cover;display:block}
 
-/* ══════════════════════════════
+/* ══════════════════════════════════════════
    SCENE 4 · CREDITS
-══════════════════════════════ */
+══════════════════════════════════════════ */
 #s-credits{
   background:#000;
   display:flex;align-items:center;
   padding:0 5% 0 8%;gap:6%;overflow:hidden
 }
 
+/* left photo slideshow */
 .credits-photo-wrap{
   flex-shrink:0;
-  width:clamp(120px,15vw,190px);height:clamp(120px,15vw,190px);
+  width:clamp(120px,15vw,190px);
+  height:clamp(120px,15vw,190px);
   border-radius:8px;overflow:hidden;
   transform:rotate(-4deg);
   box-shadow:4px 10px 28px rgba(0,0,0,.65);
-  align-self:center;position:relative
+  align-self:center;
+  position:relative
 }
-/* slideshow imgs inside the wrap */
-.credits-photo-wrap .slide-img{
+.slide-img{
   position:absolute;inset:0;
   width:100%;height:100%;object-fit:cover;
   opacity:0;transition:opacity 1s ease
 }
-.credits-photo-wrap .slide-img.on{opacity:1}
+.slide-img.on{opacity:1}
 
+/* scrolling credits text */
 .credits-text-wrap{
   flex:1;overflow:hidden;height:88vh;
   display:flex;align-items:center;
-  mask-image:linear-gradient(to bottom,transparent 0%,black 16%,black 84%,transparent 100%);
-  -webkit-mask-image:linear-gradient(to bottom,transparent 0%,black 16%,black 84%,transparent 100%)
+  mask-image:linear-gradient(to bottom,
+    transparent 0%,black 15%,black 85%,transparent 100%);
+  -webkit-mask-image:linear-gradient(to bottom,
+    transparent 0%,black 15%,black 85%,transparent 100%)
 }
 .credits-inner{
   display:flex;flex-direction:column;
   gap:clamp(10px,1.4vh,16px)
 }
+
+@keyframes creditsScroll{
+  0%  {transform:translateY(70vh)}
+  100%{transform:translateY(-120%)}
+}
+
 .credit-row{display:flex;gap:clamp(14px,2vw,24px);align-items:baseline}
 .c-label{
   width:clamp(130px,17vw,230px);flex-shrink:0;text-align:right;
-  font-size:clamp(10px,1.1vw,14px);color:rgba(255,255,255,.55);
-  font-weight:300;line-height:1.5
+  font-size:clamp(10px,1.1vw,14px);color:rgba(255,255,255,.52);
+  font-weight:300;line-height:1.55
 }
 .c-value{
   font-size:clamp(10px,1.1vw,14px);color:#fff;
-  font-weight:400;line-height:1.5
+  font-weight:400;line-height:1.55
 }
 </style>
 </head>
 <body>
 
-<!-- YouTube IFrame API script -->
-<script>var onYouTubeIframeAPIReady=function(){window._ytReady=true;if(window._ytReadyCb)window._ytReadyCb();};</script>
+<!-- ══════════════════════════════════════════
+     AUDIO — Beete Lamhein from 00:47
+     Drop your mp3 file at:  audio/beete-lamhein.mp3
+══════════════════════════════════════════ -->
+<audio id="credits-audio" preload="auto" style="display:none">
+  <source src="audio/beete-lamhein.mp3" type="audio/mpeg">
+</audio>
+
+<!-- YouTube IFrame API -->
+<script>
+  function onYouTubeIframeAPIReady() { window._ytLoaded = true; }
+</script>
 <script src="https://www.youtube.com/iframe_api" async></script>
 
+<!-- ══════════════════════════════════════════
+     STAGE
+══════════════════════════════════════════ -->
 <div id="stage">
 
-  <!-- ══ S1: INTRO ══ -->
+  <!-- S1: INTRO -->
   <div class="scene active" id="s-intro">
-    <!-- YouTube fills background after tap -->
     <div id="yt-bg"></div>
-
-    <!-- Tap to begin overlay (hides after tap) -->
     <div id="tap-cover" onclick="beginExperience()">
-      <!-- Netflix N -->
       <svg class="tap-n" viewBox="0 0 111 190" xmlns="http://www.w3.org/2000/svg">
         <polygon points="0,0 27,0 27,190 0,190"    fill="#E50914"/>
         <polygon points="84,0 111,0 111,190 84,190" fill="#E50914"/>
         <polygon points="0,0 27,0 111,190 84,190"  fill="#E50914"/>
       </svg>
       <div class="tap-ring">
-        <svg width="26" height="26" viewBox="0 0 24 24" fill="#fff">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="#fff">
           <polygon points="5,3 19,12 5,21"/>
         </svg>
       </div>
-      <span class="tap-label">Tap anywhere to begin</span>
+      <span class="tap-label">Tap to begin</span>
     </div>
   </div>
 
-  <!-- ══ S2: WHO'S WATCHING ══ -->
+  <!-- S2: WHO'S WATCHING -->
   <div class="scene" id="s-profiles">
     <p class="whos-title">Who's Watching?</p>
     <div class="profiles-row" id="profiles-row"></div>
     <button class="manage-btn">MANAGE PROFILES</button>
   </div>
 
-  <!-- ══ S3: NETFLIX HOME (milestone-specific) ══ -->
+  <!-- S3: NETFLIX HOME -->
   <div class="scene" id="s-home">
-    <button class="home-back-btn"    onclick="goTo('profiles')">← Back</button>
-    <button class="home-credits-btn" onclick="goTo('credits')">View End Credits ›</button>
+    <button class="home-back-btn"    onclick="goTo('profiles')">&#8592; Back</button>
+    <button class="home-credits-btn" onclick="goTo('credits')">View End Credits &#8250;</button>
 
     <nav class="nf-nav">
-      <svg style="height:clamp(16px,2.2vw,28px);flex-shrink:0" viewBox="0 0 120 30" xmlns="http://www.w3.org/2000/svg">
-        <text x="0" y="24" font-family="'Inter',sans-serif" font-weight="800"
-              font-size="26" letter-spacing="-0.5" fill="#E50914">NETFLIX</text>
-      </svg>
+      <span class="nf-wordmark">NETFLIX</span>
       <ul class="nf-nav-links">
         <li><a href="#">Home</a></li>
         <li><a href="#">TV Shows</a></li>
@@ -363,7 +381,7 @@ html,body{width:100%;height:100vh;background:#000;overflow:hidden;font-family:'I
     </nav>
 
     <div class="nf-hero">
-      <div class="nf-hero-bg-ph" id="home-hero-bg"></div>
+      <div class="nf-hero-bg" id="home-hero-bg"></div>
       <div class="nf-hero-overlay"></div>
       <div class="nf-hero-content">
         <div class="nf-series-badge">
@@ -378,19 +396,17 @@ html,body{width:100%;height:100vh;background:#000;overflow:hidden;font-family:'I
         <p  class="nf-hero-desc"  id="home-desc">A love story written by fate, directed by God.</p>
         <div class="nf-hero-btns">
           <button class="nf-btn-play">
-            <svg width="13" height="13" viewBox="0 0 13 13"><path d="M1 0l11 6.5L1 13V0z" fill="#000"/></svg>
+            <svg width="12" height="12" viewBox="0 0 12 12"><path d="M1 0l10 6L1 12V0z" fill="#000"/></svg>
             Play
           </button>
-          <button class="nf-btn-credits" onclick="goTo('credits')">
-            View End Credits
-          </button>
+          <button class="nf-btn-credits" onclick="goTo('credits')">View End Credits</button>
         </div>
       </div>
     </div>
 
     <div class="nf-rows">
       <div>
-        <div class="nf-row-label" id="home-row1-label">Moments Together</div>
+        <div class="nf-row-label">Moments Together</div>
         <div class="nf-tiles" id="home-popular"></div>
       </div>
       <div>
@@ -400,7 +416,7 @@ html,body{width:100%;height:100vh;background:#000;overflow:hidden;font-family:'I
     </div>
   </div>
 
-  <!-- ══ S4: CREDITS ══ -->
+  <!-- S4: CREDITS -->
   <div class="scene" id="s-credits">
     <div class="credits-photo-wrap" id="credits-slideshow"></div>
     <div class="credits-text-wrap">
@@ -411,286 +427,276 @@ html,body{width:100%;height:100vh;background:#000;overflow:hidden;font-family:'I
 </div><!-- /stage -->
 
 <script>
-// ══════════════════════════════════════════
+// ──────────────────────────────────────────
 // DATA
-// ══════════════════════════════════════════
-
-const NAMES = { boy: 'Premal', girl: 'Shivani', loc: 'Canada' };
-
-// Photos by date cluster
-const PHOTOS = {
-  aug24:  'images/ms1.jpg',   // 1 month  – Aug 2024
-  sep24:  'images/ms2.jpg',   // 2 months – Sep 2024
-  oct24a: 'images/p1.jpg',    // 3 months – Oct 2024
-  oct24b: 'images/p2.jpg',    // 3 months – Oct 2024
-  dec24:  'images/hero.jpg',  // 5 months – Dec 2024
-  feb25a: 'images/ms3.jpg',   // 6 months – Feb 2025
-  feb25b: 'images/player.jpg',// 6 months – Feb 2025
-  apr25a: 'images/ms4.jpg',   // 9 months – Apr 2025
-  apr25b: 'images/p3.jpg',
-  apr25c: 'images/p4.jpg',
-  apr25d: 'images/r2.jpg',
-  apr25e: 'images/r3.jpg',
-  apr25f: 'images/r4.jpg',
-  apr25g: 'images/credits.jpg',
-  may25a: 'images/p5.jpg',    // 10 months – May 2025
-  may25b: 'images/r1.jpg',
+// ──────────────────────────────────────────
+const P = {
+  val:   'images/valentine.jpg',  // Valentine's card — 5s opener
+  aug24: 'images/ms1.jpg',
+  sep24: 'images/ms2.jpg',
+  oct24a:'images/p1.jpg',
+  oct24b:'images/p2.jpg',
+  dec24: 'images/hero.jpg',
+  feb25a:'images/ms3.jpg',
+  feb25b:'images/player.jpg',
+  apr25a:'images/ms4.jpg',
+  apr25b:'images/p3.jpg',
+  apr25c:'images/p4.jpg',
+  apr25d:'images/r2.jpg',
+  apr25e:'images/r3.jpg',
+  apr25f:'images/r4.jpg',
+  apr25g:'images/credits.jpg',
+  may25a:'images/p5.jpg',
+  may25b:'images/r1.jpg',
 };
+
+// Credits slideshow: {src, ms} — valentine shows for 5 000 ms, rest 2 800 ms
+const SLIDESHOW = [
+  {src: P.val,   ms: 5000},
+  {src: P.aug24, ms: 2800},
+  {src: P.sep24, ms: 2800},
+  {src: P.oct24a,ms: 2800},
+  {src: P.dec24, ms: 2800},
+  {src: P.feb25a,ms: 2800},
+  {src: P.feb25b,ms: 2800},
+  {src: P.apr25a,ms: 2800},
+  {src: P.apr25b,ms: 2800},
+  {src: P.apr25c,ms: 2800},
+  {src: P.may25a,ms: 2800},
+  {src: P.apr25g,ms: 2800},
+  {src: P.may25b,ms: 2800},
+];
 
 const MILESTONES = [
   {
-    label:   '1 month',
-    photo:   PHOTOS.aug24,
-    heading: 'the beginning',
-    desc:    'Where it all started. The first chapter of us.',
-    hero:    PHOTOS.aug24,
-    popular: [PHOTOS.aug24, PHOTOS.aug24, PHOTOS.aug24, PHOTOS.aug24, PHOTOS.aug24],
-    recent:  [PHOTOS.aug24, PHOTOS.aug24, PHOTOS.aug24, PHOTOS.aug24, PHOTOS.aug24],
+    label:'1 month', photo:P.aug24,
+    heading:'the beginning',
+    desc:'Where it all started. The first chapter of us.',
+    hero:P.aug24,
+    popular:[P.aug24,P.aug24,P.aug24,P.aug24,P.aug24],
+    recent: [P.aug24,P.aug24,P.aug24,P.aug24,P.aug24],
   },
   {
-    label:   '3 months',
-    photo:   PHOTOS.oct24a,
-    heading: 'three months of us',
-    desc:    'Growing closer every single day.',
-    hero:    PHOTOS.dec24,
-    popular: [PHOTOS.aug24, PHOTOS.sep24, PHOTOS.oct24a, PHOTOS.oct24b, PHOTOS.dec24],
-    recent:  [PHOTOS.oct24b, PHOTOS.oct24a, PHOTOS.sep24, PHOTOS.dec24, PHOTOS.aug24],
+    label:'3 months', photo:P.oct24a,
+    heading:'three months of us',
+    desc:'Growing closer every single day.',
+    hero:P.dec24,
+    popular:[P.aug24,P.sep24,P.oct24a,P.oct24b,P.dec24],
+    recent: [P.oct24b,P.oct24a,P.sep24,P.dec24,P.aug24],
   },
   {
-    label:   '6 months',
-    photo:   PHOTOS.feb25a,
-    heading: 'half a year in love',
-    desc:    'Six months and still falling harder.',
-    hero:    PHOTOS.feb25b,
-    popular: [PHOTOS.feb25a, PHOTOS.feb25b, PHOTOS.dec24, PHOTOS.oct24a, PHOTOS.sep24],
-    recent:  [PHOTOS.feb25b, PHOTOS.feb25a, PHOTOS.oct24b, PHOTOS.dec24, PHOTOS.aug24],
+    label:'6 months', photo:P.feb25a,
+    heading:'half a year in love',
+    desc:'Six months and still falling harder.',
+    hero:P.feb25b,
+    popular:[P.feb25a,P.feb25b,P.dec24,P.oct24a,P.sep24],
+    recent: [P.feb25b,P.feb25a,P.oct24b,P.dec24,P.aug24],
   },
   {
-    label:   '10 months',
-    photo:   PHOTOS.may25a,
-    heading: 'ten months & counting',
-    desc:    'Every moment with you is the best one yet.',
-    hero:    PHOTOS.apr25a,
-    popular: [PHOTOS.apr25a, PHOTOS.apr25b, PHOTOS.apr25c, PHOTOS.apr25d, PHOTOS.apr25e],
-    recent:  [PHOTOS.apr25f, PHOTOS.apr25g, PHOTOS.may25a, PHOTOS.may25b, PHOTOS.apr25b],
+    label:'10 months', photo:P.may25a,
+    heading:'ten months & counting',
+    desc:'Every moment with you is the best one yet.',
+    hero:P.apr25a,
+    popular:[P.apr25a,P.apr25b,P.apr25c,P.apr25d,P.apr25e],
+    recent: [P.apr25f,P.apr25g,P.may25a,P.may25b,P.apr25b],
   },
-];
-
-// All photos for credits slideshow
-const ALL_PHOTOS = [
-  PHOTOS.aug24, PHOTOS.sep24, PHOTOS.oct24a, PHOTOS.oct24b,
-  PHOTOS.dec24, PHOTOS.feb25a, PHOTOS.feb25b, PHOTOS.apr25a,
-  PHOTOS.apr25b, PHOTOS.apr25c, PHOTOS.apr25d, PHOTOS.may25a,
-  PHOTOS.apr25g, PHOTOS.may25b,
 ];
 
 const CREDITS_DATA = [
-  ['Directed by',             'God'],
-  ['Cast',                    ''],
-  ['Boyfriend',               NAMES.boy],
-  ['Girlfriend',              NAMES.girl],
-  ['Written by',              'Fate & destiny'],
-  ['Produced by',             'Patience & support'],
-  ['Director of photography', 'Our camera rolls'],
-  ['Location',                NAMES.loc],
-  ['Chief editor',            'Our favorite memories'],
-  ['Soundtrack',              'Melodies of us'],
-  ['Executive producers',     'Shared Future Plans'],
-  ['Technical advisor',       'Honest communication'],
-  ['Catering by',             'Midnight cravings'],
-  ['Stunt coordinators',      'Arguments & Fights'],
-  ['Time management',         '"Five more minutes"'],
-  ['Wardrobe designer',       "Each other's hoodies"],
-  ['Chief motivator',         'Family & friends'],
+  ['Directed by',            'God'],
+  ['Cast',                   ''],
+  ['Boyfriend',              'Premal'],
+  ['Girlfriend',             'Shivani'],
+  ['Written by',             'Fate & destiny'],
+  ['Produced by',            'Patience & support'],
+  ['Director of photography','Our camera rolls'],
+  ['Location',               'Canada'],
+  ['Chief editor',           'Our favorite memories'],
+  ['Soundtrack',             'Melodies of us'],
+  ['Executive producers',    'Shared Future Plans'],
+  ['Technical advisor',      'Honest communication'],
+  ['Catering by',            'Midnight cravings'],
+  ['Stunt coordinators',     'Arguments & Fights'],
+  ['Time management',        '"Five more minutes"'],
+  ['Wardrobe designer',      "Each other's hoodies"],
+  ['Chief motivator',        'Family & friends'],
 ];
 
-// ══════════════════════════════════════════
-// SCENE ROUTING
-// ══════════════════════════════════════════
-const SCENES = { intro:'s-intro', profiles:'s-profiles', home:'s-home', credits:'s-credits' };
-let current = 'intro';
-let creditsScrollTimer  = null;
-let slideshowTimer      = null;
-let slideIdx            = 0;
+// ──────────────────────────────────────────
+// ROUTING
+// ──────────────────────────────────────────
+let _slideshowTimer = null;
+let _slideIdx       = 0;
+let _hasPlayedIntro = false;
 
 function goTo(key) {
-  // deactivate all
-  Object.values(SCENES).forEach(id => {
-    const el = document.getElementById(id);
-    el.classList.remove('active');
+  ['s-intro','s-profiles','s-home','s-credits'].forEach(id => {
+    document.getElementById(id).classList.remove('active');
   });
-  // prep target
-  if (key === 'credits') prepCredits();
-  // activate
-  document.getElementById(SCENES[key]).classList.add('active');
-  current = key;
+  if (key === 'credits') _startCredits();
+  document.getElementById('s-' + key).classList.add('active');
 }
 
-// ══════════════════════════════════════════
-// YOUTUBE INTRO
-// ══════════════════════════════════════════
-let ytPlayer = null;
-let ytReady  = false;
-
-window._ytReadyCb = function() { ytReady = true; };
-
+// ──────────────────────────────────────────
+// INTRO — YouTube player
+// ──────────────────────────────────────────
 function beginExperience() {
+  if (_hasPlayedIntro) return;
+  _hasPlayedIntro = true;
+
+  // fade out tap cover
   const cover = document.getElementById('tap-cover');
-  cover.style.pointerEvents = 'none';
   cover.style.transition = 'opacity .5s';
   cover.style.opacity = '0';
-  setTimeout(() => cover.remove(), 500);
+  setTimeout(() => cover.remove(), 600);
 
-  // Try embedding YouTube
-  loadYouTube();
-
-  // Regardless of YT status, move to profiles after 5s
-  setTimeout(() => goTo('profiles'), 5000);
-}
-
-function loadYouTube() {
+  // show YouTube background
   const bg = document.getElementById('yt-bg');
   bg.style.opacity = '1';
 
+  // create YT player div
   const div = document.createElement('div');
   div.id = 'yt-player-el';
+  div.style.cssText = 'width:100%;height:100%';
   bg.appendChild(div);
 
-  function createPlayer() {
-    ytPlayer = new YT.Player('yt-player-el', {
+  function createYT() {
+    new YT.Player('yt-player-el', {
       videoId: 'GV3HUDMQ-F8',
-      width: '100%', height: '100%',
-      playerVars: {
-        autoplay: 1, controls: 0, disablekb: 1,
-        fs: 0, iv_load_policy: 3, modestbranding: 1,
-        playsinline: 1, rel: 0, showinfo: 0,
-        start: 0, mute: 0
+      playerVars:{
+        autoplay:1, controls:0, disablekb:1,
+        fs:0, iv_load_policy:3, modestbranding:1,
+        playsinline:1, rel:0
       },
-      events: {
-        onReady: e => { try { e.target.setVolume(100); e.target.playVideo(); } catch(_){} },
-        onError: ()=> { bg.style.opacity = '0'; }
+      events:{
+        onReady: e => { try{ e.target.setVolume(100); e.target.playVideo(); }catch(ex){} },
+        onError: () => { bg.style.opacity='0'; }
       }
     });
   }
 
   if (window.YT && YT.Player) {
-    createPlayer();
+    createYT();
   } else {
-    // Wait up to 3s for the API to load
-    let tries = 0;
-    const interval = setInterval(() => {
-      tries++;
-      if (window.YT && YT.Player) { clearInterval(interval); createPlayer(); }
-      else if (tries > 30) { clearInterval(interval); bg.style.opacity = '0'; }
+    // poll until YT API loads (it loads async)
+    let t = 0;
+    const poll = setInterval(() => {
+      t += 100;
+      if (window.YT && YT.Player) { clearInterval(poll); createYT(); }
+      else if (t > 4000)          { clearInterval(poll); bg.style.opacity='0'; }
     }, 100);
   }
+
+  // Move to profiles after 5.2 s regardless of YT status
+  setTimeout(() => goTo('profiles'), 5200);
 }
 
-// ══════════════════════════════════════════
-// WHO'S WATCHING
-// ══════════════════════════════════════════
-function buildProfiles() {
-  const row = document.getElementById('profiles-row');
-  row.innerHTML = MILESTONES.map((m, i) => `
+// ──────────────────────────────────────────
+// WHO'S WATCHING — build profiles
+// ──────────────────────────────────────────
+function _buildProfiles() {
+  document.getElementById('profiles-row').innerHTML = MILESTONES.map((m, i) => `
     <div class="profile-item" onclick="openMilestone(${i})">
       <div class="profile-photo">
-        <img src="${m.photo}" alt="${m.label}" loading="eager">
+        <img src="${m.photo}" alt="${m.label}">
       </div>
       <span class="profile-label">${m.label}</span>
-    </div>
-  `).join('');
+    </div>`).join('');
 }
 
-// ══════════════════════════════════════════
-// NETFLIX HOME (milestone-specific)
-// ══════════════════════════════════════════
+// ──────────────────────────────────────────
+// NETFLIX HOME — milestone-specific
+// ──────────────────────────────────────────
 function openMilestone(idx) {
   const m = MILESTONES[idx];
 
-  // Update hero
-  const heroBg = document.getElementById('home-hero-bg');
-  heroBg.innerHTML = `<img src="${m.hero}" alt="">`;
+  // hero bg
+  const hb = document.getElementById('home-hero-bg');
+  hb.innerHTML = `<img src="${m.hero}" alt="">`;
 
-  // Update text
+  // text
   document.getElementById('home-title').textContent = m.heading;
   document.getElementById('home-desc').textContent  = m.desc;
 
-  // Update tiles
-  buildTiles('home-popular', m.popular);
-  buildTiles('home-recent',  m.recent);
+  // tiles
+  _buildTiles('home-popular', m.popular);
+  _buildTiles('home-recent',  m.recent);
 
   goTo('home');
 }
 
-function buildTiles(containerId, photos) {
-  document.getElementById(containerId).innerHTML =
-    photos.map(src => `
-      <div class="nf-tile">
-        <img src="${src}" alt="" loading="lazy">
-      </div>`).join('');
+function _buildTiles(id, photos) {
+  document.getElementById(id).innerHTML = photos.map(src =>
+    `<div class="nf-tile"><img src="${src}" alt="" loading="lazy"></div>`
+  ).join('');
 }
 
-// ══════════════════════════════════════════
-// CREDITS  (slideshow + scroll)
-// ══════════════════════════════════════════
-function buildCreditsList() {
-  document.getElementById('credits-inner').innerHTML =
-    CREDITS_DATA.map(([lbl, val]) => `
-      <div class="credit-row">
-        <span class="c-label">${lbl}</span>
-        <span class="c-value">${val}</span>
-      </div>`).join('');
+// ──────────────────────────────────────────
+// CREDITS
+// ──────────────────────────────────────────
+function _buildCreditsList() {
+  document.getElementById('credits-inner').innerHTML = CREDITS_DATA.map(([l, v]) =>
+    `<div class="credit-row">
+       <span class="c-label">${l}</span>
+       <span class="c-value">${v}</span>
+     </div>`
+  ).join('');
 }
 
-function buildSlideshow() {
-  const wrap = document.getElementById('credits-slideshow');
-  wrap.innerHTML = ALL_PHOTOS.map((src, i) => `
-    <img class="slide-img${i===0?' on':''}" src="${src}" alt="" loading="lazy">
-  `).join('');
+function _buildSlideshowDOM() {
+  document.getElementById('credits-slideshow').innerHTML = SLIDESHOW.map((item, i) =>
+    `<img class="slide-img${i===0?' on':''}" src="${item.src}" alt="">`
+  ).join('');
 }
 
-function prepCredits() {
-  // Reset scroll
-  clearInterval(slideshowTimer);
-  clearTimeout(creditsScrollTimer);
-
+function _startCredits() {
+  // ── scroll reset ──
   const inner = document.getElementById('credits-inner');
   inner.style.animation = 'none';
-  void inner.offsetHeight; // reflow
-  inner.style.animation = 'creditsScroll 18s linear forwards';
-  inner.style.animationDelay = '0.8s';
+  void inner.offsetHeight;
+  inner.style.animation = 'creditsScroll 20s linear forwards';
 
-  // Reset slideshow
-  slideIdx = 0;
+  // ── slideshow reset ──
+  clearTimeout(_slideshowTimer);
+  _slideIdx = 0;
   const imgs = document.querySelectorAll('#credits-slideshow .slide-img');
-  imgs.forEach((img, i) => img.classList.toggle('on', i === 0));
+  imgs.forEach((el, i) => el.classList.toggle('on', i === 0));
+  _scheduleSlideshowStep(imgs);
 
-  slideshowTimer = setInterval(() => {
-    const imgs2 = document.querySelectorAll('#credits-slideshow .slide-img');
-    if (!imgs2.length) return;
-    imgs2[slideIdx].classList.remove('on');
-    slideIdx = (slideIdx + 1) % imgs2.length;
-    imgs2[slideIdx].classList.add('on');
-  }, 2800);
+  // ── music ──
+  const audio = document.getElementById('credits-audio');
+  if (audio && audio.readyState > 0) {
+    audio.currentTime = 47;
+    audio.volume = 0.82;
+    audio.play().catch(() => {});
+  } else if (audio) {
+    audio.addEventListener('canplay', function onCan() {
+      audio.removeEventListener('canplay', onCan);
+      audio.currentTime = 47;
+      audio.volume = 0.82;
+      audio.play().catch(() => {});
+    });
+  }
 }
 
-// Inject credits scroll keyframe
-(function(){
-  const s = document.createElement('style');
-  s.textContent = `
-    @keyframes creditsScroll {
-      0%   { transform: translateY(65vh); }
-      100% { transform: translateY(-115%); }
-    }`;
-  document.head.appendChild(s);
-})();
+function _scheduleSlideshowStep(imgs) {
+  if (!imgs || !imgs.length) return;
+  const duration = SLIDESHOW[_slideIdx].ms;
 
-// ══════════════════════════════════════════
+  _slideshowTimer = setTimeout(() => {
+    imgs[_slideIdx].classList.remove('on');
+    _slideIdx = (_slideIdx + 1) % imgs.length;
+    imgs[_slideIdx].classList.add('on');
+    _scheduleSlideshowStep(imgs);
+  }, duration);
+}
+
+// ──────────────────────────────────────────
 // INIT
-// ══════════════════════════════════════════
-buildProfiles();
-buildCreditsList();
-buildSlideshow();
+// ──────────────────────────────────────────
+_buildProfiles();
+_buildCreditsList();
+_buildSlideshowDOM();
 </script>
 </body>
 </html>
