@@ -8,499 +8,378 @@
 <title>Premal & Shivani</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,700&family=Cormorant+Garamond:ital,wght@1,300&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,400;1,700&family=Cormorant+Garamond:ital,wght@1,300&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-/* ── base ── */
-*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
-
-:root {
-  /* Safari-safe full viewport height */
-  --vh: 100vh;
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{height:-webkit-fill-available}
+body{
+  width:100%;height:100vh;height:-webkit-fill-available;
+  background:#000;overflow:hidden;
+  font-family:'Inter',sans-serif;color:#fff;
+  -webkit-font-smoothing:antialiased;
+  touch-action:manipulation;
+  -webkit-tap-highlight-color:transparent;
+  user-select:none;-webkit-user-select:none;
 }
-
-html {
-  height: -webkit-fill-available;
+#stage{position:relative;width:100%;height:100%}
+.scene{
+  position:absolute;inset:0;opacity:0;pointer-events:none;
+  transition:opacity .75s ease;overflow:hidden;
 }
-
-body {
-  width: 100%;
-  height: 100vh;
-  height: -webkit-fill-available;
-  background: #000;
-  overflow: hidden;
-  font-family: 'Inter', sans-serif;
-  color: #fff;
-  -webkit-font-smoothing: antialiased;
-  /* prevent double-tap zoom on mobile */
-  touch-action: manipulation;
-  -webkit-tap-highlight-color: transparent;
-  user-select: none;
-  -webkit-user-select: none;
-}
-
-/* ── stage + scenes ── */
-#stage {
-  position: relative;
-  width: 100%;
-  height: 100%;
-}
-
-.scene {
-  position: absolute;
-  inset: 0;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity .75s ease;
-  overflow: hidden;
-}
-.scene.active {
-  opacity: 1;
-  pointer-events: all;
-}
+.scene.active{opacity:1;pointer-events:all}
 
 
-/* ════════════════════════════════
+/* ═══════════════════════════════════════
    S1 · INTRO
-════════════════════════════════ */
-#s-intro {
-  background: #000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+═══════════════════════════════════════ */
+#s-intro{background:#000;display:flex;align-items:center;justify-content:center}
+
+#intro-video{
+  position:absolute;inset:0;width:100%;height:100%;
+  object-fit:cover;opacity:0;transition:opacity .4s;pointer-events:none;
 }
 
-/* local MP4 video — fills scene */
-#intro-video {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  opacity: 0;
-  transition: opacity .4s;
-  pointer-events: none;
+#tap-cover{
+  position:absolute;inset:0;z-index:5;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:28px;
+  cursor:pointer;
 }
-
-/* tap overlay */
-#tap-cover {
-  position: absolute;
-  inset: 0;
-  z-index: 5;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 28px;
-  cursor: pointer;
+.tap-n{width:clamp(80px,14vw,140px)}
+.tap-ring{
+  width:68px;height:68px;border-radius:50%;
+  border:2px solid rgba(255,255,255,.2);
+  display:flex;align-items:center;justify-content:center;
+  animation:pulse 2s ease-in-out infinite;
 }
-
-.tap-n {
-  width: clamp(80px, 14vw, 140px);
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(229,9,20,.4)}50%{box-shadow:0 0 0 18px rgba(229,9,20,0)}}
+.tap-label{
+  font-size:clamp(10px,2.5vw,13px);letter-spacing:.22em;
+  color:rgba(255,255,255,.45);text-transform:uppercase;
+  animation:blink 2s ease-in-out infinite;
 }
-
-.tap-ring {
-  width: 68px; height: 68px;
-  border-radius: 50%;
-  border: 2px solid rgba(255,255,255,.2);
-  display: flex; align-items: center; justify-content: center;
-  animation: pulse 2s ease-in-out infinite;
-}
-@keyframes pulse {
-  0%,100% { box-shadow: 0 0 0 0 rgba(229,9,20,.4); }
-  50%      { box-shadow: 0 0 0 18px rgba(229,9,20,0); }
-}
-
-.tap-label {
-  font-size: clamp(10px, 2.5vw, 13px);
-  letter-spacing: .22em;
-  color: rgba(255,255,255,.45);
-  text-transform: uppercase;
-  animation: blink 2s ease-in-out infinite;
-}
-@keyframes blink { 0%,100%{opacity:.45} 50%{opacity:1} }
+@keyframes blink{0%,100%{opacity:.45}50%{opacity:1}}
 
 
-/* ════════════════════════════════
+/* ═══════════════════════════════════════
    S2 · WHO'S WATCHING
-════════════════════════════════ */
-#s-profiles {
-  background: #000;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 0;
+═══════════════════════════════════════ */
+#s-profiles{
+  background:#000;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+}
+#s-profiles::before{
+  content:'';position:absolute;bottom:-30%;left:50%;
+  transform:translateX(-50%);width:170%;height:70%;
+  background:radial-gradient(ellipse at center bottom,
+    #cc0000 0%,#990000 14%,#550000 30%,transparent 65%);
+  border-radius:50%;pointer-events:none;
 }
 
-/* red ground glow */
-#s-profiles::before {
-  content: '';
-  position: absolute;
-  bottom: -30%; left: 50%;
-  transform: translateX(-50%);
-  width: 170%; height: 70%;
-  background: radial-gradient(ellipse at center bottom,
-    #cc0000 0%, #990000 14%, #550000 30%, transparent 65%);
-  border-radius: 50%;
-  pointer-events: none;
-  z-index: 0;
+.whos-title{
+  font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:300;
+  font-size:clamp(22px,5vw,44px);color:#fff;
+  margin-bottom:clamp(28px,5vh,52px);letter-spacing:.01em;
+  position:relative;z-index:2;
 }
 
-.whos-title {
-  font-family: 'Cormorant Garamond', serif;
-  font-style: italic;
-  font-weight: 300;
-  font-size: clamp(22px, 5vw, 44px);
-  color: #fff;
-  margin-bottom: clamp(28px, 5vh, 50px);
-  letter-spacing: .01em;
-  position: relative; z-index: 2;
+/* ── profiles row: single line on desktop, 2×2 on mobile ── */
+.profiles-row{
+  display:flex;gap:clamp(14px,4vw,36px);
+  margin-bottom:clamp(24px,4vh,44px);
+  position:relative;z-index:2;
+  flex-wrap:nowrap;
+}
+@media(max-width:560px){
+  .profiles-row{
+    flex-wrap:wrap;
+    justify-content:center;
+    max-width:min(340px,94vw);
+    gap:clamp(14px,4vw,22px);
+  }
+  .profile-item{
+    flex:0 0 calc(50% - clamp(7px,2vw,11px));
+    align-items:center;
+  }
+  .profile-photo{
+    width:100% !important;
+    height:auto !important;
+    aspect-ratio:1;
+  }
 }
 
-.profiles-row {
-  display: flex;
-  gap: clamp(14px, 4vw, 36px);
-  margin-bottom: clamp(24px, 4vh, 44px);
-  position: relative; z-index: 2;
+.profile-item{
+  display:flex;flex-direction:column;align-items:center;gap:10px;
+  cursor:pointer;transition:transform .2s;
 }
+@media(hover:hover){
+  .profile-item:hover{transform:scale(1.07)}
+  .profile-item:hover .profile-photo{outline:3px solid #fff}
+}
+.profile-item:active{transform:scale(.95)}
 
-.profile-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-  cursor: pointer;
-  transition: transform .2s;
+.profile-photo{
+  width:clamp(80px,18vw,148px);height:clamp(80px,18vw,148px);
+  border-radius:5px;overflow:hidden;background:#1c1c1c;flex-shrink:0;
 }
-/* desktop hover */
-@media (hover: hover) {
-  .profile-item:hover { transform: scale(1.07); }
-  .profile-item:hover .profile-photo { outline: 3px solid #fff; }
+.profile-photo img{
+  width:100%;height:100%;
+  object-fit:cover;
+  object-position:center 15%;  /* show faces */
+  display:block;
 }
-/* mobile tap */
-.profile-item:active { transform: scale(0.96); }
-
-.profile-photo {
-  width: clamp(80px, 18vw, 150px);
-  height: clamp(80px, 18vw, 150px);
-  border-radius: 5px;
-  overflow: hidden;
-  background: #1c1c1c;
-  flex-shrink: 0;
+.profile-label{
+  font-size:clamp(10px,2.5vw,14px);
+  color:rgba(255,255,255,.82);font-weight:400;letter-spacing:.02em;
 }
-.profile-photo img {
-  width: 100%; height: 100%;
-  object-fit: cover; object-position: center top;
-  display: block;
-}
-
-.profile-label {
-  font-size: clamp(10px, 2.5vw, 14px);
-  color: rgba(255,255,255,.82);
-  font-weight: 400;
-  letter-spacing: .02em;
-}
-
-.manage-btn {
-  position: relative; z-index: 2;
-  font-family: 'Inter', sans-serif;
-  font-size: clamp(9px, 2vw, 12px);
-  font-weight: 500;
-  color: #fff;
-  background: transparent;
-  border: 1.5px solid rgba(255,255,255,.6);
-  padding: 9px 24px;
-  letter-spacing: .18em;
-  text-transform: uppercase;
-  cursor: default;
+.manage-btn{
+  position:relative;z-index:2;
+  font-family:'Inter',sans-serif;font-size:clamp(9px,2vw,12px);font-weight:500;
+  color:#fff;background:transparent;
+  border:1.5px solid rgba(255,255,255,.6);
+  padding:9px 24px;letter-spacing:.18em;text-transform:uppercase;cursor:default;
 }
 
 
-/* ════════════════════════════════
+/* ═══════════════════════════════════════
    S3 · NETFLIX HOME
-════════════════════════════════ */
-#s-home {
-  background: #141414;
-  display: flex;
-  flex-direction: column;
-}
+═══════════════════════════════════════ */
+#s-home{background:#141414;display:flex;flex-direction:column}
 
-/* floating buttons */
-.home-back-btn,
-.home-credits-btn {
-  position: absolute;
-  top: max(12px, env(safe-area-inset-top, 12px));
-  z-index: 50;
-  font-family: 'Inter', sans-serif;
-  font-size: clamp(11px, 2.5vw, 14px);
-  font-weight: 600;
-  padding: 8px 16px;
-  border-radius: 5px;
-  cursor: pointer;
-  border: none;
-  transition: opacity .2s;
+/* nav — clean, no floating buttons on top of it */
+.nf-nav{
+  position:absolute;top:0;left:0;right:0;z-index:10;
+  display:flex;align-items:center;
+  padding:clamp(12px,2vh,22px) clamp(20px,4vw,52px);
+  background:linear-gradient(to bottom,rgba(0,0,0,.95),transparent);
+  gap:clamp(12px,2vw,22px);
 }
-.home-back-btn:active,
-.home-credits-btn:active { opacity: .7; }
+.nf-logo{
+  font-family:'Inter',sans-serif;font-weight:800;letter-spacing:-.03em;
+  font-size:clamp(18px,4vw,32px);color:#e50914;flex-shrink:0;
+}
+.nf-links{display:flex;gap:clamp(8px,1.5vw,18px);list-style:none;flex-wrap:nowrap}
+.nf-links li a{
+  color:rgba(255,255,255,.65);text-decoration:none;
+  font-size:clamp(9px,1.8vw,13px);white-space:nowrap;cursor:default;
+}
+.nf-links li:first-child a{color:#fff;font-weight:500}
 
-.home-back-btn {
-  left: max(14px, env(safe-area-inset-left, 14px));
-  background: rgba(0,0,0,.65);
-  border: 1px solid rgba(255,255,255,.3);
-  color: #fff;
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+/* bottom bar — replaces floating back/credits buttons */
+.home-bottom-bar{
+  position:absolute;bottom:0;left:0;right:0;z-index:20;
+  height:clamp(40px,6vh,52px);
+  background:linear-gradient(to top,rgba(0,0,0,.85),transparent);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 clamp(20px,4vw,52px);
 }
-
-.home-credits-btn {
-  right: max(14px, env(safe-area-inset-right, 14px));
-  background: #e50914;
-  color: #fff;
+.hbb-btn{
+  background:none;border:none;
+  color:rgba(255,255,255,.55);
+  font-size:clamp(10px,1.8vw,13px);
+  font-family:'Inter',sans-serif;font-weight:500;
+  letter-spacing:.08em;text-transform:uppercase;
+  cursor:pointer;transition:color .2s;padding:6px 0;
 }
-
-/* nav */
-.nf-nav {
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  z-index: 10;
-  display: flex;
-  align-items: center;
-  padding: clamp(12px,2vh,22px) clamp(20px,4vw,52px);
-  background: linear-gradient(to bottom, rgba(0,0,0,.95), transparent);
-  gap: clamp(12px,2vw,24px);
-}
-.nf-logo {
-  font-family: 'Inter', sans-serif;
-  font-weight: 800;
-  font-size: clamp(18px,4vw,32px);
-  color: #e50914;
-  letter-spacing: -.03em;
-  flex-shrink: 0;
-}
-.nf-links {
-  display: flex;
-  gap: clamp(8px,1.5vw,18px);
-  list-style: none;
-  flex-wrap: nowrap;
-}
-.nf-links li a {
-  color: rgba(255,255,255,.65);
-  text-decoration: none;
-  font-size: clamp(9px,1.8vw,13px);
-  white-space: nowrap;
-}
-.nf-links li:first-child a { color: #fff; font-weight: 500; }
+@media(hover:hover){.hbb-btn:hover{color:#fff}}
+.hbb-btn:active{color:#fff}
 
 /* hero */
-.nf-hero {
-  position: relative;
-  width: 100%;
-  height: 52%;
-  min-height: 220px;
-  flex-shrink: 0;
+.nf-hero{position:relative;width:100%;height:52%;min-height:200px;flex-shrink:0}
+.nf-hero-bg{position:absolute;inset:0;background:#0d1117}
+.nf-hero-bg img{
+  position:absolute;inset:0;width:100%;height:100%;
+  object-fit:cover;object-position:center 20%;display:block;
 }
-.nf-hero-bg {
-  position: absolute; inset: 0;
-  background: #0d1117;
-}
-.nf-hero-bg img {
-  position: absolute; inset: 0;
-  width: 100%; height: 100%;
-  object-fit: cover;
-  object-position: center 20%;
-  display: block;
-}
-.nf-hero-overlay {
-  position: absolute; inset: 0;
+.nf-hero-overlay{
+  position:absolute;inset:0;
   background:
-    linear-gradient(to right, rgba(0,0,0,.9) 0%, rgba(0,0,0,.5) 50%, transparent 80%),
-    linear-gradient(to top, #141414 0%, transparent 45%);
+    linear-gradient(to right,rgba(0,0,0,.9) 0%,rgba(0,0,0,.5) 50%,transparent 80%),
+    linear-gradient(to top,#141414 0%,transparent 45%);
 }
-.nf-hero-content {
-  position: absolute;
-  bottom: clamp(16px,4vh,56px);
-  left: clamp(20px,4vw,52px);
-  max-width: min(50%, 440px);
+.nf-hero-content{
+  position:absolute;
+  bottom:clamp(14px,3vh,48px);left:clamp(20px,4vw,52px);
+  max-width:min(50%,440px);
 }
-@media (max-width: 600px) {
-  .nf-hero-content { max-width: 70%; }
-}
+@media(max-width:600px){.nf-hero-content{max-width:72%}}
 
-.nf-badge {
-  display: flex; align-items: center; gap: 5px;
-  margin-bottom: 5px;
+.nf-badge{display:flex;align-items:center;gap:5px;margin-bottom:5px}
+.nf-badge svg{width:13px;height:13px;flex-shrink:0}
+.nf-badge-text{
+  font-size:clamp(8px,1.5vw,11px);letter-spacing:.22em;
+  color:rgba(255,255,255,.72);text-transform:uppercase;
 }
-.nf-badge svg { width: 14px; height: 14px; flex-shrink: 0; }
-.nf-badge-text {
-  font-size: clamp(8px,1.5vw,11px);
-  letter-spacing: .22em;
-  color: rgba(255,255,255,.75);
-  text-transform: uppercase;
+.nf-hero-title{
+  font-family:'Playfair Display',serif;font-style:italic;font-weight:700;
+  font-size:clamp(20px,5vw,56px);color:#f5c518;
+  line-height:1;margin-bottom:8px;text-transform:lowercase;
 }
+.nf-hero-desc{
+  font-size:clamp(9px,1.5vw,13px);color:rgba(255,255,255,.68);
+  margin-bottom:12px;line-height:1.5;font-weight:300;
+}
+.nf-hero-btns{display:flex;gap:8px}
+.btn-play,.btn-ec{
+  display:flex;align-items:center;gap:6px;border:none;border-radius:3px;
+  padding:clamp(6px,1.2vh,9px) clamp(12px,2vw,18px);
+  font-size:clamp(10px,1.8vw,14px);font-weight:700;
+  font-family:'Inter',sans-serif;cursor:pointer;transition:opacity .2s;
+}
+.btn-play:active,.btn-ec:active{opacity:.7}
+.btn-play{background:#fff;color:#000}
+.btn-ec{background:rgba(109,109,110,.75);color:#fff}
 
-.nf-hero-title {
-  font-family: 'Playfair Display', serif;
-  font-style: italic;
-  font-weight: 700;
-  font-size: clamp(22px, 5vw, 58px);
-  color: #f5c518;
-  line-height: 1;
-  margin-bottom: 8px;
-  text-transform: lowercase;
+/* rows */
+.nf-rows{
+  flex:1;overflow:hidden;
+  padding:clamp(4px,1vh,8px) clamp(20px,4vw,52px) clamp(44px,7vh,60px);
+  display:flex;flex-direction:column;gap:clamp(6px,1.5vh,14px);
 }
-.nf-hero-desc {
-  font-size: clamp(9px,1.5vw,13px);
-  color: rgba(255,255,255,.68);
-  margin-bottom: 12px;
-  line-height: 1.5;
-  font-weight: 300;
+.row-label{
+  font-size:clamp(11px,2.5vw,17px);font-weight:500;color:#fff;
+  margin-bottom:clamp(4px,.8vh,8px);
 }
-.nf-hero-btns { display: flex; gap: 8px; }
+.tiles{display:flex;gap:clamp(3px,.6vw,7px)}
 
-.btn-play, .btn-ec {
-  display: flex; align-items: center; gap: 6px;
-  border: none; border-radius: 3px;
-  padding: clamp(6px,1.2vh,9px) clamp(12px,2vw,18px);
-  font-size: clamp(10px,1.8vw,14px);
-  font-weight: 700;
-  font-family: 'Inter', sans-serif;
-  cursor: pointer;
-  transition: opacity .2s;
+.tile{
+  flex:1;aspect-ratio:3/2;border-radius:4px;
+  overflow:hidden;background:#1e1e1e;flex-shrink:0;
+  cursor:pointer;position:relative;
+  transition:transform .18s;
 }
-.btn-play:active, .btn-ec:active { opacity: .7; }
-.btn-play { background: #fff; color: #000; }
-.btn-ec   { background: rgba(109,109,110,.75); color: #fff; }
-
-/* tile rows */
-.nf-rows {
-  flex: 1;
-  overflow: hidden;
-  padding: clamp(4px,1vh,10px) clamp(20px,4vw,52px) clamp(6px,1vh,14px);
-  display: flex;
-  flex-direction: column;
-  gap: clamp(6px,1.5vh,16px);
+@media(hover:hover){.tile:hover{transform:scale(1.04);z-index:2}}
+.tile:active{transform:scale(.97)}
+.tile img{
+  width:100%;height:100%;
+  object-fit:cover;
+  object-position:center 15%;  /* show faces */
+  display:block;pointer-events:none;
 }
-.row-label {
-  font-size: clamp(11px,2.5vw,17px);
-  font-weight: 500;
-  color: #fff;
-  margin-bottom: clamp(4px,.8vh,8px);
-}
-.tiles {
-  display: flex;
-  gap: clamp(3px,.6vw,7px);
-}
-.tile {
-  flex: 1;
-  aspect-ratio: 3/2;
-  border-radius: 3px;
-  overflow: hidden;
-  background: #1e1e1e;
-  flex-shrink: 0;
-}
-.tile img {
-  width: 100%; height: 100%;
-  object-fit: cover;
-  object-position: center top;
-  display: block;
+.tile-date{
+  position:absolute;bottom:4px;left:5px;
+  font-size:clamp(7px,1.2vw,10px);
+  color:rgba(255,255,255,.9);
+  background:rgba(0,0,0,.6);
+  padding:2px 5px;border-radius:2px;
+  font-family:'Inter',sans-serif;
+  pointer-events:none;letter-spacing:.03em;
+  white-space:nowrap;
 }
 
 
-/* ════════════════════════════════
+/* ═══════════════════════════════════════
    S4 · CREDITS
-════════════════════════════════ */
-#s-credits {
-  background: #000;
-  display: flex;
-  align-items: center;
-  padding: 0 5% 0 7%;
-  gap: 5%;
+═══════════════════════════════════════ */
+#s-credits{
+  background:#000;
+  display:flex;align-items:center;
+  padding:0 4% 0 6%;gap:5%;
 }
 
-/* left photo slideshow */
-.credits-photo {
-  flex-shrink: 0;
-  width: clamp(110px,18vw,190px);
-  height: clamp(110px,18vw,190px);
-  border-radius: 8px;
-  overflow: hidden;
-  transform: rotate(-4deg);
-  box-shadow: 4px 10px 28px rgba(0,0,0,.7);
-  align-self: center;
-  position: relative;
+/* bigger slideshow */
+.credits-photo{
+  flex-shrink:0;
+  width:clamp(180px,28vw,340px);
+  height:clamp(180px,28vw,340px);
+  border-radius:10px;overflow:hidden;
+  transform:rotate(-4deg);
+  box-shadow:6px 12px 40px rgba(0,0,0,.75);
+  align-self:center;position:relative;
 }
-.slide-img {
-  position: absolute; inset: 0;
-  width: 100%; height: 100%;
-  object-fit: cover;
-  object-position: center top;
-  opacity: 0;
-  transition: opacity .9s ease;
+.slide-img{
+  position:absolute;inset:0;width:100%;height:100%;
+  object-fit:cover;object-position:center 15%;
+  opacity:0;transition:opacity .9s ease;
 }
-.slide-img.on { opacity: 1; }
+.slide-img.on{opacity:1}
 
-/* scrolling credits */
-.credits-text-wrap {
-  flex: 1;
-  overflow: hidden;
-  height: 85%;
-  display: flex;
-  align-items: center;
-  mask-image: linear-gradient(to bottom,
-    transparent 0%, black 15%, black 85%, transparent 100%);
-  -webkit-mask-image: linear-gradient(to bottom,
-    transparent 0%, black 15%, black 85%, transparent 100%);
+/* credits text */
+.credits-text-wrap{
+  flex:1;overflow:hidden;height:85%;
+  display:flex;align-items:center;
+  mask-image:linear-gradient(to bottom,transparent 0%,black 14%,black 86%,transparent 100%);
+  -webkit-mask-image:linear-gradient(to bottom,transparent 0%,black 14%,black 86%,transparent 100%);
 }
-
-@keyframes scrollUp {
-  0%   { transform: translateY(65vh); }
-  100% { transform: translateY(-120%); }
+@keyframes scrollUp{
+  0%{transform:translateY(70vh)}
+  100%{transform:translateY(-125%)}
 }
-
-.credits-inner {
-  display: flex;
-  flex-direction: column;
-  gap: clamp(10px,1.8vh,18px);
+.credits-inner{display:flex;flex-direction:column;gap:clamp(10px,1.8vh,18px)}
+.credit-row{display:flex;gap:clamp(12px,2.5vw,24px);align-items:baseline}
+.c-label{
+  width:clamp(120px,18vw,220px);flex-shrink:0;text-align:right;
+  font-size:clamp(10px,1.8vw,14px);color:rgba(255,255,255,.5);
+  font-weight:300;line-height:1.6;
+}
+.c-value{
+  font-size:clamp(10px,1.8vw,14px);color:#fff;
+  font-weight:400;line-height:1.6;
 }
 
-.credit-row {
-  display: flex;
-  gap: clamp(12px,2.5vw,24px);
-  align-items: baseline;
+
+/* ═══════════════════════════════════════
+   LIGHTBOX
+═══════════════════════════════════════ */
+#lightbox{
+  position:fixed;inset:0;z-index:999;
+  background:rgba(0,0,0,.93);
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;pointer-events:none;
+  transition:opacity .3s;
+  padding:20px;
 }
-.c-label {
-  width: clamp(120px,18vw,220px);
-  flex-shrink: 0;
-  text-align: right;
-  font-size: clamp(10px,1.8vw,14px);
-  color: rgba(255,255,255,.5);
-  font-weight: 300;
-  line-height: 1.6;
+#lightbox.open{opacity:1;pointer-events:all}
+
+.lb-inner{
+  position:relative;
+  display:flex;flex-direction:column;align-items:center;gap:14px;
+  max-width:min(88vw,520px);
 }
-.c-value {
-  font-size: clamp(10px,1.8vw,14px);
-  color: #fff;
-  font-weight: 400;
-  line-height: 1.6;
+#lb-img{
+  max-width:100%;max-height:72vh;
+  border-radius:10px;
+  object-fit:contain;
+  box-shadow:0 8px 48px rgba(0,0,0,.8);
+}
+.lb-close{
+  position:absolute;top:-44px;right:-4px;
+  background:none;border:none;color:rgba(255,255,255,.7);
+  font-size:32px;cursor:pointer;line-height:1;
+  transition:color .2s;
+}
+.lb-close:hover,.lb-close:active{color:#fff}
+.lb-date{
+  font-family:'Playfair Display',serif;
+  font-style:italic;
+  font-size:clamp(13px,3vw,19px);
+  color:rgba(255,255,255,.65);
+  letter-spacing:.04em;
 }
 </style>
 </head>
 <body>
 
-<!-- AUDIO — Beete Lamhein (play from 00:47 on credits) -->
+<!-- song: Beete Lamhein from 00:47 -->
 <audio id="bgm" preload="auto">
   <source src="audio/Beete Lamhein The Train 320 Kbps.mp3" type="audio/mpeg">
 </audio>
 
+<!-- lightbox -->
+<div id="lightbox" onclick="closeLightbox()">
+  <div class="lb-inner" onclick="event.stopPropagation()">
+    <button class="lb-close" onclick="closeLightbox()">&#215;</button>
+    <img id="lb-img" src="" alt="">
+    <div id="lb-date" class="lb-date"></div>
+  </div>
+</div>
+
 <div id="stage">
 
-  <!-- ── S1: INTRO ── -->
+  <!-- S1: INTRO -->
   <div class="scene active" id="s-intro">
-    <!-- local Netflix intro MP4 -->
     <video id="intro-video" playsinline webkit-playsinline preload="auto">
       <source src="netflix-intro.mp4" type="video/mp4">
     </video>
-    <!-- tap overlay -->
     <div id="tap-cover" onclick="beginExperience()">
       <svg class="tap-n" viewBox="0 0 111 190">
         <polygon points="0,0 27,0 27,190 0,190"    fill="#E50914"/>
@@ -516,25 +395,23 @@ body {
     </div>
   </div>
 
-  <!-- ── S2: WHO'S WATCHING ── -->
+  <!-- S2: WHO'S WATCHING -->
   <div class="scene" id="s-profiles">
     <p class="whos-title">Who's Watching?</p>
     <div class="profiles-row" id="profiles-row"></div>
     <button class="manage-btn">MANAGE PROFILES</button>
   </div>
 
-  <!-- ── S3: NETFLIX HOME ── -->
+  <!-- S3: NETFLIX HOME -->
   <div class="scene" id="s-home">
-    <button class="home-back-btn"    onclick="goTo('profiles')">&#8592; Back</button>
-    <button class="home-credits-btn" onclick="goTo('credits')">View End Credits</button>
-
+    <!-- clean nav — no floating buttons -->
     <nav class="nf-nav">
       <span class="nf-logo">NETFLIX</span>
       <ul class="nf-links">
-        <li><a href="#">Home</a></li>
-        <li><a href="#">TV Shows</a></li>
-        <li><a href="#">Movies</a></li>
-        <li><a href="#">My List</a></li>
+        <li><a>Home</a></li>
+        <li><a>TV Shows</a></li>
+        <li><a>Movies</a></li>
+        <li><a>My List</a></li>
       </ul>
     </nav>
 
@@ -556,8 +433,7 @@ body {
           <button class="btn-play">
             <svg width="11" height="11" viewBox="0 0 11 11">
               <path d="M0 0l11 5.5L0 11V0z" fill="#000"/>
-            </svg>
-            Play
+            </svg>Play
           </button>
           <button class="btn-ec" onclick="goTo('credits')">View End Credits</button>
         </div>
@@ -574,9 +450,15 @@ body {
         <div class="tiles" id="home-recent"></div>
       </div>
     </div>
+
+    <!-- back/credits as subtle bottom bar — doesn't ruin Netflix UI -->
+    <div class="home-bottom-bar">
+      <button class="hbb-btn" onclick="goTo('profiles')">&#8592; Who's Watching</button>
+      <button class="hbb-btn" onclick="goTo('credits')">View End Credits &#8250;</button>
+    </div>
   </div>
 
-  <!-- ── S4: CREDITS ── -->
+  <!-- S4: CREDITS -->
   <div class="scene" id="s-credits">
     <div class="credits-photo" id="credits-slideshow"></div>
     <div class="credits-text-wrap">
@@ -584,22 +466,54 @@ body {
     </div>
   </div>
 
-</div><!-- /stage -->
+</div>
 
 <script>
 // ─────────────────────────────────────────
-// Fix Safari 100vh via JS
+// Safari 100vh fix
 // ─────────────────────────────────────────
 function setVH() {
-  document.documentElement.style.setProperty('--vh', window.innerHeight + 'px');
-  document.body.style.height = window.innerHeight + 'px';
-  document.getElementById('stage').style.height = window.innerHeight + 'px';
+  const h = window.innerHeight + 'px';
+  document.body.style.height = h;
+  document.getElementById('stage').style.height = h;
 }
 setVH();
 window.addEventListener('resize', setVH);
 
 // ─────────────────────────────────────────
-// PHOTO DATA
+// PHOTO DATA — src → display date
+// ─────────────────────────────────────────
+const DATES = {
+  'images/ms1.jpg':     'August 2024',
+  'images/ms2.jpg':     'September 2024',
+  'images/p1.jpg':      'October 2024',
+  'images/p2.jpg':      'October 2024',
+  'images/hero.jpg':    'December 2024',
+  'images/ms3.jpg':     'February 2025',
+  'images/player.jpg':  'February 2025',
+  'images/ms4.jpg':     'April 2025',
+  'images/p3.jpg':      'April 2025',
+  'images/p4.jpg':      'April 2025',
+  'images/r2.jpg':      'April 2025',
+  'images/r3.jpg':      'April 2025',
+  'images/r4.jpg':      'April 2025',
+  'images/credits.jpg': 'April 2025',
+  'images/p5.jpg':      'May 2025',
+  'images/r1.jpg':      'May 2025',
+  'images/r5.jpg':      'May 2025',
+  'images/valentine.jpg':'February 14, 2025',
+};
+
+// short label for tile badge
+function shortDate(src) {
+  const d = DATES[src]; if (!d) return '';
+  const m = d.match(/^(\w+)\s+(\d{4})$/);
+  if (m) return m[1].slice(0,3) + " '" + m[2].slice(2);
+  return d; // "February 14, 2025" stays as is
+}
+
+// ─────────────────────────────────────────
+// MILESTONES — varied photos per milestone
 // ─────────────────────────────────────────
 const P = {
   val:   'images/valentine.jpg',
@@ -621,168 +535,161 @@ const P = {
   may25b:'images/r1.jpg',
 };
 
-// Milestones — each has its own hero + tile set
 const MILESTONES = [
   {
-    label:'1 month',   photo: P.aug24,
-    heading: 'the beginning',
-    desc:    'Where it all started. The first chapter of us.',
+    label:'1 month', photo: P.aug24,
+    heading:'the beginning',
+    desc:'Where it all started. The first chapter of us.',
     hero: P.aug24,
-    popular: [P.aug24, P.aug24, P.aug24, P.aug24, P.aug24],
-    recent:  [P.aug24, P.aug24, P.aug24, P.aug24, P.aug24],
+    // varied across timeline so tiles aren't all the same photo
+    popular:[P.aug24, P.sep24, P.oct24a, P.feb25a, P.apr25a],
+    recent: [P.may25a, P.apr25b, P.dec24,  P.oct24b, P.feb25b],
   },
   {
-    label:'3 months',  photo: P.oct24a,
-    heading: 'three months of us',
-    desc:    'Every call, every text — growing closer every day.',
+    label:'3 months', photo: P.oct24a,
+    heading:'three months of us',
+    desc:'Every call, every text — growing closer every day.',
     hero: P.dec24,
-    popular: [P.aug24, P.sep24, P.oct24a, P.oct24b, P.dec24],
-    recent:  [P.dec24, P.oct24b, P.oct24a, P.sep24, P.aug24],
+    popular:[P.aug24,  P.sep24, P.oct24a, P.oct24b, P.dec24],
+    recent: [P.dec24,  P.oct24b,P.oct24a, P.sep24,  P.aug24],
   },
   {
-    label:'6 months',  photo: P.feb25a,
-    heading: 'half a year in love',
-    desc:    'Six months and still falling harder.',
+    label:'6 months', photo: P.feb25a,
+    heading:'half a year in love',
+    desc:'Six months and still falling harder.',
     hero: P.feb25b,
-    popular: [P.feb25a, P.feb25b, P.dec24, P.oct24a, P.sep24],
-    recent:  [P.feb25b, P.feb25a, P.oct24b, P.dec24, P.aug24],
+    popular:[P.feb25a, P.feb25b,P.dec24,  P.oct24a, P.sep24],
+    recent: [P.feb25b, P.feb25a,P.oct24b, P.dec24,  P.aug24],
   },
   {
     label:'10 months', photo: P.may25a,
-    heading: 'ten months & counting',
-    desc:    'Every moment with you is the best one yet.',
+    heading:'ten months & counting',
+    desc:'Every moment with you is the best one yet.',
     hero: P.apr25a,
-    popular: [P.apr25a, P.apr25b, P.apr25c, P.apr25d, P.apr25e],
-    recent:  [P.apr25f, P.apr25g, P.may25a, P.may25b, P.apr25b],
+    popular:[P.apr25a, P.apr25b,P.apr25c, P.apr25d, P.apr25e],
+    recent: [P.apr25f, P.apr25g,P.may25a, P.may25b, P.apr25b],
   },
 ];
 
-// Credits slideshow — valentine first (5 000 ms), rest 2 800 ms
+// credits slideshow: valentine first (5 s), rest 2.8 s
 const SLIDES = [
-  { src: P.val,   ms: 5000 },
-  { src: P.aug24, ms: 2800 },
-  { src: P.sep24, ms: 2800 },
-  { src: P.oct24a,ms: 2800 },
-  { src: P.dec24, ms: 2800 },
-  { src: P.feb25a,ms: 2800 },
-  { src: P.feb25b,ms: 2800 },
-  { src: P.apr25a,ms: 2800 },
-  { src: P.apr25b,ms: 2800 },
-  { src: P.apr25c,ms: 2800 },
-  { src: P.may25a,ms: 2800 },
-  { src: P.apr25g,ms: 2800 },
-  { src: P.may25b,ms: 2800 },
+  {src:P.val,   ms:5000},
+  {src:P.aug24, ms:2800},
+  {src:P.sep24, ms:2800},
+  {src:P.oct24a,ms:2800},
+  {src:P.dec24, ms:2800},
+  {src:P.feb25a,ms:2800},
+  {src:P.feb25b,ms:2800},
+  {src:P.apr25a,ms:2800},
+  {src:P.apr25b,ms:2800},
+  {src:P.apr25c,ms:2800},
+  {src:P.may25a,ms:2800},
+  {src:P.apr25g,ms:2800},
+  {src:P.may25b,ms:2800},
 ];
 
 const CREDITS_DATA = [
-  ['Directed by',             'God'],
-  ['Cast',                    ''],
-  ['Boyfriend',               'Premal'],
-  ['Girlfriend',              'Shivani'],
-  ['Written by',              'Fate & destiny'],
-  ['Produced by',             'Patience & support'],
-  ['Director of photography', 'Our camera rolls'],
-  ['Location',                'Canada'],
-  ['Chief editor',            'Our favorite memories'],
-  ['Soundtrack',              'Melodies of us'],
-  ['Executive producers',     'Shared Future Plans'],
-  ['Technical advisor',       'Honest communication'],
-  ['Catering by',             'Midnight cravings'],
-  ['Stunt coordinators',      'Arguments & Fights'],
-  ['Time management',         '"Five more minutes"'],
-  ['Wardrobe designer',       "Each other's hoodies"],
-  ['Chief motivator',         'Family & friends'],
+  ['Directed by',            'God'],
+  ['Cast',                   ''],
+  ['Boyfriend',              'Premal'],
+  ['Girlfriend',             'Shivani'],
+  ['Written by',             'Fate & destiny'],
+  ['Produced by',            'Patience & support'],
+  ['Director of photography','Our camera rolls'],
+  ['Location',               'Canada'],
+  ['Chief editor',           'Our favorite memories'],
+  ['Soundtrack',             'Melodies of us'],
+  ['Executive producers',    'Shared Future Plans'],
+  ['Technical advisor',      'Honest communication'],
+  ['Catering by',            'Midnight cravings'],
+  ['Stunt coordinators',     'Arguments & Fights'],
+  ['Time management',        '"Five more minutes"'],
+  ['Wardrobe designer',      "Each other's hoodies"],
+  ['Chief motivator',        'Family & friends'],
 ];
 
 // ─────────────────────────────────────────
 // ROUTING
 // ─────────────────────────────────────────
-let _ssTimer = null;
-let _ssIdx   = 0;
+let _ssTimer=null, _ssIdx=0;
 
-function goTo(key) {
-  document.querySelectorAll('.scene').forEach(el => el.classList.remove('active'));
-  if (key === 'credits') _startCredits();
-  document.getElementById('s-' + key).classList.add('active');
+function goTo(key){
+  document.querySelectorAll('.scene').forEach(el=>el.classList.remove('active'));
+  if(key==='credits') _startCredits();
+  document.getElementById('s-'+key).classList.add('active');
 }
 
 // ─────────────────────────────────────────
-// S1 · INTRO — local MP4
+// INTRO
 // ─────────────────────────────────────────
-let _introStarted = false;
-
-function beginExperience() {
-  if (_introStarted) return;
-  _introStarted = true;
-
-  const cover = document.getElementById('tap-cover');
-  const vid   = document.getElementById('intro-video');
-
-  // fade out tap overlay
-  cover.style.transition = 'opacity .45s';
-  cover.style.opacity = '0';
-  setTimeout(() => { cover.style.display = 'none'; }, 500);
-
-  // show + play video
-  vid.style.opacity = '1';
-  vid.muted = false;
-  vid.volume = 1;
-  vid.play().catch(() => {
-    // If unmuted play blocked (old iOS), play muted
-    vid.muted = true;
-    vid.play().catch(() => {});
-  });
-
-  // go to profiles when video ends (or after 6s fallback)
-  vid.addEventListener('ended', () => goTo('profiles'), { once: true });
-  setTimeout(() => goTo('profiles'), 6000);
+let _started=false;
+function beginExperience(){
+  if(_started) return; _started=true;
+  const cover=document.getElementById('tap-cover');
+  const vid=document.getElementById('intro-video');
+  cover.style.transition='opacity .45s'; cover.style.opacity='0';
+  setTimeout(()=>{cover.style.display='none';},500);
+  vid.style.opacity='1';
+  vid.muted=false; vid.volume=1;
+  vid.play().catch(()=>{ vid.muted=true; vid.play().catch(()=>{}); });
+  vid.addEventListener('ended',()=>goTo('profiles'),{once:true});
+  setTimeout(()=>goTo('profiles'),6200);
 }
 
 // ─────────────────────────────────────────
-// S2 · WHO'S WATCHING
+// WHO'S WATCHING
 // ─────────────────────────────────────────
-function _buildProfiles() {
-  document.getElementById('profiles-row').innerHTML = MILESTONES.map((m, i) => `
+function _buildProfiles(){
+  document.getElementById('profiles-row').innerHTML=MILESTONES.map((m,i)=>`
     <div class="profile-item" onclick="openMilestone(${i})">
       <div class="profile-photo">
-        <img src="${m.photo}" alt="${m.label}" loading="eager">
+        <img src="${m.photo}" alt="${m.label}">
       </div>
       <span class="profile-label">${m.label}</span>
     </div>`).join('');
 }
 
 // ─────────────────────────────────────────
-// S3 · NETFLIX HOME
+// NETFLIX HOME
 // ─────────────────────────────────────────
-function openMilestone(idx) {
-  const m = MILESTONES[idx];
-
-  // hero bg
-  document.getElementById('home-hero-bg').innerHTML =
-    `<img src="${m.hero}" alt="">`;
-
-  // text
-  document.getElementById('home-title').textContent = m.heading;
-  document.getElementById('home-desc').textContent  = m.desc;
-
-  // tiles
-  _buildTiles('home-popular', m.popular);
-  _buildTiles('home-recent',  m.recent);
-
+function openMilestone(idx){
+  const m=MILESTONES[idx];
+  document.getElementById('home-hero-bg').innerHTML=`<img src="${m.hero}" alt="">`;
+  document.getElementById('home-title').textContent=m.heading;
+  document.getElementById('home-desc').textContent=m.desc;
+  _buildTiles('home-popular',m.popular);
+  _buildTiles('home-recent',m.recent);
   goTo('home');
 }
 
-function _buildTiles(id, photos) {
-  document.getElementById(id).innerHTML = photos.map(src =>
-    `<div class="tile"><img src="${src}" alt="" loading="lazy"></div>`
-  ).join('');
+function _buildTiles(id,photos){
+  document.getElementById(id).innerHTML=photos.map(src=>{
+    const badge=shortDate(src);
+    return `<div class="tile" onclick="openLightbox('${src}')">
+      <img src="${src}" alt="" loading="lazy">
+      ${badge?`<span class="tile-date">${badge}</span>`:''}
+    </div>`;
+  }).join('');
 }
 
 // ─────────────────────────────────────────
-// S4 · CREDITS
+// LIGHTBOX
 // ─────────────────────────────────────────
-function _buildCreditsList() {
-  document.getElementById('credits-inner').innerHTML = CREDITS_DATA.map(([l, v]) =>
+function openLightbox(src){
+  document.getElementById('lb-img').src=src;
+  document.getElementById('lb-date').textContent=DATES[src]||'';
+  document.getElementById('lightbox').classList.add('open');
+}
+function closeLightbox(){
+  document.getElementById('lightbox').classList.remove('open');
+}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeLightbox();});
+
+// ─────────────────────────────────────────
+// CREDITS
+// ─────────────────────────────────────────
+function _buildCreditsList(){
+  document.getElementById('credits-inner').innerHTML=CREDITS_DATA.map(([l,v])=>
     `<div class="credit-row">
        <span class="c-label">${l}</span>
        <span class="c-value">${v}</span>
@@ -790,41 +697,39 @@ function _buildCreditsList() {
   ).join('');
 }
 
-function _buildSlideshowDOM() {
-  document.getElementById('credits-slideshow').innerHTML =
-    SLIDES.map((s, i) =>
+function _buildSlideshowDOM(){
+  document.getElementById('credits-slideshow').innerHTML=
+    SLIDES.map((s,i)=>
       `<img class="slide-img${i===0?' on':''}" src="${s.src}" alt="" loading="lazy">`
     ).join('');
 }
 
-function _startCredits() {
-  // reset credits scroll
-  const inner = document.getElementById('credits-inner');
-  inner.style.animation = 'none';
-  void inner.offsetHeight;
-  inner.style.animation = 'scrollUp 20s linear forwards';
+function _startCredits(){
+  // reset scroll
+  const inner=document.getElementById('credits-inner');
+  inner.style.animation='none'; void inner.offsetHeight;
+  // slower: 40 seconds so song has time to play
+  inner.style.animation='scrollUp 40s linear forwards';
 
   // reset slideshow
-  clearTimeout(_ssTimer);
-  _ssIdx = 0;
-  const imgs = document.querySelectorAll('#credits-slideshow .slide-img');
-  imgs.forEach((el, i) => el.classList.toggle('on', i === 0));
+  clearTimeout(_ssTimer); _ssIdx=0;
+  const imgs=document.querySelectorAll('#credits-slideshow .slide-img');
+  imgs.forEach((el,i)=>el.classList.toggle('on',i===0));
   _nextSlide(imgs);
 
-  // play music from 00:47
-  const audio = document.getElementById('bgm');
-  if (audio) {
-    audio.currentTime = 47;
-    audio.volume = 0.85;
-    audio.play().catch(() => {});
+  // play song from 00:47
+  const audio=document.getElementById('bgm');
+  if(audio){
+    audio.currentTime=47; audio.volume=0.85;
+    audio.play().catch(()=>{});
   }
 }
 
-function _nextSlide(imgs) {
-  if (!imgs.length) return;
-  _ssTimer = setTimeout(() => {
+function _nextSlide(imgs){
+  if(!imgs.length) return;
+  _ssTimer=setTimeout(()=>{
     imgs[_ssIdx].classList.remove('on');
-    _ssIdx = (_ssIdx + 1) % imgs.length;
+    _ssIdx=(_ssIdx+1)%imgs.length;
     imgs[_ssIdx].classList.add('on');
     _nextSlide(imgs);
   }, SLIDES[_ssIdx].ms);
