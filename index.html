@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
-<title>Premal & Shivani</title>
+<title>Netflix</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,400;1,700&family=Cormorant+Garamond:ital,wght@1,300&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -110,6 +110,39 @@ body{
 .tile img{width:100%;height:100%;object-fit:cover;object-position:center 10%;display:block;pointer-events:none}
 .tile-date{position:absolute;bottom:5px;left:6px;font-size:clamp(8px,1.2vw,10px);color:rgba(255,255,255,.92);background:rgba(0,0,0,.65);padding:2px 6px;border-radius:3px;font-family:'Inter',sans-serif;pointer-events:none;letter-spacing:.03em;white-space:nowrap}
 
+/* ═══ VIDEO TILE ═══ */
+.vid-tile{background:linear-gradient(145deg,#0d1117 0%,#1a1a2e 55%,#0f2040 100%)}
+.vid-play-badge{
+  position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  pointer-events:none;
+}
+.vid-play-badge svg{
+  width:clamp(32px,7vw,52px);height:clamp(32px,7vw,52px);
+  background:rgba(229,9,20,.85);border-radius:50%;
+  padding:clamp(8px,1.8vw,13px) clamp(10px,2vw,16px) clamp(8px,1.8vw,13px) clamp(12px,2.4vw,18px);
+  filter:drop-shadow(0 4px 16px rgba(0,0,0,.6));
+}
+
+/* ═══ VIDEO OVERLAY ═══ */
+#vid-overlay{
+  position:fixed;inset:0;z-index:960;background:rgba(0,0,0,.97);
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;pointer-events:none;transition:opacity .3s;
+}
+#vid-overlay.open{opacity:1;pointer-events:all}
+#vid-close{
+  position:absolute;top:max(20px,env(safe-area-inset-top,20px));right:22px;
+  background:none;border:none;color:rgba(255,255,255,.65);
+  font-size:34px;cursor:pointer;line-height:1;padding:4px;z-index:2;transition:color .2s;
+}
+#vid-close:active,#vid-close:hover{color:#fff}
+#vid-player{
+  max-width:min(94vw,680px);
+  max-height:calc(100vh - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px) - 80px);
+  border-radius:10px;box-shadow:0 8px 56px rgba(0,0,0,.8);
+  background:#000;display:block;
+}
+
 .home-bottom-bar{position:absolute;bottom:0;left:0;right:0;z-index:20;height:clamp(40px,6vh,52px);background:linear-gradient(to top,rgba(0,0,0,.8),transparent);display:flex;align-items:center;justify-content:space-between;padding:0 clamp(20px,4vw,52px)}
 .hbb-btn{background:none;border:none;color:rgba(255,255,255,.52);font-size:clamp(10px,1.8vw,13px);font-family:'Inter',sans-serif;font-weight:500;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;transition:color .2s;padding:6px 0}
 @media(hover:hover){.hbb-btn:hover{color:#fff}}
@@ -117,6 +150,13 @@ body{
 
 /* ═══ CREDITS ═══ */
 #s-credits{background:#000;display:flex;align-items:center;padding:0 4% 0 6%;gap:5%}
+.credits-back{
+  position:absolute;top:max(18px,env(safe-area-inset-top,18px));left:clamp(16px,4vw,32px);
+  z-index:20;background:none;border:none;
+  color:rgba(255,255,255,.38);font-size:22px;cursor:pointer;
+  transition:color .2s;line-height:1;padding:6px;
+}
+.credits-back:hover,.credits-back:active{color:#fff}
 .credits-photo{flex-shrink:0;width:clamp(180px,28vw,340px);height:clamp(180px,28vw,340px);border-radius:10px;overflow:hidden;transform:rotate(-4deg);box-shadow:6px 14px 44px rgba(0,0,0,.75);align-self:center;position:relative}
 .slide-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 10%;opacity:0;transition:opacity .9s ease}
 .slide-img.on{opacity:1}
@@ -127,6 +167,34 @@ body{
 .c-label{width:clamp(120px,18vw,220px);flex-shrink:0;text-align:right;font-size:clamp(10px,1.8vw,14px);color:rgba(255,255,255,.5);font-weight:300;line-height:1.6}
 .c-value{font-size:clamp(10px,1.8vw,14px);color:#fff;font-weight:400;line-height:1.6}
 
+/* ═══ CREDITS — mobile stacked layout ═══ */
+@media(max-width:700px){
+  #s-credits{
+    flex-direction:column;
+    padding:max(env(safe-area-inset-top,16px),16px) 0 max(env(safe-area-inset-bottom,8px),8px);
+    gap:0;
+    align-items:center;
+    justify-content:flex-start;
+  }
+  .credits-photo{
+    width:min(70vw,300px);height:min(70vw,300px);
+    margin:clamp(14px,2.5vh,28px) auto clamp(10px,1.8vh,20px);
+    transform:rotate(-2deg);
+    flex-shrink:0;
+  }
+  .credits-text-wrap{
+    flex:none;
+    width:100%;
+    height:52vh;
+    mask-image:linear-gradient(to bottom,transparent 0%,black 8%,black 92%,transparent 100%);
+    -webkit-mask-image:linear-gradient(to bottom,transparent 0%,black 8%,black 92%,transparent 100%);
+  }
+  .credits-inner{padding:0 5%}
+  .credit-row{gap:8px}
+  .c-label{width:min(38vw,160px);font-size:clamp(9px,3vw,13px);text-align:right}
+  .c-value{font-size:clamp(9px,3vw,13px)}
+}
+
 /* ═══ MILESTONE SLIDESHOW ═══ */
 #ss-overlay{position:fixed;inset:0;z-index:900;background:rgba(0,0,0,.96);display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .3s}
 #ss-overlay.open{opacity:1;pointer-events:all}
@@ -135,7 +203,7 @@ body{
 .ss-row{display:flex;align-items:center;gap:clamp(10px,3vw,28px);width:100%;justify-content:center;padding:0 clamp(16px,4vw,48px)}
 .ss-arrow{background:rgba(255,255,255,.08);border:none;color:rgba(255,255,255,.7);font-size:clamp(24px,5vw,40px);width:clamp(38px,6vw,54px);height:clamp(38px,6vw,54px);border-radius:50%;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:background .18s,color .18s}
 .ss-arrow:active,.ss-arrow:hover{background:rgba(255,255,255,.18);color:#fff}
-#ss-img-wrap{position:relative;display:flex;flex-direction:column;align-items:center;gap:14px;max-width:min(80vw,420px)}
+#ss-img-wrap{position:relative;display:flex;flex-direction:column;align-items:center;gap:14px;max-width:min(80vw,500px)}
 #ss-img{max-width:100%;max-height:65vh;border-radius:10px;object-fit:contain;box-shadow:0 8px 48px rgba(0,0,0,.8);display:block}
 #ss-date{font-family:'Playfair Display',serif;font-style:italic;font-size:clamp(13px,2.5vw,18px);color:rgba(255,255,255,.65);letter-spacing:.04em;min-height:1.4em;text-align:center}
 #ss-counter{font-size:clamp(10px,1.8vw,13px);color:rgba(255,255,255,.35);letter-spacing:.06em}
@@ -181,6 +249,12 @@ body{
     <img id="lb-img" src="" alt="">
     <div id="lb-date" class="lb-date"></div>
   </div>
+</div>
+
+<!-- Video Overlay -->
+<div id="vid-overlay" onclick="closeVid()">
+  <button id="vid-close" onclick="closeVid()">&#215;</button>
+  <video id="vid-player" controls playsinline webkit-playsinline onclick="event.stopPropagation()"></video>
 </div>
 
 <div id="stage">
@@ -249,6 +323,7 @@ body{
 
   <!-- CREDITS -->
   <div class="scene" id="s-credits">
+    <button class="credits-back" onclick="goTo('home')" title="Back">&#8592;</button>
     <div class="credits-photo" id="credits-slideshow"></div>
     <div class="credits-text-wrap">
       <div class="credits-inner" id="credits-inner"></div>
@@ -263,7 +338,7 @@ function setVH(){const h=window.innerHeight+'px';document.body.style.height=h;do
 setVH();window.addEventListener('resize',setVH);
 
 /* ──────────────────────────────────────
-   DATE HELPERS  (from filename)
+   DATE HELPERS
 ────────────────────────────────────── */
 const MONTH_LONG  = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 const MONTH_SHORT = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
@@ -285,27 +360,41 @@ function shortDate(fn){
   if(!d) return '';
   return `${MONTH_SHORT[+d.mo-1]} '${d.y.slice(2)}`;
 }
+function _sortKey(fn){
+  const d=_dateFromFile(fn);
+  if(!d) return 99999999;
+  return +(d.y+d.mo+d.d);
+}
 
-/* helper: prepend images/ path */
+/* helpers */
 const img = fn => 'images/' + fn;
+const vid = fn => 'videos/' + fn;
 
 /* ──────────────────────────────────────
-   MILESTONE DATA — all 107 photos, timeline-ordered
+   MILESTONE DATA
+   Photos sorted by date; Snapchat photos
+   placed by visual analysis of content.
 ────────────────────────────────────── */
 const MILESTONES = [
   {
     /* ── 1 MONTH: Aug 26 – Sep 30, 2024 ── */
     label:   '1 month',
     sublabel:'Aug – Sep 2024',
-    photo:   img('20240826_182222.jpg'),   // couple car selfie
+    photo:   img('20240826_182222.jpg'),
     heading: 'the beginning',
     desc:    'August 2024 · Where it all started.',
     hero:    img('20240826_182223.jpg'),
     photos: [
       '20240826_182222.jpg','20240826_182223.jpg','20240826_182226.jpg',
       '20240930_174104.jpg','20240930_174105.jpg','20240930_174109.jpg',
-      'Snapchat-1409371325.jpg','Snapchat-1282282821.jpg','Snapchat-1493094235.jpg',
+      /* Night car selfies — early relationship */
+      'Snapchat-1006342143.jpg','Snapchat-2117433068.jpg',
+      /* Red roses — early romantic gesture */
+      'Snapchat-1433906752.jpg',
+      /* Car, overcast day */
+      'Snapchat-1282282821.jpg',
     ].map(img),
+    vids: ['20240825_220332.mp4'],
   },
   {
     /* ── 3 MONTHS: Oct – Dec 2024 ── */
@@ -324,9 +413,18 @@ const MILESTONES = [
       '20241214_233307.jpg','20241214_233522.jpg',
       '20241215_002835.jpg','20241215_003011.jpg','20241215_003041.jpg',
       '20241215_003130.jpg','20241215_003241.jpg','20241215_003304.jpg',
-      'Snapchat-2117433068.jpg','Snapchat-1006342143.jpg','Snapchat-552263264.jpg',
-      'Snapchat-1433906752.jpg','Snapchat-1963777634.jpg',
+      /* Navratri/cultural event Oct 2024 */
+      'Snapchat-1409371325.jpg',
+      /* Ethnic wear indoor event — Diwali Nov 2024 */
+      'Snapchat-1884807469.jpg',
+      /* Fall jacket car selfie */
+      'Snapchat-1493094235.jpg',
+      /* Blue turtleneck sweater — winter */
+      'Snapchat-552263264.jpg',
+      /* Indoor apartment casual */
+      'Snapchat-1945727858.jpg','Snapchat-1960320966.jpg',
     ].map(img),
+    vids: [],
   },
   {
     /* ── 6 MONTHS: Jan – Jun 2025 ── */
@@ -351,14 +449,17 @@ const MILESTONES = [
       '20250629_151249.jpg','20250629_151320.jpg','20250629_151405.jpg',
       '20250629_151406.jpg','20250629_151523.jpg',
       'valentine.jpg',
-      'Snapchat-1945727858.jpg','Snapchat-1960320966.jpg',
+      /* Downtown city outing, warm weather — summer 2025 */
+      'Snapchat-1963777634.jpg','Snapchat-1274994827.jpg',
+      'Snapchat-524185506.jpg','Snapchat-687287911.jpg','Snapchat-790482175.jpg',
     ].map(img),
+    vids: ['20250426_190555.mp4','20250511_160519.mp4'],
   },
   {
     /* ── 1 YEAR: Jul 2025 – Apr 2026 ── */
     label:   '1 year',
     sublabel:'Jul 2025 – Apr 2026',
-    photo:   img('20250721_220526.jpg'),   // couple at S Club Cafe
+    photo:   img('20250721_220526.jpg'),
     heading: 'one year & counting',
     desc:    'July 2025 · A full year of the best moments.',
     hero:    img('20250803_194808.jpg'),
@@ -375,14 +476,16 @@ const MILESTONES = [
       'IMG_20251012_172727_997.jpg','IMG_20251012_172731_352.jpg',
       'Screenshot_20260221_202434_Instagram.jpg',
       '20260402_145233.jpg','20260402_145240.jpg','20260423_171132.jpg',
-      'Snapchat-10814446.jpg','Snapchat-1274994827.jpg','Snapchat-1605463310.jpg',
-      'Snapchat-1884807469.jpg','Snapchat-524185506.jpg','Snapchat-687287911.jpg',
-      'Snapchat-790482175.jpg','Snapchat-918357969.jpg',
+      /* Befikre restaurant date */
+      'Snapchat-10814446.jpg','Snapchat-1605463310.jpg',
+      /* Sunny car selfie — later period */
+      'Snapchat-918357969.jpg',
     ].map(img),
+    vids: ['VID_20250803_164935_672.mp4','VID_20250803_165003_100.mp4'],
   },
 ];
 
-/* Credits slideshow — valentine first 5s, then curated selection */
+/* Credits slideshow */
 const SLIDES = [
   {src:img('valentine.jpg'),          ms:5000},
   {src:img('20240826_182222.jpg'),    ms:2800},
@@ -429,7 +532,7 @@ function goTo(key){
 }
 
 /* ──────────────────────────────────────
-   INTRO — local MP4 (muted for autoplay compat, with audio fallback)
+   INTRO
 ────────────────────────────────────── */
 let _started=false;
 function beginExperience(){
@@ -438,18 +541,10 @@ function beginExperience(){
   const vid=document.getElementById('intro-video');
   cover.style.transition='opacity .45s';cover.style.opacity='0';
   setTimeout(()=>cover.style.display='none',500);
-
   vid.style.opacity='1';
-  // Try unmuted first; fall back to muted if blocked
-  vid.muted=false;
-  vid.volume=1;
+  vid.muted=false; vid.volume=1;
   const p=vid.play();
-  if(p!==undefined){
-    p.catch(()=>{
-      vid.muted=true;
-      vid.play().catch(()=>{});
-    });
-  }
+  if(p!==undefined){p.catch(()=>{vid.muted=true;vid.play().catch(()=>{})})}
   vid.addEventListener('ended',()=>goTo('profiles'),{once:true});
   setTimeout(()=>goTo('profiles'),6500);
 }
@@ -466,7 +561,7 @@ function _buildProfiles(){
 }
 
 /* ──────────────────────────────────────
-   NETFLIX HOME
+   NETFLIX HOME — combined photo + video tiles sorted by date
 ────────────────────────────────────── */
 let _curMilestone=null;
 function openMilestone(idx){
@@ -475,18 +570,36 @@ function openMilestone(idx){
   document.getElementById('home-title').textContent=m.heading;
   document.getElementById('home-desc').textContent=m.desc;
   document.getElementById('home-play-btn').onclick=()=>openSS(m.photos);
-  document.getElementById('home-tiles').innerHTML=m.photos.map(src=>{
-    const sd=shortDate(src.replace('images/',''));
-    return `<div class="tile" onclick="openLB('${src}')">
-      <img src="${src}" alt="" loading="lazy">
-      ${sd?`<span class="tile-date">${sd}</span>`:''}
-    </div>`;
+
+  /* Build combined sorted media list */
+  const allMedia=[
+    ...m.photos.map(src=>({type:'img',src,key:src.replace('images/','')})),
+    ...m.vids.map(fn=>({type:'vid',fn,key:fn})),
+  ].sort((a,b)=>_sortKey(a.key)-_sortKey(b.key));
+
+  document.getElementById('home-tiles').innerHTML=allMedia.map(item=>{
+    if(item.type==='img'){
+      const sd=shortDate(item.key);
+      return `<div class="tile" onclick="openLB('${item.src}')">
+        <img src="${item.src}" alt="" loading="lazy">
+        ${sd?`<span class="tile-date">${sd}</span>`:''}
+      </div>`;
+    } else {
+      const sd=shortDate(item.key);
+      const vsrc=vid(item.fn);
+      return `<div class="tile vid-tile" onclick="openVid('${vsrc}')">
+        <div class="vid-play-badge">
+          <svg viewBox="0 0 24 24" fill="#fff"><polygon points="5,3 19,12 5,21"/></svg>
+        </div>
+        ${sd?`<span class="tile-date">${sd}</span>`:''}
+      </div>`;
+    }
   }).join('');
   goTo('home');
 }
 
 /* ──────────────────────────────────────
-   MILESTONE SLIDESHOW (Play button)
+   MILESTONE SLIDESHOW (Play button — photos only)
 ────────────────────────────────────── */
 let _ssPhotos=[],_ssIdx=0,_ssAuto=null,_ssTouchX=0;
 function openSS(photos){
@@ -523,6 +636,21 @@ function openLB(src){
 function closeLB(){document.getElementById('lightbox').classList.remove('open')}
 
 /* ──────────────────────────────────────
+   VIDEO OVERLAY
+────────────────────────────────────── */
+function openVid(src){
+  const v=document.getElementById('vid-player');
+  v.src=src; v.load();
+  v.play().catch(()=>{});
+  document.getElementById('vid-overlay').classList.add('open');
+}
+function closeVid(){
+  const v=document.getElementById('vid-player');
+  v.pause(); v.src='';
+  document.getElementById('vid-overlay').classList.remove('open');
+}
+
+/* ──────────────────────────────────────
    CREDITS
 ────────────────────────────────────── */
 function _buildCreditsList(){
@@ -557,15 +685,13 @@ function _nextCSlide(imgs){
 
 /* keyboard shortcuts */
 document.addEventListener('keydown',e=>{
-  if(e.key==='Escape'){closeLB();closeSS()}
+  if(e.key==='Escape'){closeLB();closeSS();closeVid()}
   const ssOpen=document.getElementById('ss-overlay').classList.contains('open');
   if(ssOpen&&e.key==='ArrowLeft')ssStep(-1);
   if(ssOpen&&e.key==='ArrowRight')ssStep(1);
 });
 
-/* ──────────────────────────────────────
-   INIT
-────────────────────────────────────── */
+/* ── INIT ── */
 _buildProfiles();
 _buildCreditsList();
 _buildSlideshowDOM();
