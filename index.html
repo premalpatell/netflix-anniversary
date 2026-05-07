@@ -89,37 +89,59 @@ body{
 
 /* ═══ NETFLIX HOME ═══ */
 #s-home{background:#141414;display:flex;flex-direction:column}
-.nf-nav{position:absolute;top:0;left:0;right:0;z-index:10;display:flex;align-items:center;padding:clamp(12px,2vh,22px) clamp(20px,4vw,52px);background:linear-gradient(to bottom,rgba(0,0,0,.95),transparent);gap:clamp(12px,2vw,22px)}
+.nf-nav{
+  position:absolute;top:0;left:0;right:0;z-index:10;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:clamp(10px,1.8vh,20px) clamp(16px,3.5vw,48px);
+  background:linear-gradient(to bottom,rgba(0,0,0,.96) 0%,rgba(0,0,0,.6) 60%,transparent 100%);
+  gap:clamp(10px,2vw,20px);
+}
 .nf-logo{font-family:'Inter',sans-serif;font-weight:800;letter-spacing:-.03em;font-size:clamp(18px,4vw,32px);color:#e50914;flex-shrink:0}
-.nf-links{display:flex;gap:clamp(8px,1.5vw,18px);list-style:none;flex-wrap:nowrap}
-.nf-links li a{color:rgba(255,255,255,.65);text-decoration:none;font-size:clamp(9px,1.8vw,13px);white-space:nowrap}
+.nf-links{display:flex;gap:clamp(8px,1.5vw,18px);list-style:none;flex-wrap:nowrap;flex:1;margin-left:clamp(8px,2vw,24px)}
+.nf-links li a{color:rgba(255,255,255,.65);text-decoration:none;font-size:clamp(9px,1.8vw,13px);white-space:nowrap;transition:color .18s}
 .nf-links li:first-child a{color:#fff;font-weight:500}
+@media(hover:hover){.nf-links li a:hover{color:#fff}}
+.nf-nav-right{display:flex;align-items:center;gap:clamp(8px,1.8vw,18px);flex-shrink:0}
+.nf-nav-icon{width:clamp(15px,2.2vw,20px);height:clamp(15px,2.2vw,20px);opacity:.7;cursor:pointer;transition:opacity .18s;flex-shrink:0}
+@media(hover:hover){.nf-nav-icon:hover{opacity:1}}
+.nf-avatar{width:clamp(26px,3.2vw,32px);height:clamp(26px,3.2vw,32px);border-radius:4px;background:#e50914;display:flex;align-items:center;justify-content:center;font-size:clamp(11px,1.5vw,13px);font-weight:700;color:#fff;cursor:pointer;flex-shrink:0;letter-spacing:.02em}
 
-.nf-hero{position:relative;width:100%;height:54%;min-height:220px;flex-shrink:0}
-.nf-hero-bg{position:absolute;inset:0;background:#0d1117}
-.nf-hero-bg img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 10%;display:block}
-.nf-hero-overlay{position:absolute;inset:0;background:linear-gradient(to right,rgba(0,0,0,.88) 0%,rgba(0,0,0,.45) 50%,transparent 80%),linear-gradient(to top,#141414 0%,transparent 45%)}
-.nf-hero-content{position:absolute;bottom:clamp(12px,2.5vh,44px);left:clamp(20px,4vw,52px);max-width:min(52%,460px)}
-@media(max-width:600px){.nf-hero-content{max-width:72%}}
-.nf-badge{display:flex;align-items:center;gap:5px;margin-bottom:5px}
+.nf-hero{position:relative;width:100%;height:56%;min-height:240px;flex-shrink:0}
+.nf-hero-bg{position:absolute;inset:0;background:#141414}
+.nf-hero-bg img,.nf-hero-bg video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 20%;display:block}
+.nf-hero-overlay{
+  position:absolute;inset:0;
+  background:
+    linear-gradient(to right,rgba(0,0,0,.92) 0%,rgba(0,0,0,.5) 45%,rgba(0,0,0,.1) 75%,transparent 100%),
+    linear-gradient(to top,#141414 0%,rgba(20,20,20,.7) 18%,transparent 44%),
+    linear-gradient(to bottom,rgba(0,0,0,.3) 0%,transparent 20%);
+}
+.nf-hero-content{position:absolute;bottom:clamp(14px,3vh,52px);left:clamp(16px,3.5vw,48px);max-width:min(54%,480px)}
+@media(max-width:600px){.nf-hero-content{max-width:76%}}
+.nf-badge{display:flex;align-items:center;gap:5px;margin-bottom:4px}
 .nf-badge svg{width:13px;height:13px;flex-shrink:0}
 .nf-badge-text{font-size:clamp(8px,1.5vw,11px);letter-spacing:.22em;color:rgba(255,255,255,.72);text-transform:uppercase}
-.nf-hero-title{font-family:'Playfair Display',serif;font-style:italic;font-weight:700;font-size:clamp(20px,5vw,56px);color:#f5c518;line-height:1;margin-bottom:8px;text-transform:lowercase}
-.nf-hero-desc{font-size:clamp(9px,1.5vw,13px);color:rgba(255,255,255,.68);margin-bottom:6px;line-height:1.5;font-weight:300}
-.nf-hero-compliment{font-family:'Playfair Display',serif;font-style:italic;font-size:clamp(10px,1.7vw,13px);color:rgba(245,197,24,.5);margin-bottom:10px;line-height:1.4}
-.nf-hero-btns{display:flex;gap:8px}
-.btn-play,.btn-ec{display:flex;align-items:center;gap:6px;border:none;border-radius:3px;padding:clamp(6px,1.2vh,9px) clamp(12px,2vw,18px);font-size:clamp(10px,1.8vw,14px);font-weight:700;font-family:'Inter',sans-serif;cursor:pointer;transition:opacity .18s}
-.btn-play:active,.btn-ec:active{opacity:.7}
+.nf-match{font-size:clamp(10px,1.8vw,13px);color:#46d369;font-weight:700;margin-bottom:3px;letter-spacing:.04em}
+.nf-hero-title{font-family:'Playfair Display',serif;font-style:italic;font-weight:700;font-size:clamp(22px,5.5vw,60px);color:#f5c518;line-height:1;margin-bottom:6px;text-transform:lowercase;text-shadow:0 2px 20px rgba(0,0,0,.5)}
+.nf-hero-meta{font-size:clamp(9px,1.4vw,12px);color:rgba(255,255,255,.45);letter-spacing:.05em;margin-bottom:6px;display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.nf-hero-meta span{color:rgba(255,255,255,.25)}
+.nf-hero-desc{font-size:clamp(9px,1.5vw,13px);color:rgba(255,255,255,.7);margin-bottom:5px;line-height:1.55;font-weight:300}
+.nf-hero-compliment{font-family:'Playfair Display',serif;font-style:italic;font-size:clamp(10px,1.7vw,13px);color:rgba(245,197,24,.48);margin-bottom:12px;line-height:1.4}
+.nf-hero-btns{display:flex;gap:8px;flex-wrap:wrap}
+.btn-play,.btn-ec{display:flex;align-items:center;gap:6px;border:none;border-radius:3px;padding:clamp(7px,1.3vh,10px) clamp(14px,2.2vw,22px);font-size:clamp(10px,1.8vw,14px);font-weight:700;font-family:'Inter',sans-serif;cursor:pointer;transition:background .18s,opacity .18s;white-space:nowrap}
+.btn-play:active,.btn-ec:active{opacity:.75}
 .btn-play{background:#fff;color:#000}
-.btn-ec{background:rgba(255,255,255,.12);border:1.5px solid rgba(255,255,255,.72);color:#fff}
+@media(hover:hover){.btn-play:hover{background:rgba(255,255,255,.85)}}
+.btn-ec{background:rgba(109,109,110,.6);border:1.5px solid rgba(255,255,255,.6);color:#fff}
+@media(hover:hover){.btn-ec:hover{background:rgba(109,109,110,.85)}}
 
-.nf-photo-section{flex:1;overflow:hidden;padding:clamp(8px,1.5vh,14px) 0 clamp(44px,7vh,56px);display:flex;flex-direction:column}
-.row-label{font-size:clamp(12px,2.5vw,18px);font-weight:500;color:#fff;margin-bottom:clamp(6px,1vh,10px);padding:0 clamp(20px,4vw,52px)}
+.nf-photo-section{flex:1;overflow:hidden;padding:clamp(6px,1.2vh,12px) 0 clamp(40px,7vh,54px);display:flex;flex-direction:column}
+.row-label{font-size:clamp(12px,2.2vw,17px);font-weight:600;color:#e5e5e5;margin-bottom:clamp(6px,1vh,10px);padding:0 clamp(16px,3.5vw,48px);letter-spacing:.01em}
 
-.tiles-strip{display:flex;gap:clamp(6px,1vw,10px);overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;padding:0 clamp(20px,4vw,52px) 8px;scrollbar-width:none}
+.tiles-strip{display:flex;gap:clamp(6px,1vw,10px);overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;padding:0 clamp(16px,3.5vw,48px) 8px;scrollbar-width:none}
 .tiles-strip::-webkit-scrollbar{display:none}
 .tile{
-  flex:0 0 clamp(120px,20vw,190px);border-radius:6px;overflow:hidden;
+  flex:0 0 clamp(130px,30vw,200px);border-radius:6px;overflow:hidden;
   background:#1c1c1c;scroll-snap-align:start;cursor:pointer;
   position:relative;transition:transform .18s;flex-shrink:0;
   display:flex;flex-direction:column;
@@ -128,8 +150,8 @@ body{
 .tile:active{transform:scale(.96)}
 .tile-img{width:100%;aspect-ratio:2/3;object-fit:cover;object-position:center 10%;display:block;pointer-events:none;flex-shrink:0}
 .tile-info{padding:5px 7px 7px;display:flex;flex-direction:column;gap:2px;background:#1c1c1c}
-.tile-info-date{font-size:clamp(8px,1.3vw,10px);color:rgba(255,255,255,.58);letter-spacing:.04em;white-space:nowrap}
-.tile-info-story{font-size:clamp(8px,1.3vw,10px);color:rgba(255,255,255,.3);line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-style:italic}
+.tile-info-date{font-size:clamp(9px,1.4vw,11px);color:rgba(255,255,255,.6);letter-spacing:.04em;white-space:nowrap;font-weight:500}
+.tile-info-story{font-size:clamp(9px,1.4vw,11px);color:rgba(255,255,255,.32);line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-style:italic;margin-top:1px}
 
 /* ═══ VIDEO TILE ═══ */
 .tile-vid-box{width:100%;aspect-ratio:2/3;background:linear-gradient(145deg,#0d1117 0%,#1a1a2e 55%,#0f2040 100%);position:relative;display:flex;align-items:center;justify-content:center;flex-shrink:0}
@@ -180,7 +202,7 @@ body{
 .slide-img.on{opacity:1}
 .slide-img.letterbox{object-fit:contain;object-position:center;background:#0a0a0a}
 .credits-text-wrap{flex:1;overflow:hidden;height:85%;display:flex;align-items:center;mask-image:linear-gradient(to bottom,transparent 0%,black 14%,black 86%,transparent 100%);-webkit-mask-image:linear-gradient(to bottom,transparent 0%,black 14%,black 86%,transparent 100%)}
-@keyframes scrollUp{0%{transform:translateY(70vh)}100%{transform:translateY(-125%)}}
+@keyframes scrollUp{0%{transform:translate3d(0,70vh,0)}100%{transform:translate3d(0,-125%,0)}}
 .credits-inner{display:flex;flex-direction:column;gap:clamp(10px,1.8vh,18px)}
 .credit-row{display:flex;gap:clamp(12px,2.5vw,24px);align-items:baseline}
 .c-label{width:clamp(120px,18vw,220px);flex-shrink:0;text-align:right;font-size:clamp(10px,1.8vw,14px);color:rgba(255,255,255,.5);font-weight:300;line-height:1.6}
@@ -188,12 +210,13 @@ body{
 
 /* ═══ iPhone Pro Max extras ═══ */
 @media(max-width:480px){
-  .nf-links{gap:clamp(6px,2.5vw,14px)}
-  .nf-links li a{font-size:clamp(9px,2.2vw,12px)}
+  .nf-links{gap:clamp(6px,2.5vw,12px)}
+  .nf-links li a{font-size:clamp(8px,2vw,11px)}
+  .nf-nav-right{gap:clamp(6px,2vw,12px)}
   .hbb-btn{font-size:clamp(9px,2.2vw,12px)}
   .btn-play,.btn-ec{padding:8px clamp(12px,3vw,18px);font-size:clamp(10px,2.2vw,13px)}
   .nf-hero{height:52%}
-  .tile{flex:0 0 clamp(120px,28vw,180px)}
+  .tile{flex:0 0 clamp(130px,36vw,170px)}
 }
 
 /* ═══ CREDITS — mobile stacked layout ═══ */
@@ -321,9 +344,16 @@ body{
     <nav class="nf-nav">
       <span class="nf-logo">NETFLIX</span>
       <ul class="nf-links">
-        <li><a onclick="goTo('profiles')" style="cursor:pointer">Home</a></li><li><a>TV Shows</a></li>
-        <li><a>Movies</a></li><li><a>My List</a></li>
+        <li><a onclick="goTo('profiles')" style="cursor:pointer">Home</a></li>
+        <li><a>Memories</a></li>
+        <li><a>Moments</a></li>
+        <li><a>Our Story</a></li>
       </ul>
+      <div class="nf-nav-right">
+        <svg class="nf-nav-icon" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.7)" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="6"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <svg class="nf-nav-icon" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.7)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        <div class="nf-avatar">P</div>
+      </div>
     </nav>
     <div class="nf-hero">
       <div class="nf-hero-bg" id="home-hero-bg"></div>
@@ -331,9 +361,11 @@ body{
       <div class="nf-hero-content">
         <div class="nf-badge">
           <svg viewBox="0 0 111 190"><polygon points="0,0 27,0 27,190 0,190" fill="#E50914"/><polygon points="84,0 111,0 111,190 84,190" fill="#E50914"/><polygon points="0,0 27,0 111,190 84,190" fill="#E50914"/></svg>
-          <span class="nf-badge-text">SERIES</span>
+          <span class="nf-badge-text">LOVE SERIES</span>
         </div>
+        <div class="nf-match">100% Match ♡</div>
         <h1 class="nf-hero-title" id="home-title"></h1>
+        <p  class="nf-hero-meta"  id="home-meta"></p>
         <p  class="nf-hero-desc"  id="home-desc"></p>
         <p  class="nf-hero-compliment" id="home-compliment"></p>
         <div class="nf-hero-btns">
@@ -345,7 +377,7 @@ body{
       </div>
     </div>
     <div class="nf-photo-section">
-      <div class="row-label">Our Story</div>
+      <div class="row-label" id="row-label">Our Story</div>
       <div class="tiles-strip" id="home-tiles"></div>
     </div>
     <div class="home-bottom-bar">
@@ -382,14 +414,14 @@ function _dateFromFile(fn){
   return {y:m[1], mo:m[2], d:m[3]};
 }
 function fullDate(fn){
-  if(fn==='valentine.jpg') return 'February 14, 2025';
+  if(fn==='valentine.jpg') return 'February 14, 2026';
   if(SNAP_DATES[fn]) return SNAP_DATES[fn].full;
   const d=_dateFromFile(fn);
   if(!d) return '';
   return `${MONTH_LONG[+d.mo-1]} ${+d.d}, ${d.y}`;
 }
 function shortDate(fn){
-  if(fn==='valentine.jpg') return "Feb '25";
+  if(fn==='valentine.jpg') return "Feb '26";
   if(SNAP_DATES[fn]) return SNAP_DATES[fn].short;
   const d=_dateFromFile(fn);
   if(!d) return '';
@@ -397,7 +429,7 @@ function shortDate(fn){
 }
 function _sortKey(fn){
   if(SNAP_DATES[fn]) return SNAP_DATES[fn].sort;
-  if(fn==='valentine.jpg') return 20250214;
+  if(fn==='valentine.jpg') return 20260214;
   const d=_dateFromFile(fn);
   if(!d) return 99999999;
   return +(d.y+d.mo+d.d);
@@ -584,6 +616,7 @@ const MILESTONES = [
     heading: 'the beginning',
     desc:    'August 2024 · First temple visit. First date at Liu Loqum Atelier.',
     compliment: 'you walked into my life and made it complete',
+    rowLabel: 'Chapter 1 · The Beginning',
     hero:    img('20240826_182223.jpg'),
     photos: [
       '20240826_182222.jpg','20240826_182223.jpg','20240826_182226.jpg',
@@ -600,6 +633,7 @@ const MILESTONES = [
     heading: 'three months of us',
     desc:    'October 2024 · Navratri nights, her first car, date nights at the Fairmont.',
     compliment: 'i was falling harder for you every single day',
+    rowLabel: 'Chapter 2 · Growing Together',
     hero:    img('20241215_002835.jpg'),
     photos: [
       '20241012_012640.jpg','20241012_012827.jpg','20241012_021256.jpg',
@@ -625,6 +659,7 @@ const MILESTONES = [
     heading: 'half a year in love',
     desc:    'February 2025 · Airport reunions, Cactus Club, Planta, Pai Thai — and the day she graduated.',
     compliment: 'watching you succeed makes me the proudest person alive',
+    rowLabel: 'Chapter 3 · Her Biggest Year',
     hero:    img('20250412_231204.jpg'),
     photos: [
       'IMG_20250105_232702_246.jpg',
@@ -640,7 +675,6 @@ const MILESTONES = [
       '20250527_182736.jpg','20250527_182738.jpg','20250527_182746.jpg',
       '20250629_151249.jpg','20250629_151320.jpg','20250629_151405.jpg',
       '20250629_151406.jpg','20250629_151523.jpg',
-      'valentine.jpg',
       'Snapchat-1433906752.jpg', // Jan 25 — airport pickup from India
       'Snapchat-1945727858.jpg', // Apr 5
       'Snapchat-1960320966.jpg', // Apr 5
@@ -660,6 +694,7 @@ const MILESTONES = [
     heading: 'one year & counting',
     desc:    'July 2025 · Her birthday, Crystal Beach, Navratri, and the hardest goodbye.',
     compliment: 'a year with you was still not nearly enough',
+    rowLabel: 'Chapter 4 · One Full Year',
     hero:    img('20250803_194808.jpg'),
     photos: [
       '20250706_141011.jpg','20250706_151749.jpg','20250706_151818.jpg',
@@ -678,6 +713,7 @@ const MILESTONES = [
       'Snapchat-10814446.jpg',   // Nov 4, 2025
       'Snapchat-1605463310.jpg', // Nov 4, 2025
       'Snapchat-1282282821.jpg', // Apr 2, 2026 — bob haircut
+      'valentine.jpg',           // Feb 14, 2026 — Valentine's letter
       'Snapchat-918357969.jpg',  // Premal selfie
     ].map(img),
     vids: ['VID_20250803_164935_672.mp4','VID_20250803_165003_100.mp4'],
@@ -745,9 +781,16 @@ const CREDITS_DATA = [
 ────────────────────────────────────── */
 let _cSsTimer=null, _cSsIdx=0;
 function goTo(key){
+  /* Pause hero video when leaving home */
+  const hv=document.querySelector('#home-hero-bg video');
+  if(hv) hv.pause();
+  /* Pause BGM when leaving credits */
+  if(key!=='credits'){const bgm=document.getElementById('bgm');if(bgm&&!bgm.paused)bgm.pause();}
   document.querySelectorAll('.scene').forEach(el=>el.classList.remove('active'));
   if(key==='credits') _startCredits();
   document.getElementById('s-'+key).classList.add('active');
+  /* Resume hero video when returning to home */
+  if(key==='home'&&hv) hv.play().catch(()=>{});
 }
 
 /* ──────────────────────────────────────
@@ -793,10 +836,20 @@ function _buildProfiles(){
 let _curMilestone=null;
 function openMilestone(idx){
   const m=_curMilestone=MILESTONES[idx];
-  document.getElementById('home-hero-bg').innerHTML=`<img src="${m.hero}" alt="" loading="eager">`;
+  /* Hero — auto-play first video if available, else static image */
+  const heroBg=document.getElementById('home-hero-bg');
+  const oldVid=heroBg.querySelector('video');
+  if(oldVid){oldVid.pause();oldVid.removeAttribute('src');}
+  if(m.vids&&m.vids.length){
+    heroBg.innerHTML=`<video autoplay muted playsinline loop preload="auto"><source src="${vid(m.vids[0])}" type="video/mp4"></video>`;
+  } else {
+    heroBg.innerHTML=`<img src="${m.hero}" alt="" loading="eager">`;
+  }
   document.getElementById('home-title').textContent=m.heading;
+  document.getElementById('home-meta').textContent=m.sublabel+' · Romance · Toronto';
   document.getElementById('home-desc').textContent=m.desc;
   document.getElementById('home-compliment').textContent=m.compliment||'';
+  document.getElementById('row-label').textContent=m.rowLabel||'Our Story';
   document.getElementById('home-play-btn').onclick=()=>openSS(m.photos);
 
   /* Build combined sorted media list */
