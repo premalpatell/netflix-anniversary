@@ -365,17 +365,21 @@ function _dateFromFile(fn){
 }
 function fullDate(fn){
   if(fn==='valentine.jpg') return 'February 14, 2025';
+  if(SNAP_DATES[fn]) return SNAP_DATES[fn].full;
   const d=_dateFromFile(fn);
   if(!d) return '';
   return `${MONTH_LONG[+d.mo-1]} ${+d.d}, ${d.y}`;
 }
 function shortDate(fn){
   if(fn==='valentine.jpg') return "Feb '25";
+  if(SNAP_DATES[fn]) return SNAP_DATES[fn].short;
   const d=_dateFromFile(fn);
   if(!d) return '';
   return `${MONTH_SHORT[+d.mo-1]} '${d.y.slice(2)}`;
 }
 function _sortKey(fn){
+  if(SNAP_DATES[fn]) return SNAP_DATES[fn].sort;
+  if(fn==='valentine.jpg') return 20250214;
   const d=_dateFromFile(fn);
   if(!d) return 99999999;
   return +(d.y+d.mo+d.d);
@@ -384,6 +388,28 @@ function _sortKey(fn){
 /* helpers */
 const img = fn => 'images/' + fn;
 const vid = fn => 'videos/' + fn;
+
+/* ── Snapchat date lookup (confirmed by Premal) ── */
+const SNAP_DATES = {
+  'Snapchat-1006342143.jpg': {full:'October 18, 2024',  short:"Oct '24", sort:20241018},
+  'Snapchat-10814446.jpg':   {full:'November 4, 2025',  short:"Nov '25", sort:20251104},
+  'Snapchat-1274994827.jpg': {full:'May 29, 2025',      short:"May '25", sort:20250529},
+  'Snapchat-1282282821.jpg': {full:'April 2, 2026',     short:"Apr '26", sort:20260402},
+  'Snapchat-1409371325.jpg': {full:'August 26, 2024',   short:"Aug '24", sort:20240826},
+  'Snapchat-1433906752.jpg': {full:'January 25, 2025',  short:"Jan '25", sort:20250125},
+  'Snapchat-1493094235.jpg': {full:'',                  short:'',        sort:99999997},
+  'Snapchat-1605463310.jpg': {full:'November 4, 2025',  short:"Nov '25", sort:20251104},
+  'Snapchat-1884807469.jpg': {full:'October 12, 2025',  short:"Oct '25", sort:20251012},
+  'Snapchat-1945727858.jpg': {full:'April 5, 2025',     short:"Apr '25", sort:20250405},
+  'Snapchat-1960320966.jpg': {full:'April 5, 2025',     short:"Apr '25", sort:20250405},
+  'Snapchat-1963777634.jpg': {full:'May 29, 2025',      short:"May '25", sort:20250529},
+  'Snapchat-2117433068.jpg': {full:'October 18, 2024',  short:"Oct '24", sort:20241018},
+  'Snapchat-524185506.jpg':  {full:'May 29, 2025',      short:"May '25", sort:20250529},
+  'Snapchat-552263264.jpg':  {full:'November 20, 2024', short:"Nov '24", sort:20241120},
+  'Snapchat-687287911.jpg':  {full:'May 29, 2025',      short:"May '25", sort:20250529},
+  'Snapchat-790482175.jpg':  {full:'May 29, 2025',      short:"May '25", sort:20250529},
+  'Snapchat-918357969.jpg':  {full:'',                  short:'',        sort:99999998},
+};
 
 /* ──────────────────────────────────────
    MILESTONE DATA
@@ -402,12 +428,7 @@ const MILESTONES = [
     photos: [
       '20240826_182222.jpg','20240826_182223.jpg','20240826_182226.jpg',
       '20240930_174104.jpg','20240930_174105.jpg','20240930_174109.jpg',
-      /* Night car selfies — early relationship */
-      'Snapchat-1006342143.jpg','Snapchat-2117433068.jpg',
-      /* Red roses — early romantic gesture */
-      'Snapchat-1433906752.jpg',
-      /* Car, overcast day */
-      'Snapchat-1282282821.jpg',
+      'Snapchat-1409371325.jpg', // Aug 26 — first temple visit together
     ].map(img),
     vids: ['20240825_220332.mp4'],
   },
@@ -428,16 +449,10 @@ const MILESTONES = [
       '20241214_233307.jpg','20241214_233522.jpg',
       '20241215_002835.jpg','20241215_003011.jpg','20241215_003041.jpg',
       '20241215_003130.jpg','20241215_003241.jpg','20241215_003304.jpg',
-      /* Navratri/cultural event Oct 2024 */
-      'Snapchat-1409371325.jpg',
-      /* Ethnic wear indoor event — Diwali Nov 2024 */
-      'Snapchat-1884807469.jpg',
-      /* Fall jacket car selfie */
-      'Snapchat-1493094235.jpg',
-      /* Blue turtleneck sweater — winter */
-      'Snapchat-552263264.jpg',
-      /* Indoor apartment casual */
-      'Snapchat-1945727858.jpg','Snapchat-1960320966.jpg',
+      'Snapchat-1006342143.jpg', // Oct 18 — Navratri 2024
+      'Snapchat-2117433068.jpg', // Oct 18 — Navratri 2024
+      'Snapchat-552263264.jpg',  // Nov 20
+      'Snapchat-1493094235.jpg', // Premal selfie
     ].map(img),
     vids: [],
   },
@@ -464,9 +479,14 @@ const MILESTONES = [
       '20250629_151249.jpg','20250629_151320.jpg','20250629_151405.jpg',
       '20250629_151406.jpg','20250629_151523.jpg',
       'valentine.jpg',
-      /* Downtown city outing, warm weather — summer 2025 */
-      'Snapchat-1963777634.jpg','Snapchat-1274994827.jpg',
-      'Snapchat-524185506.jpg','Snapchat-687287911.jpg','Snapchat-790482175.jpg',
+      'Snapchat-1433906752.jpg', // Jan 25 — airport pickup from India
+      'Snapchat-1945727858.jpg', // Apr 5
+      'Snapchat-1960320966.jpg', // Apr 5
+      'Snapchat-1274994827.jpg', // May 29 — graduation
+      'Snapchat-1963777634.jpg', // May 29 — graduation
+      'Snapchat-524185506.jpg',  // May 29 — graduation
+      'Snapchat-687287911.jpg',  // May 29 — graduation
+      'Snapchat-790482175.jpg',  // May 29 — graduation
     ].map(img),
     vids: ['20250426_190555.mp4','20250511_160519.mp4'],
   },
@@ -491,10 +511,11 @@ const MILESTONES = [
       'IMG_20251012_172727_997.jpg','IMG_20251012_172731_352.jpg',
       'Screenshot_20260221_202434_Instagram.jpg',
       '20260402_145233.jpg','20260402_145240.jpg','20260423_171132.jpg',
-      /* Befikre restaurant date */
-      'Snapchat-10814446.jpg','Snapchat-1605463310.jpg',
-      /* Sunny car selfie — later period */
-      'Snapchat-918357969.jpg',
+      'Snapchat-1884807469.jpg', // Oct 12, 2025 — Navratri 2025
+      'Snapchat-10814446.jpg',   // Nov 4, 2025
+      'Snapchat-1605463310.jpg', // Nov 4, 2025
+      'Snapchat-1282282821.jpg', // Apr 2, 2026 — bob haircut
+      'Snapchat-918357969.jpg',  // Premal selfie
     ].map(img),
     vids: ['VID_20250803_164935_672.mp4','VID_20250803_165003_100.mp4'],
   },
