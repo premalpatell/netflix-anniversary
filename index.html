@@ -135,10 +135,10 @@ body{
 .btn-ec{background:rgba(109,109,110,.6);border:1.5px solid rgba(255,255,255,.6);color:#fff}
 @media(hover:hover){.btn-ec:hover{background:rgba(109,109,110,.85)}}
 
-.nf-photo-section{flex:1;overflow:hidden;padding:clamp(6px,1.2vh,12px) 0 clamp(40px,7vh,54px);display:flex;flex-direction:column}
+.nf-photo-section{flex:1;overflow:visible;padding:clamp(6px,1.2vh,12px) 0 clamp(90px,13vh,112px);display:flex;flex-direction:column}
 .row-label{font-size:clamp(12px,2.2vw,17px);font-weight:600;color:#e5e5e5;margin-bottom:clamp(6px,1vh,10px);padding:0 clamp(16px,3.5vw,48px);letter-spacing:.01em}
 
-.tiles-strip{display:flex;gap:clamp(6px,1vw,10px);overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;padding:0 clamp(16px,3.5vw,48px) 8px;scrollbar-width:none}
+.tiles-strip{display:flex;gap:clamp(6px,1vw,10px);overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;padding:0 clamp(16px,3.5vw,48px) 8px;scrollbar-width:none;align-items:flex-start}
 .tiles-strip::-webkit-scrollbar{display:none}
 .tile{
   flex:0 0 clamp(130px,30vw,200px);border-radius:6px;overflow:hidden;
@@ -215,8 +215,14 @@ body{
   .nf-nav-right{gap:clamp(6px,2vw,12px)}
   .hbb-btn{font-size:clamp(9px,2.2vw,12px)}
   .btn-play,.btn-ec{padding:8px clamp(12px,3vw,18px);font-size:clamp(10px,2.2vw,13px)}
-  .nf-hero{height:52%}
-  .tile{flex:0 0 clamp(130px,36vw,170px)}
+  .nf-hero{height:50%}
+  .tile{flex:0 0 clamp(115px,32vw,160px)}
+  .tile-img{aspect-ratio:3/4}
+}
+@media(max-height:680px){
+  .nf-hero{height:48%}
+  .nf-photo-section{padding-top:4px;padding-bottom:30px}
+  .tile-img{aspect-ratio:3/4}
 }
 
 /* ═══ CREDITS — mobile stacked layout ═══ */
@@ -781,15 +787,17 @@ const CREDITS_DATA = [
 ────────────────────────────────────── */
 let _cSsTimer=null, _cSsIdx=0;
 function goTo(key){
-  /* Pause hero video when leaving home */
   const hv=document.querySelector('#home-hero-bg video');
   if(hv) hv.pause();
-  /* Pause BGM when leaving credits */
-  if(key!=='credits'){const bgm=document.getElementById('bgm');if(bgm&&!bgm.paused)bgm.pause();}
+  /* Stop credits slideshow & BGM when leaving credits */
+  if(key!=='credits'){
+    clearTimeout(_cSsTimer);
+    const bgm=document.getElementById('bgm');
+    if(bgm&&!bgm.paused) bgm.pause();
+  }
   document.querySelectorAll('.scene').forEach(el=>el.classList.remove('active'));
   if(key==='credits') _startCredits();
   document.getElementById('s-'+key).classList.add('active');
-  /* Resume hero video when returning to home */
   if(key==='home'&&hv) hv.play().catch(()=>{});
 }
 
@@ -838,12 +846,23 @@ function openMilestone(idx){
   const m=_curMilestone=MILESTONES[idx];
   /* Hero — auto-play first video if available, else static image */
   const heroBg=document.getElementById('home-hero-bg');
+  /* Tear down existing media cleanly */
   const oldVid=heroBg.querySelector('video');
-  if(oldVid){oldVid.pause();oldVid.removeAttribute('src');}
+  if(oldVid){oldVid.pause();oldVid.src='';}
+  heroBg.innerHTML='';
   if(m.vids&&m.vids.length){
-    heroBg.innerHTML=`<video autoplay muted playsinline loop preload="auto"><source src="${vid(m.vids[0])}" type="video/mp4"></video>`;
+    /* Videos are now <1MB — use poster so hero appears instantly */
+    const vEl=document.createElement('video');
+    vEl.autoplay=true; vEl.muted=true; vEl.playsInline=true;
+    vEl.setAttribute('playsinline',''); vEl.loop=true; vEl.preload='auto';
+    vEl.poster=m.hero;
+    vEl.innerHTML=`<source src="${vid(m.vids[0])}" type="video/mp4">`;
+    heroBg.appendChild(vEl);
+    vEl.play().catch(()=>{});
   } else {
-    heroBg.innerHTML=`<img src="${m.hero}" alt="" loading="eager">`;
+    const iEl=document.createElement('img');
+    iEl.src=m.hero; iEl.alt=''; iEl.loading='eager';
+    heroBg.appendChild(iEl);
   }
   document.getElementById('home-title').textContent=m.heading;
   document.getElementById('home-meta').textContent=m.sublabel+' · Romance · Toronto';
