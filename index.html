@@ -45,6 +45,7 @@ body{
 }
 @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(229,9,20,.4)}50%{box-shadow:0 0 0 18px rgba(229,9,20,0)}}
 .tap-label{font-size:clamp(10px,2.5vw,13px);letter-spacing:.22em;color:rgba(255,255,255,.45);text-transform:uppercase;animation:blink 2s ease-in-out infinite}
+.tap-compliment{font-size:clamp(9px,1.8vw,11px);letter-spacing:.14em;color:rgba(255,255,255,.22);text-transform:uppercase;text-align:center;margin-top:4px}
 @keyframes blink{0%,100%{opacity:.45}50%{opacity:1}}
 
 /* ═══ WHO'S WATCHING ═══ */
@@ -57,15 +58,20 @@ body{
 }
 .profiles-back:hover,.profiles-back:active{color:#fff}
 #s-profiles::before{
-  content:'';position:absolute;bottom:-30%;left:50%;transform:translateX(-50%);
-  width:170%;height:70%;
-  background:radial-gradient(ellipse at center bottom,#cc0000 0%,#990000 14%,#550000 30%,transparent 65%);
-  border-radius:50%;pointer-events:none;
+  content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);
+  width:200%;height:65%;
+  background:radial-gradient(ellipse at center bottom,rgba(220,0,0,.65) 0%,rgba(160,0,0,.35) 22%,rgba(90,0,0,.18) 45%,transparent 70%);
+  border-radius:50%;pointer-events:none;z-index:0;
 }
 .whos-title{
   font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:300;
   font-size:clamp(22px,5vw,44px);color:#fff;
-  margin-bottom:clamp(28px,5vh,52px);letter-spacing:.01em;position:relative;z-index:2;
+  margin-bottom:8px;letter-spacing:.01em;position:relative;z-index:2;
+}
+.whos-subtitle{
+  font-family:'Playfair Display',serif;font-style:italic;
+  font-size:clamp(11px,2.2vw,15px);color:rgba(255,255,255,.38);
+  letter-spacing:.06em;margin-bottom:clamp(20px,4vh,42px);position:relative;z-index:2;text-align:center;
 }
 .profiles-row{display:flex;gap:clamp(14px,4vw,36px);margin-bottom:clamp(24px,4vh,44px);position:relative;z-index:2;flex-wrap:nowrap}
 @media(max-width:560px){
@@ -99,7 +105,8 @@ body{
 .nf-badge svg{width:13px;height:13px;flex-shrink:0}
 .nf-badge-text{font-size:clamp(8px,1.5vw,11px);letter-spacing:.22em;color:rgba(255,255,255,.72);text-transform:uppercase}
 .nf-hero-title{font-family:'Playfair Display',serif;font-style:italic;font-weight:700;font-size:clamp(20px,5vw,56px);color:#f5c518;line-height:1;margin-bottom:8px;text-transform:lowercase}
-.nf-hero-desc{font-size:clamp(9px,1.5vw,13px);color:rgba(255,255,255,.68);margin-bottom:12px;line-height:1.5;font-weight:300}
+.nf-hero-desc{font-size:clamp(9px,1.5vw,13px);color:rgba(255,255,255,.68);margin-bottom:6px;line-height:1.5;font-weight:300}
+.nf-hero-compliment{font-family:'Playfair Display',serif;font-style:italic;font-size:clamp(10px,1.7vw,13px);color:rgba(245,197,24,.5);margin-bottom:10px;line-height:1.4}
 .nf-hero-btns{display:flex;gap:8px}
 .btn-play,.btn-ec{display:flex;align-items:center;gap:6px;border:none;border-radius:3px;padding:clamp(6px,1.2vh,9px) clamp(12px,2vw,18px);font-size:clamp(10px,1.8vw,14px);font-weight:700;font-family:'Inter',sans-serif;cursor:pointer;transition:opacity .18s}
 .btn-play:active,.btn-ec:active{opacity:.7}
@@ -111,22 +118,26 @@ body{
 
 .tiles-strip{display:flex;gap:clamp(6px,1vw,10px);overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;padding:0 clamp(20px,4vw,52px) 8px;scrollbar-width:none}
 .tiles-strip::-webkit-scrollbar{display:none}
-.tile{flex:0 0 clamp(130px,22vw,220px);aspect-ratio:3/4;border-radius:5px;overflow:hidden;background:#1e1e1e;scroll-snap-align:start;cursor:pointer;position:relative;transition:transform .18s;flex-shrink:0}
+.tile{
+  flex:0 0 clamp(120px,20vw,190px);border-radius:6px;overflow:hidden;
+  background:#1c1c1c;scroll-snap-align:start;cursor:pointer;
+  position:relative;transition:transform .18s;flex-shrink:0;
+  display:flex;flex-direction:column;
+}
 @media(hover:hover){.tile:hover{transform:scale(1.04);z-index:2}}
-.tile:active{transform:scale(.97)}
-.tile img{width:100%;height:100%;object-fit:cover;object-position:center 10%;display:block;pointer-events:none}
-.tile-date{position:absolute;bottom:5px;left:6px;font-size:clamp(8px,1.2vw,10px);color:rgba(255,255,255,.92);background:rgba(0,0,0,.65);padding:2px 6px;border-radius:3px;font-family:'Inter',sans-serif;pointer-events:none;letter-spacing:.03em;white-space:nowrap}
+.tile:active{transform:scale(.96)}
+.tile-img{width:100%;aspect-ratio:2/3;object-fit:cover;object-position:center 10%;display:block;pointer-events:none;flex-shrink:0}
+.tile-info{padding:5px 7px 7px;display:flex;flex-direction:column;gap:2px;background:#1c1c1c}
+.tile-info-date{font-size:clamp(8px,1.3vw,10px);color:rgba(255,255,255,.58);letter-spacing:.04em;white-space:nowrap}
+.tile-info-story{font-size:clamp(8px,1.3vw,10px);color:rgba(255,255,255,.3);line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-style:italic}
 
 /* ═══ VIDEO TILE ═══ */
-.vid-tile{background:linear-gradient(145deg,#0d1117 0%,#1a1a2e 55%,#0f2040 100%)}
-.vid-play-badge{
-  position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
-  pointer-events:none;
-}
+.tile-vid-box{width:100%;aspect-ratio:2/3;background:linear-gradient(145deg,#0d1117 0%,#1a1a2e 55%,#0f2040 100%);position:relative;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.vid-play-badge{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none}
 .vid-play-badge svg{
-  width:clamp(32px,7vw,52px);height:clamp(32px,7vw,52px);
+  width:clamp(28px,6vw,44px);height:clamp(28px,6vw,44px);
   background:rgba(229,9,20,.85);border-radius:50%;
-  padding:clamp(8px,1.8vw,13px) clamp(10px,2vw,16px) clamp(8px,1.8vw,13px) clamp(12px,2.4vw,18px);
+  padding:clamp(7px,1.5vw,11px) clamp(9px,1.8vw,13px) clamp(7px,1.5vw,11px) clamp(11px,2.2vw,16px);
   filter:drop-shadow(0 4px 16px rgba(0,0,0,.6));
 }
 
@@ -292,6 +303,7 @@ body{
         <svg viewBox="0 0 24 24" width="24" height="24" fill="#fff"><polygon points="5,3 19,12 5,21"/></svg>
       </div>
       <span class="tap-label">Tap to begin</span>
+      <span class="tap-compliment">made with love, just for you</span>
     </div>
   </div>
 
@@ -299,6 +311,7 @@ body{
   <div class="scene" id="s-profiles">
     <button class="profiles-back" onclick="resetIntro()">&#8592; Replay</button>
     <p class="whos-title">Who's Watching?</p>
+    <p class="whos-subtitle">every chapter, a favourite memory</p>
     <div class="profiles-row" id="profiles-row"></div>
     <button class="manage-btn">MANAGE PROFILES</button>
   </div>
@@ -308,7 +321,7 @@ body{
     <nav class="nf-nav">
       <span class="nf-logo">NETFLIX</span>
       <ul class="nf-links">
-        <li><a>Home</a></li><li><a>TV Shows</a></li>
+        <li><a onclick="goTo('profiles')" style="cursor:pointer">Home</a></li><li><a>TV Shows</a></li>
         <li><a>Movies</a></li><li><a>My List</a></li>
       </ul>
     </nav>
@@ -322,6 +335,7 @@ body{
         </div>
         <h1 class="nf-hero-title" id="home-title"></h1>
         <p  class="nf-hero-desc"  id="home-desc"></p>
+        <p  class="nf-hero-compliment" id="home-compliment"></p>
         <div class="nf-hero-btns">
           <button class="btn-play" id="home-play-btn">
             <svg width="11" height="11" viewBox="0 0 11 11"><path d="M0 0l11 5.5L0 11V0z" fill="#000"/></svg>Play
@@ -569,6 +583,7 @@ const MILESTONES = [
     photo:   img('20240826_182222.jpg'),
     heading: 'the beginning',
     desc:    'August 2024 · First temple visit. First date at Liu Loqum Atelier.',
+    compliment: 'you walked into my life and made it complete',
     hero:    img('20240826_182223.jpg'),
     photos: [
       '20240826_182222.jpg','20240826_182223.jpg','20240826_182226.jpg',
@@ -584,6 +599,7 @@ const MILESTONES = [
     photo:   img('20241014_214813.jpg'),
     heading: 'three months of us',
     desc:    'October 2024 · Navratri nights, her first car, date nights at the Fairmont.',
+    compliment: 'i was falling harder for you every single day',
     hero:    img('20241215_002835.jpg'),
     photos: [
       '20241012_012640.jpg','20241012_012827.jpg','20241012_021256.jpg',
@@ -608,6 +624,7 @@ const MILESTONES = [
     photo:   img('20250207_234919.jpg'),
     heading: 'half a year in love',
     desc:    'February 2025 · Airport reunions, Cactus Club, Planta, Pai Thai — and the day she graduated.',
+    compliment: 'watching you succeed makes me the proudest person alive',
     hero:    img('20250412_231204.jpg'),
     photos: [
       'IMG_20250105_232702_246.jpg',
@@ -642,6 +659,7 @@ const MILESTONES = [
     photo:   img('20250721_220526.jpg'),
     heading: 'one year & counting',
     desc:    'July 2025 · Her birthday, Crystal Beach, Navratri, and the hardest goodbye.',
+    compliment: 'a year with you was still not nearly enough',
     hero:    img('20250803_194808.jpg'),
     photos: [
       '20250706_141011.jpg','20250706_151749.jpg','20250706_151818.jpg',
@@ -717,6 +735,9 @@ const CREDITS_DATA = [
   ['Shot on',              'Our camera rolls & stolen moments'],
   ['Written by',           'Every day we chose each other'],
   ['Executive producer',   'Fate, for planning all of this'],
+  ['',                     ''],
+  ['To Shivani',           'you are my favourite person in the world'],
+  ['',                     '— Premal ♡'],
 ];
 
 /* ──────────────────────────────────────
@@ -772,9 +793,10 @@ function _buildProfiles(){
 let _curMilestone=null;
 function openMilestone(idx){
   const m=_curMilestone=MILESTONES[idx];
-  document.getElementById('home-hero-bg').innerHTML=`<img src="${m.hero}" alt="">`;
+  document.getElementById('home-hero-bg').innerHTML=`<img src="${m.hero}" alt="" loading="eager">`;
   document.getElementById('home-title').textContent=m.heading;
   document.getElementById('home-desc').textContent=m.desc;
+  document.getElementById('home-compliment').textContent=m.compliment||'';
   document.getElementById('home-play-btn').onclick=()=>openSS(m.photos);
 
   /* Build combined sorted media list */
@@ -785,19 +807,30 @@ function openMilestone(idx){
 
   document.getElementById('home-tiles').innerHTML=allMedia.map(item=>{
     if(item.type==='img'){
-      const sd=shortDate(item.key);
+      const fn=item.key;
+      const sd=shortDate(fn);
+      const story=STORIES[fn]||'';
       return `<div class="tile" onclick="openLB('${item.src}')">
-        <img src="${item.src}" alt="" loading="lazy">
-        ${sd?`<span class="tile-date">${sd}</span>`:''}
+        <img class="tile-img" src="${item.src}" alt="" loading="lazy">
+        <div class="tile-info">
+          ${sd?`<div class="tile-info-date">${sd}</div>`:''}
+          ${story?`<div class="tile-info-story">${story}</div>`:''}
+        </div>
       </div>`;
     } else {
-      const sd=shortDate(item.key);
+      const fn=item.key;
+      const sd=shortDate(fn);
       const vsrc=vid(item.fn);
       return `<div class="tile vid-tile" onclick="openVid('${vsrc}')">
-        <div class="vid-play-badge">
-          <svg viewBox="0 0 24 24" fill="#fff"><polygon points="5,3 19,12 5,21"/></svg>
+        <div class="tile-vid-box">
+          <div class="vid-play-badge">
+            <svg viewBox="0 0 24 24" fill="#fff"><polygon points="5,3 19,12 5,21"/></svg>
+          </div>
         </div>
-        ${sd?`<span class="tile-date">${sd}</span>`:''}
+        <div class="tile-info">
+          ${sd?`<div class="tile-info-date">${sd}</div>`:''}
+          <div class="tile-info-story" style="color:rgba(229,9,20,.55)">&#9654; Video</div>
+        </div>
       </div>`;
     }
   }).join('');
