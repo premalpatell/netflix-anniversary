@@ -804,27 +804,30 @@ function goTo(key){
 /* ──────────────────────────────────────
    INTRO
 ────────────────────────────────────── */
-let _started=false;
+let _started=false, _introTimer=null;
 function resetIntro(){
   _started=false;
+  clearTimeout(_introTimer);
   const cover=document.getElementById('tap-cover');
-  const vid=document.getElementById('intro-video');
+  const introVid=document.getElementById('intro-video');
   cover.style.display='';cover.style.transition='';cover.style.opacity='1';
-  vid.style.opacity='0';vid.pause();vid.currentTime=0;
+  introVid.style.opacity='0';introVid.pause();introVid.currentTime=0;
   goTo('intro');
 }
 function beginExperience(){
   if(_started)return; _started=true;
   const cover=document.getElementById('tap-cover');
-  const vid=document.getElementById('intro-video');
+  const introVid=document.getElementById('intro-video');
   cover.style.transition='opacity .45s';cover.style.opacity='0';
   setTimeout(()=>cover.style.display='none',500);
-  vid.style.opacity='1';
-  vid.muted=false; vid.volume=1;
-  const p=vid.play();
-  if(p!==undefined){p.catch(()=>{vid.muted=true;vid.play().catch(()=>{})})}
-  vid.addEventListener('ended',()=>goTo('profiles'),{once:true});
-  setTimeout(()=>goTo('profiles'),6500);
+  introVid.style.opacity='1';
+  introVid.muted=false; introVid.volume=1;
+  const p=introVid.play();
+  if(p!==undefined){p.catch(()=>{introVid.muted=true;introVid.play().catch(()=>{})})}
+  /* Only one of these fires — whichever comes first clears the other */
+  const _advance=()=>{clearTimeout(_introTimer);goTo('profiles');};
+  introVid.addEventListener('ended',_advance,{once:true});
+  _introTimer=setTimeout(_advance,6500);
 }
 
 /* ──────────────────────────────────────
@@ -851,11 +854,12 @@ function openMilestone(idx){
   if(oldVid){oldVid.pause();oldVid.src='';}
   heroBg.innerHTML='';
   if(m.vids&&m.vids.length){
-    /* Videos are now <1MB — use poster so hero appears instantly */
     const vEl=document.createElement('video');
     vEl.autoplay=true; vEl.muted=true; vEl.playsInline=true;
     vEl.setAttribute('playsinline',''); vEl.loop=true; vEl.preload='auto';
     vEl.poster=m.hero;
+    /* Inline styles guarantee object-fit:cover regardless of CSS cascade */
+    vEl.style.cssText='position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 20%;display:block';
     vEl.innerHTML=`<source src="${vid(m.vids[0])}" type="video/mp4">`;
     heroBg.appendChild(vEl);
     vEl.play().catch(()=>{});
