@@ -224,6 +224,7 @@ body{
 #ss-img-wrap{position:relative;display:flex;flex-direction:column;align-items:center;gap:14px;max-width:min(80vw,500px)}
 #ss-img{max-width:100%;max-height:65vh;border-radius:10px;object-fit:contain;box-shadow:0 8px 48px rgba(0,0,0,.8);display:block}
 #ss-date{font-family:'Playfair Display',serif;font-style:italic;font-size:clamp(13px,2.5vw,18px);color:rgba(255,255,255,.65);letter-spacing:.04em;min-height:1.4em;text-align:center}
+#ss-story{font-size:clamp(11px,2vw,14px);color:rgba(255,255,255,.42);letter-spacing:.02em;text-align:center;min-height:1.3em;font-style:italic;padding:0 8px}
 #ss-counter{font-size:clamp(10px,1.8vw,13px);color:rgba(255,255,255,.35);letter-spacing:.06em}
 #ss-dots{display:flex;gap:6px;align-items:center;margin-top:14px;flex-wrap:wrap;justify-content:center;max-width:90vw}
 .ss-dot{width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,.25);transition:background .25s,transform .25s}
@@ -237,6 +238,7 @@ body{
 .lb-close{position:absolute;top:-44px;right:-4px;background:none;border:none;color:rgba(255,255,255,.7);font-size:32px;cursor:pointer;line-height:1;transition:color .2s}
 .lb-close:active,.lb-close:hover{color:#fff}
 .lb-date{font-family:'Playfair Display',serif;font-style:italic;font-size:clamp(13px,3vw,19px);color:rgba(255,255,255,.65);letter-spacing:.04em}
+.lb-story{font-size:clamp(12px,2.5vw,15px);color:rgba(255,255,255,.45);letter-spacing:.02em;text-align:center;line-height:1.5;font-style:italic;padding:0 4px}
 </style>
 </head>
 <body>
@@ -253,6 +255,7 @@ body{
     <div id="ss-img-wrap">
       <img id="ss-img" src="" alt="">
       <div id="ss-date"></div>
+      <div id="ss-story"></div>
       <div id="ss-counter"></div>
     </div>
     <button class="ss-arrow" onclick="ssStep(1)">&#8250;</button>
@@ -266,6 +269,7 @@ body{
     <button class="lb-close" onclick="closeLB()">&#215;</button>
     <img id="lb-img" src="" alt="">
     <div id="lb-date" class="lb-date"></div>
+    <div id="lb-story" class="lb-story"></div>
   </div>
 </div>
 
@@ -411,6 +415,147 @@ const SNAP_DATES = {
   'Snapchat-918357969.jpg':  {full:'',                  short:'',        sort:99999998},
 };
 
+/* ── Stories — confirmed by Premal ── */
+const STORIES = {
+  /* G1 — First temple visit Aug 26 */
+  '20240826_182222.jpg':'First time we went to a temple together.',
+  '20240826_182223.jpg':'First time we went to a temple together.',
+  '20240826_182226.jpg':'First time we went to a temple together.',
+  'Snapchat-1409371325.jpg':'First time we went to a temple together.',
+  /* G2 — First date Sep 30 */
+  '20240930_174104.jpg':'Our very first date — Liu Loqum Atelier, College St.',
+  '20240930_174105.jpg':'Our very first date — Liu Loqum Atelier, College St.',
+  '20240930_174109.jpg':'Our very first date — Liu Loqum Atelier, College St.',
+  /* G3 — BarChef Oct 12 */
+  '20241012_012640.jpg':'BarChef Toronto.',
+  '20241012_012827.jpg':'BarChef Toronto.',
+  '20241012_021256.jpg':'BarChef Toronto.',
+  '20241012_021345.jpg':'BarChef Toronto.',
+  '20241012_021837.jpg':'BarChef Toronto.',
+  /* G4 — Atul Purohit Navratri Oct 14 */
+  '20241014_214812.jpg':'Atul Purohit Navratri.',
+  '20241014_214813.jpg':'Atul Purohit Navratri.',
+  '20241014_214823.jpg':'Atul Purohit Navratri.',
+  '20241014_214824.jpg':'Atul Purohit Navratri.',
+  /* G5 — Navratri Oct 18 */
+  'Snapchat-1006342143.jpg':'Navratri 2024.',
+  'Snapchat-2117433068.jpg':'Navratri 2024.',
+  /* G6 — Her first car Nov 3 */
+  '20241103_211756.jpg':'The day she got her first car — all by herself.',
+  '20241103_211837.jpg':'The day she got her first car — all by herself.',
+  /* G7 — Downtown Nov 20 */
+  'IMG_20241120_162835_667.jpg':'A random day exploring downtown together.',
+  'Snapchat-552263264.jpg':'A random day exploring downtown together.',
+  /* G8 — Clockwork Bar Dec 14 */
+  '20241214_233307.jpg':'Clockwork Bar at the Fairmont Royal York.',
+  '20241214_233522.jpg':'Clockwork Bar at the Fairmont Royal York.',
+  /* G9 — Date night Dec 15 */
+  '20241215_002835.jpg':'A date night out, exploring the city together.',
+  '20241215_003011.jpg':'A date night out, exploring the city together.',
+  '20241215_003041.jpg':'A date night out, exploring the city together.',
+  '20241215_003130.jpg':'A date night out, exploring the city together.',
+  '20241215_003241.jpg':'A date night out, exploring the city together.',
+  '20241215_003304.jpg':'A date night out, exploring the city together.',
+  /* G10 — Niagara Falls Jan 5 */
+  'IMG_20250105_232702_246.jpg':'A solo trip to Niagara Falls.',
+  /* G11 — Airport reunion Jan 25 */
+  'Snapchat-1433906752.jpg':'The day she flew back to Canada from India. I was waiting with roses.',
+  /* G12 — Cactus Club Feb 7–8 */
+  '20250207_233941.jpg':'Cactus Club Cafe, downtown Toronto.',
+  '20250207_234003.jpg':'Cactus Club Cafe, downtown Toronto.',
+  '20250207_234008.jpg':'Cactus Club Cafe, downtown Toronto.',
+  '20250207_234919.jpg':'Cactus Club Cafe, downtown Toronto.',
+  '20250207_234924.jpg':'Cactus Club Cafe, downtown Toronto.',
+  '20250207_234928.jpg':'Cactus Club Cafe, downtown Toronto.',
+  '20250208_000143.jpg':'Cactus Club Cafe, downtown Toronto.',
+  /* G13 — Valentine */
+  'valentine.jpg':"Her Valentine's Day letter to me — a note I will keep forever.",
+  /* G14 — Wataly Feb 15 */
+  '20250215_172023.jpg':'Wataly at the Shops at Don Mills.',
+  /* G15 — Home Apr 5 */
+  'Snapchat-1945727858.jpg':'Home. Just us, being us.',
+  'Snapchat-1960320966.jpg':'Home. Just us, being us.',
+  /* G16 — Planta Toronto Apr 12 */
+  '20250412_230943.jpg':'Planta Toronto.',
+  '20250412_231012.jpg':'Planta Toronto.',
+  '20250412_231015.jpg':'Planta Toronto.',
+  '20250412_231130.jpg':'Planta Toronto.',
+  '20250412_231133.jpg':'Planta Toronto.',
+  '20250412_231204.jpg':'Planta Toronto.',
+  /* G17 — Pai Thai Apr 26 */
+  '20250426_190640.jpg':'Pai Thai Uptown.',
+  '20250426_221747.jpg':'Pai Thai Uptown.',
+  '20250426_221751.jpg':'Pai Thai Uptown.',
+  '20250426_221755.jpg':'Pai Thai Uptown.',
+  '20250426_221758.jpg':'Pai Thai Uptown.',
+  '20250426_223101.jpg':'Pai Thai Uptown.',
+  /* G18a — Surprised at work May 21 */
+  '20250521_144010.jpg':'Surprised her at work.',
+  /* G18b — Piano Piano May 23 */
+  '20250523_220814.jpg':'Piano Piano restaurant.',
+  /* G19+G20 — Graduation May 27–29 */
+  '20250527_182137.jpg':'Her graduation from Northeastern University. So incredibly proud of her.',
+  '20250527_182725.jpg':'Her graduation from Northeastern University.',
+  '20250527_182726.jpg':'Her graduation from Northeastern University.',
+  '20250527_182736.jpg':'Her graduation from Northeastern University.',
+  '20250527_182738.jpg':'Her graduation from Northeastern University.',
+  '20250527_182746.jpg':'Her graduation from Northeastern University.',
+  'Snapchat-1274994827.jpg':'Her graduation from Northeastern University.',
+  'Snapchat-1963777634.jpg':'Her graduation from Northeastern University.',
+  'Snapchat-524185506.jpg':'Her graduation from Northeastern University.',
+  'Snapchat-687287911.jpg':'Her graduation from Northeastern University.',
+  'Snapchat-790482175.jpg':'Her graduation from Northeastern University.',
+  /* G21 — Badiali Pizzeria Jun 29 */
+  '20250629_151249.jpg':'Badiali Pizzeria.',
+  '20250629_151320.jpg':'Badiali Pizzeria.',
+  '20250629_151405.jpg':'Badiali Pizzeria.',
+  '20250629_151406.jpg':'Badiali Pizzeria.',
+  '20250629_151523.jpg':'Badiali Pizzeria.',
+  /* G22 — Alfie\'s + Etobicoke Lakeshore Jul 6 */
+  '20250706_141011.jpg':"Alfie's Sandwiches, then a walk along Etobicoke Lakeshore.",
+  '20250706_151749.jpg':'Etobicoke Lakeshore.',
+  '20250706_151818.jpg':'Etobicoke Lakeshore.',
+  '20250706_151820.jpg':'Etobicoke Lakeshore.',
+  '20250706_151912.jpg':'Etobicoke Lakeshore.',
+  /* G23 — Elora Jul 12 */
+  '20250712_202435.jpg':'Elora, the Lobby Bar.',
+  '20250712_202440.jpg':'Elora, the Lobby Bar.',
+  /* G24 — Her birthday Jul 21 */
+  '20250721_151523.jpg':'Her birthday. She wore the dress I gifted her.',
+  '20250721_220526.jpg':"Cactus Club, Yonge & Sheppard. I'm sorry that day wasn't what you deserved, Shivani.",
+  '20250721_220529.jpg':'Her birthday.',
+  '20250721_220605.jpg':'Her birthday.',
+  '20250721_220615.jpg':'Her birthday.',
+  /* G25 — Random day Jul 27 */
+  '20250727_201741.jpg':'Just us, on a random day.',
+  '20250727_201742.jpg':'Just us, on a random day.',
+  /* G26 — Crystal Beach Aug 3 */
+  '20250803_194524.jpg':'Crystal Beach, Ontario.',
+  '20250803_194526.jpg':'Crystal Beach, Ontario.',
+  '20250803_194808.jpg':'Crystal Beach, Ontario.',
+  /* G27+G28 — Navratri 2025 */
+  '20251011_223537.jpg':'Navratri 2025.',
+  '20251011_223614.jpg':'Navratri 2025.',
+  '20251011_223618.jpg':'Navratri 2025.',
+  '20251011_223639.jpg':'Navratri 2025.',
+  'IMG_20251012_172701_525.jpg':'Navratri 2025.',
+  'IMG_20251012_172719_495.jpg':'Navratri 2025.',
+  'IMG_20251012_172727_997.jpg':'Navratri 2025.',
+  'IMG_20251012_172731_352.jpg':'Navratri 2025.',
+  'Snapchat-1884807469.jpg':'Navratri 2025.',
+  /* G29 — Her random day Nov 4 */
+  'Snapchat-10814446.jpg':'Her, just being her.',
+  'Snapchat-1605463310.jpg':'Her, just being her.',
+  /* G30 — Old photo Feb 21 */
+  'Screenshot_20260221_202434_Instagram.jpg':'An old photo I keep coming back to.',
+  /* G31 — Bob haircut Apr 2 */
+  '20260402_145233.jpg':'The day she got her bob haircut.',
+  '20260402_145240.jpg':'The day she got her bob haircut.',
+  'Snapchat-1282282821.jpg':'The day she got her bob haircut.',
+  /* G32 — Last day Apr 23 */
+  '20260423_171132.jpg':'The last day before I left Canada. The photo I cherish the most.',
+};
+
 /* ──────────────────────────────────────
    MILESTONE DATA
    Photos sorted by date; Snapchat photos
@@ -423,7 +568,7 @@ const MILESTONES = [
     sublabel:'Aug – Sep 2024',
     photo:   img('20240826_182222.jpg'),
     heading: 'the beginning',
-    desc:    'August 2024 · Where it all started.',
+    desc:    'August 2024 · First temple visit. First date at Liu Loqum Atelier.',
     hero:    img('20240826_182223.jpg'),
     photos: [
       '20240826_182222.jpg','20240826_182223.jpg','20240826_182226.jpg',
@@ -438,7 +583,7 @@ const MILESTONES = [
     sublabel:'Oct – Dec 2024',
     photo:   img('20241014_214813.jpg'),
     heading: 'three months of us',
-    desc:    'October 2024 · Growing closer every single day.',
+    desc:    'October 2024 · Navratri nights, her first car, date nights at the Fairmont.',
     hero:    img('20241215_002835.jpg'),
     photos: [
       '20241012_012640.jpg','20241012_012827.jpg','20241012_021256.jpg',
@@ -462,7 +607,7 @@ const MILESTONES = [
     sublabel:'Jan – Jun 2025',
     photo:   img('20250207_234919.jpg'),
     heading: 'half a year in love',
-    desc:    'February 2025 · Six months and still falling harder.',
+    desc:    'February 2025 · Airport reunions, Cactus Club, Planta, Pai Thai — and the day she graduated.',
     hero:    img('20250412_231204.jpg'),
     photos: [
       'IMG_20250105_232702_246.jpg',
@@ -496,7 +641,7 @@ const MILESTONES = [
     sublabel:'Jul 2025 – Apr 2026',
     photo:   img('20250721_220526.jpg'),
     heading: 'one year & counting',
-    desc:    'July 2025 · A full year of the best moments.',
+    desc:    'July 2025 · Her birthday, Crystal Beach, Navratri, and the hardest goodbye.',
     hero:    img('20250803_194808.jpg'),
     photos: [
       '20250706_141011.jpg','20250706_151749.jpg','20250706_151818.jpg',
@@ -521,40 +666,57 @@ const MILESTONES = [
   },
 ];
 
-/* Credits slideshow */
+/* Credits slideshow — each slide is a chapter */
 const SLIDES = [
-  {src:img('valentine.jpg'),          ms:5000, letterbox:true},
-  {src:img('20240826_182222.jpg'),    ms:2800},
-  {src:img('20241014_214813.jpg'),    ms:2800},
-  {src:img('20241215_002835.jpg'),    ms:2800},
-  {src:img('20250207_234919.jpg'),    ms:2800},
-  {src:img('20250412_231204.jpg'),    ms:2800},
-  {src:img('20250527_182736.jpg'),    ms:2800},
-  {src:img('20250629_151249.jpg'),    ms:2800},
-  {src:img('20250721_220526.jpg'),    ms:2800},
-  {src:img('20250803_194808.jpg'),    ms:2800},
-  {src:img('20251011_223618.jpg'),    ms:2800},
-  {src:img('20260402_145240.jpg'),    ms:2800},
+  {src:img('valentine.jpg'),          ms:5500, letterbox:true}, // her letter
+  {src:img('20240826_182222.jpg'),    ms:2800}, // first temple
+  {src:img('20240930_174104.jpg'),    ms:2800}, // first date
+  {src:img('20241014_214813.jpg'),    ms:2800}, // navratri
+  {src:img('20241215_002835.jpg'),    ms:2800}, // fairmont date night
+  {src:img('20250207_234919.jpg'),    ms:2800}, // cactus club
+  {src:img('20250412_231204.jpg'),    ms:2800}, // planta
+  {src:img('20250527_182736.jpg'),    ms:2800}, // graduation
+  {src:img('20250629_151249.jpg'),    ms:2800}, // badiali
+  {src:img('20250721_220526.jpg'),    ms:2800}, // birthday
+  {src:img('20250803_194808.jpg'),    ms:2800}, // crystal beach
+  {src:img('20251011_223618.jpg'),    ms:2800}, // navratri 2025
+  {src:img('20260402_145240.jpg'),    ms:2800}, // bob haircut
+  {src:img('20260423_171132.jpg'),    ms:6000}, // last day — the one he cherishes most
 ];
 
 const CREDITS_DATA = [
-  ['Directed by',            'God'],
-  ['Cast',                   ''],
-  ['Boyfriend',              'Premal'],
-  ['Girlfriend',             'Shivani'],
-  ['Written by',             'Fate & destiny'],
-  ['Produced by',            'Patience & support'],
-  ['Director of photography','Our camera rolls'],
-  ['Location',               'Canada'],
-  ['Chief editor',           'Our favorite memories'],
-  ['Soundtrack',             'Melodies of us'],
-  ['Executive producers',    'Shared Future Plans'],
-  ['Technical advisor',      'Honest communication'],
-  ['Catering by',            'Midnight cravings'],
-  ['Stunt coordinators',     'Arguments & Fights'],
-  ['Time management',        '"Five more minutes"'],
-  ['Wardrobe designer',      "Each other's hoodies"],
-  ['Chief motivator',        'Family & friends'],
+  ['Directed by',          'God & the universe'],
+  ['Cast',                 ''],
+  ['Boyfriend',            'Premal'],
+  ['Girlfriend',           'Shivani ♡'],
+  ['',                     ''],
+  ['First date',           'Liu Loqum Atelier · Sep 30, 2024'],
+  ['First temple visit',   'Aug 26, 2024 · together'],
+  ['First Navratri',       'Atul Purohit · Oct 14, 2024'],
+  ['Her first car',        'All by herself · Nov 2024'],
+  ['Clockwork Bar',        'Fairmont Royal York · Dec 2024'],
+  ['Airport reunion',      'Jan 25, 2025 · with roses'],
+  ["Valentine's note",     "A letter I'll keep forever"],
+  ['Cactus Club',          'Feb 2025 & Jul 2025'],
+  ['BarChef Toronto',      'Oct 2024'],
+  ['Planta Toronto',       'Apr 2025'],
+  ['Pai Thai Uptown',      'Apr 2025'],
+  ['Piano Piano',          'May 2025'],
+  ['Her graduation',       'Northeastern University · May 29, 2025'],
+  ['Badiali Pizzeria',     'Jun 2025'],
+  ['Etobicoke Lakeshore',  'Jul 2025'],
+  ['Elora, the Lobby Bar', 'Jul 2025'],
+  ['Her birthday',         'Jul 21, 2025 · she wore my gift'],
+  ['A birthday apology',   "That day wasn't what you deserved. I'm sorry, Shivani."],
+  ['Crystal Beach',        'Aug 3, 2025 · Ontario'],
+  ['Navratri 2025',        'Oct 2025 · together again'],
+  ['The hardest goodbye',  'Apr 23, 2026 · but not the last chapter'],
+  ['',                     ''],
+  ['Soundtrack',           'Beete Lamhein'],
+  ['Location',             'Toronto — every corner of it'],
+  ['Shot on',              'Our camera rolls & stolen moments'],
+  ['Written by',           'Every day we chose each other'],
+  ['Executive producer',   'Fate, for planning all of this'],
 ];
 
 /* ──────────────────────────────────────
@@ -659,8 +821,10 @@ function ssStep(dir){clearTimeout(_ssAuto);_showSS((_ssIdx+dir+_ssPhotos.length)
 function _showSS(i){
   _ssIdx=i;
   const src=_ssPhotos[i];
+  const fn=src.replace('images/','');
   document.getElementById('ss-img').src=src;
-  document.getElementById('ss-date').textContent=fullDate(src.replace('images/',''));
+  document.getElementById('ss-date').textContent=fullDate(fn);
+  document.getElementById('ss-story').textContent=STORIES[fn]||'';
   document.getElementById('ss-counter').textContent=(i+1)+' / '+_ssPhotos.length;
   document.querySelectorAll('.ss-dot').forEach((d,j)=>d.classList.toggle('on',j===i));
 }
@@ -673,8 +837,10 @@ _ssWrap.addEventListener('touchend',e=>{const dx=e.changedTouches[0].clientX-_ss
    LIGHTBOX
 ────────────────────────────────────── */
 function openLB(src){
+  const fn=src.replace('images/','');
   document.getElementById('lb-img').src=src;
-  document.getElementById('lb-date').textContent=fullDate(src.replace('images/',''));
+  document.getElementById('lb-date').textContent=fullDate(fn);
+  document.getElementById('lb-story').textContent=STORIES[fn]||'';
   document.getElementById('lightbox').classList.add('open');
 }
 function closeLB(){document.getElementById('lightbox').classList.remove('open')}
@@ -709,7 +875,7 @@ function _buildSlideshowDOM(){
 function _startCredits(){
   const inner=document.getElementById('credits-inner');
   inner.style.animation='none';void inner.offsetHeight;
-  inner.style.animation='scrollUp 40s linear forwards';
+  inner.style.animation='scrollUp 52s linear forwards';
   clearTimeout(_cSsTimer);_cSsIdx=0;
   const imgs=document.querySelectorAll('#credits-slideshow .slide-img');
   imgs.forEach((el,i)=>el.classList.toggle('on',i===0));
