@@ -53,7 +53,7 @@ const storyOf = m => (EPISODE_NOTES[(m.d || '').slice(0, 10)] || {}).story || st
     const title = note.title || (firstStory ? firstStory.replace(/\.$/, '') : (b.day === 'undated' ? 'Lost & found' : fmtDay(b.day)));
     const photos = b.items.filter(m => m.k === 'img').length, vids = b.items.length - photos;
     const runtime = b.items.reduce((t, m) => t + (m.k === 'vid' ? m.dur * 1000 : PHOTO_MS), 0);
-    const thumbItem = b.items.find(m => m.k === 'img' && m.w >= m.h) || b.items.find(m => m.k === 'img') || b.items[0];
+    const thumbItem = (note.thumb && byKey[note.thumb]) || b.items.find(m => m.k === 'img' && m.w >= m.h) || b.items.find(m => m.k === 'img') || b.items[0];
     const ep = {
       id: `${b.sn}-${b.day}`, season, n: season.episodes.length + 1, day: b.day, title, items: b.items,
       thumb: thumbItem.t, thumbFull: thumbItem.f, photos, vids, runtime,
@@ -67,7 +67,11 @@ const storyOf = m => (EPISODE_NOTES[(m.d || '').slice(0, 10)] || {}).story || st
 })();
 const allEpisodes = seasons.flatMap(s => s.episodes);
 const epById = Object.fromEntries(allEpisodes.map(e => [e.id, e]));
+const epOf = new Map(); allEpisodes.forEach(e => e.items.forEach((m, k) => epOf.set(m, { ep: e, i: k })));
 const nextEpisode = ep => allEpisodes[allEpisodes.indexOf(ep) + 1] || null;
+/* "New" = within 45 days of the most recent dated episode */
+const latestDay = allEpisodes.filter(e => e.day !== 'undated').map(e => e.day).sort().pop() || '';
+const isNew = ep => ep.day !== 'undated' && (parseD(latestDay) - parseD(ep.day)) / 864e5 <= 45;
 
 /* progress: { epId: { i, frac, t } } */
 const progress = store.get('progress', {});
@@ -140,8 +144,9 @@ const svgPlay = '<svg viewBox="0 0 24 24"><path d="M6 3l14 9-14 9z"/></svg>';
 const cardHTML = (ep, i, opts = {}) => {
   const p = progress[ep.id];
   return `<button class="card" type="button" data-ep="${ep.id}" ${opts.i != null ? `data-i="${opts.i}"` : ''}>
-    <img src="${opts.thumb || ep.thumb}" alt="" loading="lazy">
+    <img src="${opts.thumb || ep.thumb}" alt="" loading="lazy" decoding="async">
     ${opts.vid ? `<span class="card-vid">${svgPlay}</span>` : ''}
+    ${opts.badge !== false && isNew(ep) ? '<span class="badge-new">New</span>' : ''}
     <div class="card-body"><div class="card-ep">${ep.label}${ep.est ? ' · approx. date' : ''}</div><div class="card-title">${opts.title || ep.title}</div><div class="card-len">${opts.len || ep.len}</div></div>
     ${p && opts.prog !== false ? `<div class="card-prog"><i style="width:${Math.round(p.frac * 100)}%"></i></div>` : ''}
   </button>`;
@@ -164,21 +169,28 @@ const browse = (() => {
     const cw = lastWatched().filter(x => x.frac > 0.02 && x.frac < 0.98).slice(0, 12);
     if (cw.length) rows.push(rowHTML('continue', `Continue Watching for ${PROFILES[profile].name.replace(' ♡', '')}`, '', cw.map(x => cardHTML(x.ep, x.i)).join('')));
     rows.push(rowHTML('top10', 'Top 10 Moments', 'as ranked by Premal', TOP10.map((k, i) => {
-      const m = byKey[k]; if (!m) return ''; const ep = allEpisodes.find(e => e.items.includes(m)); if (!ep) return '';
-      return `<button class="top-card" type="button" data-ep="${ep.id}" data-i="${ep.items.indexOf(m)}"><span class="top-num">${i + 1}</span><img src="${m.t}" alt="" loading="lazy"><div class="card-body"><div class="card-ep">${ep.label}</div><div class="card-title">${ep.title}</div></div></button>`;
+      const m = byKey[k]; const at = m && epOf.get(m); if (!at) return '';
+      return `<button class="top-card" type="button" data-ep="${at.ep.id}" data-i="${at.i}"><span class="top-num">${i + 1}</span><img src="${m.t}" alt="" loading="lazy" decoding="async"><div class="card-body"><div class="card-ep">${at.ep.label}</div><div class="card-title">${at.ep.title}</div></div></button>`;
     }).join(''), 'top10-row'));
+    const fresh = allEpisodes.filter(isNew).reverse().slice(0, 12);
+    if (fresh.length) rows.push(rowHTML('new', 'New Episodes', `latest from Season ${fresh[0].season.n}`, fresh.map(e => cardHTML(e, 0, { badge: false })).join('')));
     rows.push(rowHTML('seasons', 'Seasons', `${SEASONS.length} seasons · ${allEpisodes.filter(e => e.season.n !== EXTRAS.n).length} episodes`, SEASONS.map(s => {
       const se = seasons.find(x => x.n === s.n);
-      return `<button class="card season" type="button" data-season="${s.n}"><img src="${s.hero.replace('images/', 'images/t/')}" alt="" loading="lazy"><div class="card-body"><div class="card-ep">Season ${s.n} · ${s.tag}</div><div class="card-title">${s.title}</div><div class="card-len">${se.episodes.length} episodes · ${s.blurb}</div></div></button>`;
+      return `<button class="card season" type="button" data-season="${s.n}"><img src="${s.hero.replace('images/', 'images/t/')}" alt="" loading="lazy" decoding="async"><div class="card-body"><div class="card-ep">Season ${s.n} · ${s.tag}</div><div class="card-title">${s.title}</div><div class="card-len">${se.episodes.length} episodes · ${s.blurb}</div></div></button>`;
     }).join(''), 'season-row'));
     seasons.filter(s => s.episodes.length && s.n !== EXTRAS.n).forEach(s =>
       rows.push(rowHTML(s.slug, `Season ${s.n} · ${s.title}`, s.tag, s.episodes.map(e => cardHTML(e)).join(''))));
     const vids = MEDIA.filter(m => m.k === 'vid');
-    rows.push(rowHTML('videos', 'Videos', `${vids.length} clips`, vids.map(m => { const ep = allEpisodes.find(e => e.items.includes(m)); return cardHTML(ep, 0, { i: ep.items.indexOf(m), thumb: m.t, vid: true, len: `${secs(m.dur)} · ${fmtShort(m.d)}`, prog: false }); }).join('')));
+    rows.push(rowHTML('videos', 'Videos', `${vids.length} clips`, vids.map(m => { const at = epOf.get(m); return cardHTML(at.ep, 0, { i: at.i, thumb: m.t, vid: true, len: [secs(m.dur), fmtShort(m.d)].filter(Boolean).join(' · '), prog: false, badge: false }); }).join('')));
     const ex = seasons.find(s => s.n === EXTRAS.n);
     if (ex.episodes.length) rows.push(rowHTML('extras', 'Extras', ex.blurb, ex.episodes.map(e => cardHTML(e)).join('')));
     $('#rows').innerHTML = rows.join('');
+    measure();
   }
+  /* cached row offsets so the scroll handler never forces layout */
+  let marks = [], navBtns = $$('.nav-links button'), navCur = '', ticking = false;
+  function measure() { marks = ['videos', 'seasons'].map(id => ({ id, el: $('#row-' + id) })).filter(m => m.el).map(m => ({ id: m.id, top: m.el.offsetTop })); }
+  window.addEventListener('resize', measure, { passive: true });
   $('#rows').addEventListener('click', e => {
     const c = e.target.closest('[data-ep],[data-season]'); if (!c) return;
     if (c.dataset.season != null) return overlay('sheet', { season: +c.dataset.season });
@@ -192,13 +204,18 @@ const browse = (() => {
   $$('.nav-links button').forEach(b => b.addEventListener('click', () => {
     const t = b.dataset.nav; if (t === 'finale') return go('finale');
     const el = t === 'top' ? null : $('#row-' + t);
-    window.scrollTo({ top: el ? el.offsetTop - 70 : 0, behavior: 'smooth' });
+    window.scrollTo({ top: el ? el.offsetTop - 70 : 0, behavior: matchMedia('(prefers-reduced-motion:reduce)').matches ? 'auto' : 'smooth' });
   }));
   window.addEventListener('scroll', () => {
-    if (state.screen !== 'browse') return;
-    nav.classList.toggle('solid', window.scrollY > 40);
-    const y = window.scrollY + 120, cur = ['videos', 'seasons'].find(id => $('#row-' + id) && y >= $('#row-' + id).offsetTop) || 'top';
-    $$('.nav-links button').forEach(b => b.classList.toggle('cur', b.dataset.nav === cur));
+    if (state.screen !== 'browse' || ticking) return;
+    ticking = true;
+    requestAnimationFrame(() => {
+      ticking = false;
+      const y = window.scrollY;
+      nav.classList.toggle('solid', y > 40);
+      const cur = (marks.find(m => y + 120 >= m.top) || { id: 'top' }).id;
+      if (cur !== navCur) { navCur = cur; navBtns.forEach(b => b.classList.toggle('cur', b.dataset.nav === cur)); }
+    });
   }, { passive: true });
   function startBillboard() {
     if (!bbv.src) { bbv.src = SHOW.billboardVideo; bbv.addEventListener('playing', () => bbv.classList.add('ready'), { once: true }); }
@@ -230,7 +247,7 @@ const sheet = (() => {
       <span class="ep-n">${ep.n}</span>
       <span class="ep-thumb"><img src="${ep.thumb}" alt="" loading="lazy"><span class="play"><i>${svgPlay}</i></span>${p ? `<span class="card-prog"><i style="width:${Math.round(p.frac * 100)}%"></i></span>` : ''}</span>
       <span class="ep-body"><span class="ep-title"><span>${ep.title}</span><small>${Math.max(1, Math.round(ep.runtime / 60000))}m</small></span>
-      <span class="ep-story">${ep.story && ep.story.replace(/\.$/, '') !== ep.title ? ep.story : ep.len}</span><span class="ep-date">${ep.day === 'undated' ? 'Date unknown' : fmtLong(ep.day)}${ep.est ? ' (approx.)' : ''} · ${ep.len}</span></span></button>`; }).join('');
+      <span class="ep-story">${ep.story && ep.story.replace(/\.$/, '') !== ep.title ? ep.story : ep.len}</span><span class="ep-date">${ep.day === 'undated' ? 'Date unknown' : fmtLong(ep.day)}${ep.est ? ' (approx.)' : ''}${ep.story && ep.story.replace(/\.$/, '') !== ep.title ? ' · ' + ep.len : ''}</span></span></button>`; }).join('');
     $('#tbc').classList.toggle('hide', !s.toBeContinued);
     const lw = lastWatched()[0]; $('#sheet-play').querySelector('span').textContent = lw && lw.frac < 0.98 ? 'Resume' : 'Play';
   }
@@ -245,52 +262,80 @@ const sheet = (() => {
 /* ═══ PLAYER ═════════════════════════════════════════════ */
 const player = (() => {
   const el = $('#player'), frames = [$('#frame-a'), $('#frame-b')], blur = $('#stage-blur');
-  const fill = $('#fill'), knob = $('#knob'), timeEl = $('#pl-time'), next = $('#next');
-  let ep = null, i = 0, playing = true, fi = 0, raf = 0, t0 = 0, elapsed = 0, curDur = PHOTO_MS, video = null, hideT = 0, nextT = 0, nextTick = 0;
+  const fill = $('#fill'), knob = $('#knob'), timeEl = $('#pl-time'), next = $('#next'), loader = $('#pl-loader'), titleCard = $('#pl-titlecard');
+  let ep = null, i = 0, playing = true, fi = 0, raf = 0, t0 = 0, elapsed = 0, curDur = PHOTO_MS, video = null, hideT = 0, nextT = 0, nextTick = 0, seq = 0, cardT = 0, prefixes = [];
+  const cache = new Map();   // src -> decoded Image (bounded)
+  const preload = m => {
+    if (!m || m.k !== 'img' || cache.has(m.f)) return;
+    const im = new Image(); im.decoding = 'async'; im.src = m.f; cache.set(m.f, im);
+    if (cache.size > 8) cache.delete(cache.keys().next().value);
+  };
 
-  const prefix = idx => ep.items.slice(0, idx).reduce((t, m) => t + (m.k === 'vid' ? m.dur * 1000 : PHOTO_MS), 0);
+  const prefix = idx => prefixes[idx] || 0;
   function open(epId, idx = 0) {
     ep = epById[epId]; i = Math.min(idx, ep.items.length - 1);
+    prefixes = [0]; ep.items.forEach((m, k) => { prefixes[k + 1] = prefixes[k] + (m.k === 'vid' ? m.dur * 1000 : PHOTO_MS); });
     browse.pauseBB();
     el.classList.add('on'); el.classList.toggle('first', !store.get('hinted', false)); store.set('hinted', true);
-    $('#pl-ep').textContent = `${ep.season.n === EXTRAS.n ? 'Extras' : `Season ${ep.season.n}`} · ${ep.label}`;
+    const sLabel = ep.season.n === EXTRAS.n ? 'Extras' : `Season ${ep.season.n}`;
+    $('#pl-ep').textContent = `${sLabel} · ${ep.label}`;
     $('#pl-name').textContent = ep.title;
     $('#ticks').innerHTML = ep.items.length > 24 ? '' : ep.items.slice(1).map((_, k) => `<i style="left:${(prefix(k + 1) / ep.runtime * 100).toFixed(2)}%"></i>`).join('');
     const n = nextEpisode(ep); $('#pl-nextep').style.visibility = n ? '' : 'hidden';
+    // Netflix-style title card for the first few seconds of an episode
+    $('#tc-ep').textContent = `${sLabel} · ${ep.label}`; $('#tc-title').textContent = ep.title;
+    $('#tc-sub').textContent = ep.day === 'undated' ? ep.len : `${fmtLong(ep.day)}${ep.est ? ' (approx.)' : ''} · ${ep.len}`;
+    clearTimeout(cardT); titleCard.classList.add('on'); cardT = setTimeout(() => titleCard.classList.remove('on'), 3400);
     playing = true; setIcon(); showUI(); show(i);
   }
   function close() {
-    cancelAnimationFrame(raf); clearTimeout(hideT); clearTimeout(nextT); clearInterval(nextTick);
-    if (video) { video.pause(); video.src = ''; video = null; }
+    cancelAnimationFrame(raf); clearTimeout(hideT); clearTimeout(nextT); clearInterval(nextTick); clearTimeout(cardT);
+    if (video) { video.pause(); video.removeAttribute('src'); video.load(); video = null; }
     frames.forEach(f => { f.innerHTML = ''; f.classList.remove('on'); });
-    next.classList.remove('on'); el.classList.remove('on'); ep = null;
+    next.classList.remove('on'); titleCard.classList.remove('on'); loader.classList.remove('on'); blur.classList.remove('on');
+    el.classList.remove('on'); ep = null; seq++;
   }
   function show(idx) {
     i = idx; clearTimeout(nextT); clearInterval(nextTick); next.classList.remove('on');
-    const m = ep.items[i], f = frames[fi = 1 - fi], old = frames[1 - fi];
-    if (video) { video.pause(); video = null; }
+    const m = ep.items[i], f = frames[fi = 1 - fi], old = frames[1 - fi], my = ++seq;
+    if (video) { video.pause(); video.removeAttribute('src'); video.load(); video = null; }
+    cancelAnimationFrame(raf);
     f.innerHTML = '';
+    $('#pl-date').textContent = [fmtLong(m.d), fmtTime(m.d)].filter(Boolean).join(' · ') + (m.est ? ' · approx.' : '');
+    $('#pl-story').textContent = storyOf(m);
+    timeEl.textContent = `${i + 1} / ${ep.items.length}`;
+    preload(ep.items[i + 1]); preload(ep.items[i + 2]);
+    const commit = () => {
+      if (my !== seq) return;
+      loader.classList.remove('on');
+      blur.style.backgroundImage = `url("${m.t}")`; blur.classList.add('on');
+      f.classList.add('on'); old.classList.remove('on');
+      setTimeout(() => { if (my === seq && old !== frames[fi]) old.innerHTML = ''; }, 700);
+      elapsed = 0; t0 = performance.now(); setPlayState(); tick();
+      saveProgress(ep, i, prefix(i) / ep.runtime);
+    };
     if (m.k === 'img') {
-      const img = new Image(); img.src = m.f; img.alt = '';
+      const img = cache.get(m.f) || new Image(); if (!img.src) { img.decoding = 'async'; img.src = m.f; }
+      cache.delete(m.f); img.alt = '';
       const portrait = m.h > m.w * 1.05, tall = window.innerHeight > window.innerWidth;
       if (portrait !== tall) img.classList.add('fit');
       img.style.setProperty('--ox', `${35 + Math.random() * 30}%`); img.style.setProperty('--oy', `${20 + Math.random() * 40}%`);
       img.style.setProperty('--kb', `${PHOTO_MS + 800}ms`);
-      f.appendChild(img); curDur = PHOTO_MS;
-      blur.style.backgroundImage = `url("${m.t}")`; blur.classList.add('on');
+      curDur = PHOTO_MS;
+      // Only swap once the image is decoded: no flash, no half-painted frame.
+      const slow = setTimeout(() => { if (my === seq) loader.classList.add('on'); }, 350);
+      const ready = () => { clearTimeout(slow); if (my !== seq) return; f.appendChild(img); commit(); };
+      (img.decode ? img.decode() : Promise.resolve()).then(ready, ready);
     } else {
       video = document.createElement('video'); video.src = m.f; video.playsInline = true; video.preload = 'auto'; video.poster = m.t;
       video.muted = false; f.appendChild(video); curDur = m.dur * 1000;
-      video.addEventListener('ended', () => advance(1)); video.addEventListener('timeupdate', () => { elapsed = video.currentTime * 1000; });
-      video.play().catch(() => { video.muted = true; video.play().catch(() => {}); });
-      blur.style.backgroundImage = `url("${m.t}")`; blur.classList.add('on');
+      video.addEventListener('ended', () => { if (my === seq) advance(1); });
+      video.addEventListener('timeupdate', () => { if (my === seq) elapsed = video.currentTime * 1000; });
+      video.addEventListener('waiting', () => { if (my === seq) loader.classList.add('on'); });
+      video.addEventListener('playing', () => { if (my === seq) loader.classList.remove('on'); });
+      video.play().catch(() => { if (video) { video.muted = true; video.play().catch(() => {}); } });
+      commit();
     }
-    f.classList.add('on'); old.classList.remove('on'); setTimeout(() => { if (old !== frames[fi]) old.innerHTML = ''; }, 700);
-    const pre = ep.items[i + 1]; if (pre && pre.k === 'img') { const p = new Image(); p.src = pre.f; }
-    $('#pl-date').textContent = [fmtLong(m.d), fmtTime(m.d)].filter(Boolean).join(' · ') + (m.est ? ' · approx.' : '');
-    $('#pl-story').textContent = storyOf(m);
-    elapsed = 0; t0 = performance.now(); setPlayState(); tick();
-    saveProgress(ep, i, prefix(i) / ep.runtime);
   }
   function tick() {
     cancelAnimationFrame(raf);
@@ -299,7 +344,6 @@ const player = (() => {
       if (!video && playing) elapsed = now - t0;
       const frac = Math.min(1, (prefix(i) + Math.min(elapsed, curDur)) / ep.runtime);
       fill.style.width = knob.style.left = `${(frac * 100).toFixed(2)}%`;
-      timeEl.textContent = `${i + 1} / ${ep.items.length}`;
       if (!video && playing && elapsed >= curDur) { advance(1); return; }
       raf = requestAnimationFrame(loop);
     };

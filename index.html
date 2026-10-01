@@ -12,6 +12,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@1,400;1,500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/app.css">
+<link rel="preload" as="image" href="images/20250803_194808.jpg" fetchpriority="low">
 </head>
 <body>
 
@@ -108,6 +109,8 @@
     <div class="frame" id="frame-b"></div>
   </div>
   <div class="pl-shade"></div>
+  <div class="pl-loader" id="pl-loader" aria-hidden="true"><i></i></div>
+  <div class="pl-titlecard" id="pl-titlecard" aria-hidden="true"><small id="tc-ep"></small><b id="tc-title"></b><span id="tc-sub"></span></div>
   <div class="pl-top">
     <button class="icon-btn" type="button" id="pl-back" aria-label="Back"><svg viewBox="0 0 24 24"><path d="M15.5 4l-8 8 8 8 1.5-1.5L10.5 12l6.5-6.5z"/></svg></button>
     <div class="pl-title"><b id="pl-ep"></b><span id="pl-name"></span></div>

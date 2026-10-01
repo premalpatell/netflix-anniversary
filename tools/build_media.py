@@ -39,8 +39,80 @@ SNAP_DATES = {
   'Snapchat-524185506.jpg': '2025-05-29',  'Snapchat-552263264.jpg': '2024-11-20',
   'Snapchat-687287911.jpg': '2025-05-29',  'Snapchat-790482175.jpg': '2025-05-29',
   'valentine.jpg': '2026-02-14',
+  # Sept 2026: Shivani's Quebec trip (dated by the user from the contact sheet) + last outing flowers
+  'Snapchat-58892558.jpg': '2026-09-17',  # #48
+  'Snapchat-379522744.jpg': '2026-09-17',  # #49
+  'Snapchat-1898231155.jpg': '2026-09-23',  # #10
+  'Snapchat-1763367632.jpg': '2026-09-23',  # #12
+  'Snapchat-1533350762.jpg': '2026-09-23',  # #15
+  'Snapchat-775701662.jpg': '2026-09-23',  # #25
+  'Snapchat-1262736469.jpg': '2026-09-23',  # #34
+  'Snapchat-877446127.jpg': '2026-09-23',  # #13
+  'Snapchat-953240537.jpg': '2026-09-23',  # #67
+  'Snapchat-1519252535.jpg': '2026-09-23',  # #71
+  'Snapchat-1692021133.jpg': '2026-09-23',  # #72
+  'Snapchat-1161689235.jpg': '2026-09-24',  # #5
+  'Snapchat-1090526165.jpg': '2026-09-24',  # #6
+  'Snapchat-842324961.jpg': '2026-09-24',  # #8
+  'Snapchat-1170726861.jpg': '2026-09-24',  # #11
+  'Snapchat-1315543665.jpg': '2026-09-24',  # #14
+  'Snapchat-1408809778.jpg': '2026-09-24',  # #19
+  'Snapchat-1799361220.jpg': '2026-09-24',  # #20
+  'Snapchat-144796690.jpg': '2026-09-24',  # #21
+  'Snapchat-279122388.jpg': '2026-09-24',  # #23
+  'Snapchat-1801574389.jpg': '2026-09-24',  # #27
+  'Snapchat-1439531535.jpg': '2026-09-24',  # #28
+  'Snapchat-397317949.jpg': '2026-09-24',  # #31
+  'Snapchat-261805749.jpg': '2026-09-24',  # #33
+  'Snapchat-1675897112.jpg': '2026-09-24',  # #35
+  'Snapchat-1963362128.jpg': '2026-09-24',  # #36
+  'Snapchat-1384785441.jpg': '2026-09-24',  # #37
+  'Snapchat-766892859.jpg': '2026-09-24',  # #39
+  'Snapchat-554377905.jpg': '2026-09-24',  # #41
+  'Snapchat-1140959699.jpg': '2026-09-24',  # #44
+  'Snapchat-692691928.jpg': '2026-09-24',  # #50
+  'Snapchat-1815952221.jpg': '2026-09-24',  # #51
+  'Snapchat-1662310138.jpg': '2026-09-24',  # #52
+  'Snapchat-1980739793.jpg': '2026-09-24',  # #53
+  'Snapchat-1142385251.jpg': '2026-09-24',  # #55
+  'Snapchat-1217051938.jpg': '2026-09-24',  # #57
+  'Snapchat-2087444229.jpg': '2026-09-24',  # #59
+  'Snapchat-388645732.jpg': '2026-09-24',  # #60
+  'Snapchat-1328559998.jpg': '2026-09-24',  # #61
+  'Snapchat-1607970198.jpg': '2026-09-24',  # #62
+  'Snapchat-2127207180.jpg': '2026-09-24',  # #70
+  'Snapchat-536460620.jpg': '2026-09-24',  # #22
+  'Snapchat-534238978.jpg': '2026-09-24',  # #29
+  'Snapchat-766148922.jpg': '2026-09-24',  # #30
+  'Snapchat-2111209050.jpg': '2026-09-24',  # #40
+  'Snapchat-769528473.jpg': '2026-09-24',  # #45
+  'Snapchat-1860678894.jpg': '2026-09-24',  # #73
+  'Snapchat-1578586602.jpg': '2026-09-24',  # #3
+  'Snapchat-2113371422.jpg': '2026-09-24',  # #17
+  'Snapchat-225799036.jpg': '2026-09-25',  # #4
+  'Snapchat-819829774.jpg': '2026-09-25',  # #7
+  'Snapchat-1467093322.jpg': '2026-09-25',  # #9
+  'Snapchat-1665065057.jpg': '2026-09-25',  # #16
+  'Snapchat-2012477947.jpg': '2026-09-25',  # #18
+  'Snapchat-1948759972.jpg': '2026-09-25',  # #24
+  'Snapchat-1173658082.jpg': '2026-09-25',  # #26
+  'Snapchat-918908314.jpg': '2026-09-25',  # #32
+  'Snapchat-379051952.jpg': '2026-09-25',  # #38
+  'Snapchat-1667864078.jpg': '2026-09-25',  # #46
+  'Snapchat-1639861238.jpg': '2026-09-25',  # #47
+  'Snapchat-1446016345.jpg': '2026-09-25',  # #54
+  'Snapchat-1932869101.jpg': '2026-09-25',  # #58
+  'Snapchat-2089084440.jpg': '2026-09-25',  # #63
+  'Snapchat-1849604723.jpg': '2026-09-25',  # #64
+  'Snapchat-939790105.jpg': '2026-09-25',  # #65
+  'Snapchat-2005705401.jpg': '2026-09-25',  # #66
+  'Snapchat-16417243.jpg': '2026-09-25',  # #68
+  'Snapchat-1497567681.jpg': '2026-09-25',  # #69
+  'Snapchat-876610309.jpg': '2026-09-26',  # #42
+  'IMG_1281.JPG': '2026-09-26',  # #43
+  'Snapchat-352657970.jpg': '2026-09-26',  # #56
 }
-SKIP = {'netflix-n.png'}
+SKIP = {'netflix-n.png', 'Snapchat-1493094235.jpg', 'Snapchat-918357969.jpg'}  # not of Shivani
 
 
 def dhash(im):
@@ -105,6 +177,8 @@ def poster(src, dst):
 
 
 def encode_video(src, dst):
+    if os.path.exists(dst) and os.path.getsize(dst) > 0 and os.path.getmtime(dst) > os.path.getmtime(src):
+        return
     subprocess.run(['ffmpeg', '-y', '-v', 'error', '-i', src, '-map_metadata', '-1',
                     '-vf', "scale='if(gt(iw,ih),min(1280,iw),-2)':'if(gt(iw,ih),-2,min(1280,ih))'",
                     '-c:v', 'libx264', '-preset', 'slow', '-crf', '28', '-pix_fmt', 'yuv420p',
@@ -150,7 +224,7 @@ def main():
 def add_raw(items, hashes):
     raw = []
     for p in sorted(glob.glob(f'{RAW}/*')):
-        title = os.path.basename(p).split('__', 1)[-1]
+        title = re.sub(r'^[\w-]{33}__', '', os.path.basename(p))  # Drive ids may themselves contain '__'
         raw.append((p, title, title.rsplit('.', 1)[-1].lower()))
 
     # Pass 1: EXIF dates; iPhone numbers with dates become anchors for the undated ones
@@ -193,6 +267,8 @@ def add_raw(items, hashes):
 
     for p, title, im, d, num in imgs:
         est = False
+        if not d and title in SNAP_DATES:
+            d = SNAP_DATES[title] + 'T12:00:00'
         if not d:
             d = name_date(title)
         if not d and num:

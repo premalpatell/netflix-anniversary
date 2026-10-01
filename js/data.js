@@ -35,7 +35,7 @@ window.SEASONS = [
     hero: 'images/s_20231021_171309_1.jpg' },
   { n: 1, slug: 's1', title: 'The Beginning',      from: '2024-08-20', to: '2024-09-30',
     tag: 'Aug – Sep 2024', blurb: 'A temple, a first date at Liu Loqum Atelier, and the moment it all started.',
-    hero: 'images/20240826_182223.jpg' },
+    hero: 'images/20240930_174109.jpg' },
   { n: 2, slug: 's2', title: 'Growing Together',   from: '2024-10-01', to: '2024-12-31',
     tag: 'Oct – Dec 2024', blurb: 'Navratri nights, her first car, and date nights at the Fairmont.',
     hero: 'images/20241215_002835.jpg' },
@@ -46,7 +46,7 @@ window.SEASONS = [
     tag: 'Jul 2025 – Apr 2026', blurb: 'Her birthday, Crystal Beach, Navratri again, a letter, a haircut, and the hardest goodbye.',
     hero: 'images/20250803_194808.jpg' },
   { n: 5, slug: 's5', title: 'Still Us',           from: '2026-04-24', to: '2027-12-31',
-    tag: 'Apr 2026 →', blurb: 'Different time zones, same two people. The season that proves distance is just geography.',
+    tag: 'Apr 2026 →', blurb: 'Different time zones, a summer back together, her Québec trip, and one more goodbye. Distance is just geography.',
     hero: 'images/s_20260721_145211_1.jpg', toBeContinued: true },
 ];
 
@@ -162,10 +162,16 @@ window.STORIES = {
 };
 
 /* Episode notes — keyed by date (YYYY-MM-DD). Fill these in for the new photos:
-     '2023-09-23': { title: 'Where it started', story: 'The first time we…' },
-   `title` names the episode; `story` shows under every photo of that day. */
+     '2023-09-23': { title: 'Where it started', story: 'The first time we…', thumb: 'file.jpg' },
+   `title` names the episode; `story` shows under every photo of that day;
+   `thumb` (optional) is the media file name to use as the episode's cover. */
 window.EPISODE_NOTES = {
   '2026-07-21': { title: 'Her birthday, 2026', story: '' },
+  '2026-09-17': { title: 'Bruce Peninsula', story: '' },
+  '2026-09-23': { title: 'Montréal, on the way to Québec', story: 'Shivani\'s Québec trip, day one.', thumb: 's_20260923_120000_3.jpg' },
+  '2026-09-24': { title: 'Old Québec & Montmorency Falls', story: 'Umbrella street, the Château Frontenac and the falls.', thumb: 's_20260924_120000_11.jpg' },
+  '2026-09-25': { title: 'Lakes & lookouts, Québec', story: 'The last day of the trip.' },
+  '2026-09-26': { title: 'Roses, before the goodbye', story: 'Our last outing before Premal left Canada on September 27.' },
 };
 
 /* Top 10 Moments — in order. Media keys (file names). */
@@ -210,6 +216,11 @@ window.CREDITS = [
   ['Navratri 2025',        'Oct 2025 · together again'],
   ['The bob haircut',      'Apr 2, 2026'],
   ['The hardest goodbye',  'Apr 23, 2026 · but not the last chapter'],
+  ['Her birthday, 2026',   'Jul 21, 2026'],
+  ['Bruce Peninsula',      'Sep 17, 2026'],
+  ['Her Québec trip',      'Sep 23 – 25, 2026'],
+  ['Roses',                'Sep 26, 2026 · the night before'],
+  ['Another goodbye',      'Sep 27, 2026 · still not the last chapter'],
   ['Still us',             'Every day since'],
   ['',                     ''],
   ['Soundtrack',           'Beete Lamhein'],
