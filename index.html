@@ -2,1018 +2,174 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black">
-<title>Netflix</title>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#141414">
+<title>Shivani & Premal</title>
+<link rel="icon" href="images/netflix-n.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,400;1,700&family=Cormorant+Garamond:ital,wght@1,300&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-<style>
-*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
-html{height:-webkit-fill-available}
-body{
-  width:100%;height:100vh;height:-webkit-fill-available;
-  background:#000;overflow:hidden;
-  font-family:'Inter',sans-serif;color:#fff;
-  -webkit-font-smoothing:antialiased;
-  touch-action:manipulation;
-  -webkit-tap-highlight-color:transparent;
-  user-select:none;-webkit-user-select:none;
-}
-#stage{position:relative;width:100%;height:100%}
-.scene{position:absolute;inset:0;opacity:0;pointer-events:none;transition:opacity .7s ease;overflow:hidden}
-.scene.active{opacity:1;pointer-events:all}
-
-/* ═══ INTRO ═══ */
-#s-intro{background:#000;display:flex;align-items:center;justify-content:center}
-#intro-video{
-  position:absolute;inset:0;width:100%;height:100%;
-  object-fit:contain;background:#000;
-  opacity:0;transition:opacity .4s;pointer-events:none;
-}
-#tap-cover{
-  position:absolute;inset:0;z-index:5;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:28px;cursor:pointer;
-}
-.tap-n{width:clamp(90px,16vw,150px);display:block;filter:drop-shadow(0 0 24px rgba(229,9,20,.5))}
-.tap-ring{
-  width:66px;height:66px;border-radius:50%;
-  border:2px solid rgba(255,255,255,.2);
-  display:flex;align-items:center;justify-content:center;
-  animation:pulse 2s ease-in-out infinite;
-}
-@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(229,9,20,.4)}50%{box-shadow:0 0 0 18px rgba(229,9,20,0)}}
-.tap-label{font-size:clamp(10px,2.5vw,13px);letter-spacing:.22em;color:rgba(255,255,255,.45);text-transform:uppercase;animation:blink 2s ease-in-out infinite}
-.tap-compliment{font-size:clamp(9px,1.8vw,11px);letter-spacing:.14em;color:rgba(255,255,255,.22);text-transform:uppercase;text-align:center;margin-top:4px}
-@keyframes blink{0%,100%{opacity:.45}50%{opacity:1}}
-
-/* ═══ WHO'S WATCHING ═══ */
-#s-profiles{background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center}
-.profiles-back{
-  position:absolute;top:max(18px,env(safe-area-inset-top,18px));left:clamp(16px,4vw,28px);
-  z-index:10;background:none;border:none;color:rgba(255,255,255,.38);
-  font-family:'Inter',sans-serif;font-size:clamp(11px,2.5vw,14px);letter-spacing:.1em;
-  text-transform:uppercase;cursor:pointer;transition:color .2s;padding:8px 4px;
-}
-.profiles-back:hover,.profiles-back:active{color:#fff}
-#s-profiles::before{
-  content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);
-  width:200%;height:65%;
-  background:radial-gradient(ellipse at center bottom,rgba(220,0,0,.65) 0%,rgba(160,0,0,.35) 22%,rgba(90,0,0,.18) 45%,transparent 70%);
-  border-radius:50%;pointer-events:none;z-index:0;
-}
-.whos-title{
-  font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:300;
-  font-size:clamp(22px,5vw,44px);color:#fff;
-  margin-bottom:8px;letter-spacing:.01em;position:relative;z-index:2;
-}
-.whos-subtitle{
-  font-family:'Playfair Display',serif;font-style:italic;
-  font-size:clamp(11px,2.2vw,15px);color:rgba(255,255,255,.38);
-  letter-spacing:.06em;margin-bottom:clamp(20px,4vh,42px);position:relative;z-index:2;text-align:center;
-}
-.profiles-row{display:flex;gap:clamp(14px,4vw,36px);margin-bottom:clamp(24px,4vh,44px);position:relative;z-index:2;flex-wrap:nowrap}
-@media(max-width:560px){
-  .profiles-row{flex-wrap:wrap;justify-content:center;max-width:min(340px,94vw);gap:clamp(14px,4vw,20px)}
-  .profile-item{flex:0 0 calc(50% - clamp(7px,2vw,10px))}
-  .profile-photo{width:100%!important;height:auto!important;aspect-ratio:1}
-}
-.profile-item{display:flex;flex-direction:column;align-items:center;gap:10px;cursor:pointer;transition:transform .2s}
-@media(hover:hover){.profile-item:hover{transform:scale(1.07)}.profile-item:hover .profile-photo{outline:3px solid #fff}}
-.profile-item:active{transform:scale(.95)}
-.profile-photo{width:clamp(82px,18vw,150px);height:clamp(82px,18vw,150px);border-radius:5px;overflow:hidden;background:#1c1c1c;flex-shrink:0}
-.profile-photo img{width:100%;height:100%;object-fit:cover;object-position:center 10%;display:block}
-.profile-label{font-size:clamp(10px,2.5vw,14px);color:rgba(255,255,255,.82);font-weight:400;letter-spacing:.02em}
-.manage-btn{position:relative;z-index:2;font-family:'Inter',sans-serif;font-size:clamp(9px,2vw,12px);font-weight:500;color:#fff;background:transparent;border:1.5px solid rgba(255,255,255,.6);padding:9px 24px;letter-spacing:.18em;text-transform:uppercase;cursor:default}
-
-/* ═══ NETFLIX HOME ═══ */
-#s-home{background:#141414;display:flex;flex-direction:column}
-.nf-nav{
-  position:absolute;top:0;left:0;right:0;z-index:10;
-  display:flex;align-items:center;justify-content:space-between;
-  padding:clamp(10px,1.8vh,20px) clamp(16px,3.5vw,48px);
-  background:linear-gradient(to bottom,rgba(0,0,0,.96) 0%,rgba(0,0,0,.6) 60%,transparent 100%);
-  gap:clamp(10px,2vw,20px);
-}
-.nf-logo{font-family:'Inter',sans-serif;font-weight:800;letter-spacing:-.03em;font-size:clamp(18px,4vw,32px);color:#e50914;flex-shrink:0}
-.nf-links{display:flex;gap:clamp(8px,1.5vw,18px);list-style:none;flex-wrap:nowrap;flex:1;margin-left:clamp(8px,2vw,24px)}
-.nf-links li a{color:rgba(255,255,255,.65);text-decoration:none;font-size:clamp(9px,1.8vw,13px);white-space:nowrap;transition:color .18s}
-.nf-links li:first-child a{color:#fff;font-weight:500}
-@media(hover:hover){.nf-links li a:hover{color:#fff}}
-.nf-nav-right{display:flex;align-items:center;gap:clamp(8px,1.8vw,18px);flex-shrink:0}
-.nf-nav-icon{width:clamp(15px,2.2vw,20px);height:clamp(15px,2.2vw,20px);opacity:.7;cursor:pointer;transition:opacity .18s;flex-shrink:0}
-@media(hover:hover){.nf-nav-icon:hover{opacity:1}}
-.nf-avatar{width:clamp(26px,3.2vw,32px);height:clamp(26px,3.2vw,32px);border-radius:4px;background:#e50914;display:flex;align-items:center;justify-content:center;font-size:clamp(11px,1.5vw,13px);font-weight:700;color:#fff;cursor:pointer;flex-shrink:0;letter-spacing:.02em}
-
-.nf-hero{position:relative;width:100%;height:56%;min-height:240px;flex-shrink:0}
-.nf-hero-bg{position:absolute;inset:0;background:#141414}
-.nf-hero-bg img,.nf-hero-bg video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 20%;display:block}
-.nf-hero-overlay{
-  position:absolute;inset:0;
-  background:
-    linear-gradient(to right,rgba(0,0,0,.92) 0%,rgba(0,0,0,.5) 45%,rgba(0,0,0,.1) 75%,transparent 100%),
-    linear-gradient(to top,#141414 0%,rgba(20,20,20,.7) 18%,transparent 44%),
-    linear-gradient(to bottom,rgba(0,0,0,.3) 0%,transparent 20%);
-}
-.nf-hero-content{position:absolute;bottom:clamp(14px,3vh,52px);left:clamp(16px,3.5vw,48px);max-width:min(54%,480px)}
-@media(max-width:600px){.nf-hero-content{max-width:76%}}
-.nf-badge{display:flex;align-items:center;gap:5px;margin-bottom:4px}
-.nf-badge svg{width:13px;height:13px;flex-shrink:0}
-.nf-badge-text{font-size:clamp(8px,1.5vw,11px);letter-spacing:.22em;color:rgba(255,255,255,.72);text-transform:uppercase}
-.nf-match{font-size:clamp(10px,1.8vw,13px);color:#46d369;font-weight:700;margin-bottom:3px;letter-spacing:.04em}
-.nf-hero-title{font-family:'Playfair Display',serif;font-style:italic;font-weight:700;font-size:clamp(22px,5.5vw,60px);color:#f5c518;line-height:1;margin-bottom:6px;text-transform:lowercase;text-shadow:0 2px 20px rgba(0,0,0,.5)}
-.nf-hero-meta{font-size:clamp(9px,1.4vw,12px);color:rgba(255,255,255,.45);letter-spacing:.05em;margin-bottom:6px;display:flex;gap:6px;align-items:center;flex-wrap:wrap}
-.nf-hero-meta span{color:rgba(255,255,255,.25)}
-.nf-hero-desc{font-size:clamp(9px,1.5vw,13px);color:rgba(255,255,255,.7);margin-bottom:5px;line-height:1.55;font-weight:300}
-.nf-hero-compliment{font-family:'Playfair Display',serif;font-style:italic;font-size:clamp(10px,1.7vw,13px);color:rgba(245,197,24,.48);margin-bottom:12px;line-height:1.4}
-.nf-hero-btns{display:flex;gap:8px;flex-wrap:wrap}
-.btn-play,.btn-ec{display:flex;align-items:center;gap:6px;border:none;border-radius:3px;padding:clamp(7px,1.3vh,10px) clamp(14px,2.2vw,22px);font-size:clamp(10px,1.8vw,14px);font-weight:700;font-family:'Inter',sans-serif;cursor:pointer;transition:background .18s,opacity .18s;white-space:nowrap}
-.btn-play:active,.btn-ec:active{opacity:.75}
-.btn-play{background:#fff;color:#000}
-@media(hover:hover){.btn-play:hover{background:rgba(255,255,255,.85)}}
-.btn-ec{background:rgba(109,109,110,.6);border:1.5px solid rgba(255,255,255,.6);color:#fff}
-@media(hover:hover){.btn-ec:hover{background:rgba(109,109,110,.85)}}
-
-.nf-photo-section{flex:1;overflow:visible;padding:clamp(6px,1.2vh,12px) 0 clamp(90px,13vh,112px);display:flex;flex-direction:column}
-.row-label{font-size:clamp(12px,2.2vw,17px);font-weight:600;color:#e5e5e5;margin-bottom:clamp(6px,1vh,10px);padding:0 clamp(16px,3.5vw,48px);letter-spacing:.01em}
-
-.tiles-strip{display:flex;gap:clamp(6px,1vw,10px);overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;padding:0 clamp(16px,3.5vw,48px) 8px;scrollbar-width:none;align-items:flex-start}
-.tiles-strip::-webkit-scrollbar{display:none}
-.tile{
-  flex:0 0 clamp(130px,30vw,200px);border-radius:6px;overflow:hidden;
-  background:#1c1c1c;scroll-snap-align:start;cursor:pointer;
-  position:relative;transition:transform .18s;flex-shrink:0;
-  display:flex;flex-direction:column;
-}
-@media(hover:hover){.tile:hover{transform:scale(1.04);z-index:2}}
-.tile:active{transform:scale(.96)}
-.tile-img{width:100%;aspect-ratio:2/3;object-fit:cover;object-position:center 10%;display:block;pointer-events:none;flex-shrink:0}
-.tile-info{padding:5px 7px 7px;display:flex;flex-direction:column;gap:2px;background:#1c1c1c}
-.tile-info-date{font-size:clamp(9px,1.4vw,11px);color:rgba(255,255,255,.6);letter-spacing:.04em;white-space:nowrap;font-weight:500}
-.tile-info-story{font-size:clamp(9px,1.4vw,11px);color:rgba(255,255,255,.32);line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-style:italic;margin-top:1px}
-
-/* ═══ VIDEO TILE ═══ */
-.tile-vid-box{width:100%;aspect-ratio:2/3;background:linear-gradient(145deg,#0d1117 0%,#1a1a2e 55%,#0f2040 100%);position:relative;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.vid-play-badge{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none}
-.vid-play-badge svg{
-  width:clamp(28px,6vw,44px);height:clamp(28px,6vw,44px);
-  background:rgba(229,9,20,.85);border-radius:50%;
-  padding:clamp(7px,1.5vw,11px) clamp(9px,1.8vw,13px) clamp(7px,1.5vw,11px) clamp(11px,2.2vw,16px);
-  filter:drop-shadow(0 4px 16px rgba(0,0,0,.6));
-}
-
-/* ═══ VIDEO OVERLAY ═══ */
-#vid-overlay{
-  position:fixed;inset:0;z-index:960;background:rgba(0,0,0,.97);
-  display:flex;align-items:center;justify-content:center;
-  opacity:0;pointer-events:none;transition:opacity .3s;
-}
-#vid-overlay.open{opacity:1;pointer-events:all}
-#vid-close{
-  position:absolute;top:max(20px,env(safe-area-inset-top,20px));right:22px;
-  background:none;border:none;color:rgba(255,255,255,.65);
-  font-size:34px;cursor:pointer;line-height:1;padding:4px;z-index:2;transition:color .2s;
-}
-#vid-close:active,#vid-close:hover{color:#fff}
-#vid-player{
-  max-width:min(94vw,680px);
-  max-height:calc(100vh - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px) - 80px);
-  border-radius:10px;box-shadow:0 8px 56px rgba(0,0,0,.8);
-  background:#000;display:block;
-}
-
-.home-bottom-bar{position:absolute;bottom:0;left:0;right:0;z-index:20;height:clamp(40px,6vh,52px);background:linear-gradient(to top,rgba(0,0,0,.8),transparent);display:flex;align-items:center;justify-content:space-between;padding:0 clamp(20px,4vw,52px)}
-.hbb-btn{background:none;border:none;color:rgba(255,255,255,.52);font-size:clamp(10px,1.8vw,13px);font-family:'Inter',sans-serif;font-weight:500;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;transition:color .2s;padding:6px 0}
-@media(hover:hover){.hbb-btn:hover{color:#fff}}
-.hbb-btn:active{color:#fff}
-
-/* ═══ CREDITS ═══ */
-#s-credits{background:#000;display:flex;align-items:center;padding:0 4% 0 6%;gap:5%}
-.credits-back{
-  position:absolute;top:max(18px,env(safe-area-inset-top,18px));left:clamp(16px,4vw,32px);
-  z-index:20;background:none;border:none;
-  color:rgba(255,255,255,.38);font-size:22px;cursor:pointer;
-  transition:color .2s;line-height:1;padding:6px;
-}
-.credits-back:hover,.credits-back:active{color:#fff}
-.credits-photo{flex-shrink:0;width:clamp(180px,28vw,340px);height:clamp(180px,28vw,340px);border-radius:10px;overflow:hidden;transform:rotate(-4deg);box-shadow:6px 14px 44px rgba(0,0,0,.75);align-self:center;position:relative}
-.slide-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 10%;opacity:0;transition:opacity .9s ease}
-.slide-img.on{opacity:1}
-.slide-img.letterbox{object-fit:contain;object-position:center;background:#0a0a0a}
-.credits-text-wrap{flex:1;overflow:hidden;height:85%;display:flex;align-items:center;mask-image:linear-gradient(to bottom,transparent 0%,black 14%,black 86%,transparent 100%);-webkit-mask-image:linear-gradient(to bottom,transparent 0%,black 14%,black 86%,transparent 100%)}
-@keyframes scrollUp{0%{transform:translate3d(0,70vh,0)}100%{transform:translate3d(0,-125%,0)}}
-.credits-inner{display:flex;flex-direction:column;gap:clamp(10px,1.8vh,18px)}
-.credit-row{display:flex;gap:clamp(12px,2.5vw,24px);align-items:baseline}
-.c-label{width:clamp(120px,18vw,220px);flex-shrink:0;text-align:right;font-size:clamp(10px,1.8vw,14px);color:rgba(255,255,255,.5);font-weight:300;line-height:1.6}
-.c-value{font-size:clamp(10px,1.8vw,14px);color:#fff;font-weight:400;line-height:1.6}
-
-/* ═══ iPhone Pro Max extras ═══ */
-@media(max-width:480px){
-  .nf-links{gap:clamp(6px,2.5vw,12px)}
-  .nf-links li a{font-size:clamp(8px,2vw,11px)}
-  .nf-nav-right{gap:clamp(6px,2vw,12px)}
-  .hbb-btn{font-size:clamp(9px,2.2vw,12px)}
-  .btn-play,.btn-ec{padding:8px clamp(12px,3vw,18px);font-size:clamp(10px,2.2vw,13px)}
-  .nf-hero{height:50%}
-  .tile{flex:0 0 clamp(115px,32vw,160px)}
-  .tile-img{aspect-ratio:3/4}
-}
-@media(max-height:680px){
-  .nf-hero{height:48%}
-  .nf-photo-section{padding-top:4px;padding-bottom:30px}
-  .tile-img{aspect-ratio:3/4}
-}
-
-/* ═══ CREDITS — mobile stacked layout ═══ */
-@media(max-width:700px){
-  #s-credits{
-    flex-direction:column;
-    padding:max(env(safe-area-inset-top,16px),16px) 0 max(env(safe-area-inset-bottom,8px),8px);
-    gap:0;
-    align-items:center;
-    justify-content:flex-start;
-  }
-  .credits-photo{
-    width:min(70vw,300px);height:min(70vw,300px);
-    margin:clamp(14px,2.5vh,28px) auto clamp(10px,1.8vh,20px);
-    transform:rotate(-2deg);
-    flex-shrink:0;
-  }
-  .credits-text-wrap{
-    flex:none;
-    width:100%;
-    height:52vh;
-    mask-image:linear-gradient(to bottom,transparent 0%,black 8%,black 92%,transparent 100%);
-    -webkit-mask-image:linear-gradient(to bottom,transparent 0%,black 8%,black 92%,transparent 100%);
-  }
-  .credits-inner{padding:0 5%}
-  .credit-row{gap:8px}
-  .c-label{width:min(38vw,160px);font-size:clamp(9px,3vw,13px);text-align:right}
-  .c-value{font-size:clamp(9px,3vw,13px)}
-}
-
-/* ═══ MILESTONE SLIDESHOW ═══ */
-#ss-overlay{position:fixed;inset:0;z-index:900;background:rgba(0,0,0,.96);display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .3s}
-#ss-overlay.open{opacity:1;pointer-events:all}
-#ss-close{position:absolute;top:max(18px,env(safe-area-inset-top,18px));right:20px;background:none;border:none;color:rgba(255,255,255,.7);font-size:32px;cursor:pointer;line-height:1;padding:4px;z-index:2;transition:color .2s}
-#ss-close:active,#ss-close:hover{color:#fff}
-.ss-row{display:flex;align-items:center;gap:clamp(10px,3vw,28px);width:100%;justify-content:center;padding:0 clamp(16px,4vw,48px)}
-.ss-arrow{background:rgba(255,255,255,.08);border:none;color:rgba(255,255,255,.7);font-size:clamp(24px,5vw,40px);width:clamp(38px,6vw,54px);height:clamp(38px,6vw,54px);border-radius:50%;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:background .18s,color .18s}
-.ss-arrow:active,.ss-arrow:hover{background:rgba(255,255,255,.18);color:#fff}
-#ss-img-wrap{position:relative;display:flex;flex-direction:column;align-items:center;gap:14px;max-width:min(80vw,500px)}
-#ss-img{max-width:100%;max-height:65vh;border-radius:10px;object-fit:contain;box-shadow:0 8px 48px rgba(0,0,0,.8);display:block}
-#ss-date{font-family:'Playfair Display',serif;font-style:italic;font-size:clamp(13px,2.5vw,18px);color:rgba(255,255,255,.65);letter-spacing:.04em;min-height:1.4em;text-align:center}
-#ss-story{font-size:clamp(11px,2vw,14px);color:rgba(255,255,255,.42);letter-spacing:.02em;text-align:center;min-height:1.3em;font-style:italic;padding:0 8px}
-#ss-counter{font-size:clamp(10px,1.8vw,13px);color:rgba(255,255,255,.35);letter-spacing:.06em}
-#ss-dots{display:flex;gap:6px;align-items:center;margin-top:14px;flex-wrap:wrap;justify-content:center;max-width:90vw}
-.ss-dot{width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,.25);transition:background .25s,transform .25s}
-.ss-dot.on{background:#e50914;transform:scale(1.5)}
-
-/* ═══ LIGHTBOX ═══ */
-#lightbox{position:fixed;inset:0;z-index:950;background:rgba(0,0,0,.93);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .3s;padding:20px}
-#lightbox.open{opacity:1;pointer-events:all}
-.lb-inner{position:relative;display:flex;flex-direction:column;align-items:center;gap:14px;max-width:min(88vw,500px)}
-#lb-img{max-width:100%;max-height:72vh;border-radius:10px;object-fit:contain;box-shadow:0 8px 48px rgba(0,0,0,.8)}
-.lb-close{position:absolute;top:-44px;right:-4px;background:none;border:none;color:rgba(255,255,255,.7);font-size:32px;cursor:pointer;line-height:1;transition:color .2s}
-.lb-close:active,.lb-close:hover{color:#fff}
-.lb-date{font-family:'Playfair Display',serif;font-style:italic;font-size:clamp(13px,3vw,19px);color:rgba(255,255,255,.65);letter-spacing:.04em}
-.lb-story{font-size:clamp(12px,2.5vw,15px);color:rgba(255,255,255,.45);letter-spacing:.02em;text-align:center;line-height:1.5;font-style:italic;padding:0 4px}
-</style>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@1,400;1,500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/app.css">
 </head>
 <body>
 
-<audio id="bgm" preload="auto">
-  <source src="audio/Beete Lamhein The Train 320 Kbps.mp3" type="audio/mpeg">
-</audio>
+<!-- ═══ INTRO ═══ -->
+<section class="screen on" id="intro" aria-label="Intro">
+  <video id="intro-video" playsinline preload="auto" src="netflix-intro.mp4"></video>
+  <button id="tap" type="button">
+    <img class="tap-n" src="images/netflix-n.png" alt="">
+    <span class="tap-ring" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 3l14 9-14 9z"/></svg></span>
+    <span class="tap-label">Tap to begin</span>
+    <span class="tap-sub">made with love, just for you</span>
+  </button>
+</section>
 
-<!-- Milestone Slideshow -->
-<div id="ss-overlay">
-  <button id="ss-close" onclick="closeSS()">&#215;</button>
-  <div class="ss-row">
-    <button class="ss-arrow" onclick="ssStep(-1)">&#8249;</button>
-    <div id="ss-img-wrap">
-      <img id="ss-img" src="" alt="">
-      <div id="ss-date"></div>
-      <div id="ss-story"></div>
-      <div id="ss-counter"></div>
+<!-- ═══ WHO'S WATCHING ═══ -->
+<section class="screen" id="profiles" aria-label="Who's watching">
+  <div class="profiles-top"><button class="link" type="button" id="replay-intro">↻ Replay intro</button></div>
+  <h1 class="whos">Who's watching?</h1>
+  <p class="whos-sub">every season, a favourite memory</p>
+  <div class="profile-row" id="profile-row"></div>
+  <button class="manage" type="button" id="manage-btn">Manage profiles</button>
+</section>
+
+<!-- ═══ BROWSE ═══ -->
+<section class="screen" id="browse" aria-label="Browse">
+  <nav class="nav" id="nav">
+    <svg class="nav-logo" viewBox="0 0 111 190" aria-label="N"><polygon points="0,0 27,0 27,190 0,190" fill="#E50914"/><polygon points="84,0 111,0 111,190 84,190" fill="#E50914"/><polygon points="0,0 27,0 111,190 84,190" fill="#B20710"/></svg>
+    <ul class="nav-links">
+      <li><button type="button" class="cur" data-nav="top">Home</button></li>
+      <li><button type="button" data-nav="seasons">Seasons</button></li>
+      <li><button type="button" data-nav="videos">Videos</button></li>
+      <li><button type="button" data-nav="finale">Credits</button></li>
+    </ul>
+    <button type="button" id="nav-profile" aria-label="Switch profile"><img class="nav-avatar" id="nav-avatar" src="images/netflix-n.png" alt=""></button>
+  </nav>
+
+  <header class="billboard" id="billboard">
+    <div class="billboard-media">
+      <img id="bb-poster" src="" alt="">
+      <video id="bb-video" muted playsinline loop preload="metadata"></video>
     </div>
-    <button class="ss-arrow" onclick="ssStep(1)">&#8250;</button>
-  </div>
-  <div id="ss-dots"></div>
-</div>
-
-<!-- Lightbox -->
-<div id="lightbox" onclick="closeLB()">
-  <div class="lb-inner" onclick="event.stopPropagation()">
-    <button class="lb-close" onclick="closeLB()">&#215;</button>
-    <img id="lb-img" src="" alt="">
-    <div id="lb-date" class="lb-date"></div>
-    <div id="lb-story" class="lb-story"></div>
-  </div>
-</div>
-
-<!-- Video Overlay -->
-<div id="vid-overlay" onclick="closeVid()">
-  <button id="vid-close" onclick="closeVid()">&#215;</button>
-  <video id="vid-player" controls playsinline webkit-playsinline onclick="event.stopPropagation()"></video>
-</div>
-
-<div id="stage">
-
-  <!-- INTRO -->
-  <div class="scene active" id="s-intro">
-    <video id="intro-video" playsinline muted preload="auto">
-      <source src="netflix-intro.mp4" type="video/mp4">
-    </video>
-    <div id="tap-cover" onclick="beginExperience()">
-      <img class="tap-n" src="images/netflix-n.png" alt="N">
-      <div class="tap-ring">
-        <svg viewBox="0 0 24 24" width="24" height="24" fill="#fff"><polygon points="5,3 19,12 5,21"/></svg>
-      </div>
-      <span class="tap-label">Tap to begin</span>
-      <span class="tap-compliment">made with love, just for you</span>
-    </div>
-  </div>
-
-  <!-- WHO'S WATCHING -->
-  <div class="scene" id="s-profiles">
-    <button class="profiles-back" onclick="resetIntro()">&#8592; Replay</button>
-    <p class="whos-title">Who's Watching?</p>
-    <p class="whos-subtitle">every chapter, a favourite memory</p>
-    <div class="profiles-row" id="profiles-row"></div>
-    <button class="manage-btn">MANAGE PROFILES</button>
-  </div>
-
-  <!-- NETFLIX HOME -->
-  <div class="scene" id="s-home">
-    <nav class="nf-nav">
-      <span class="nf-logo">NETFLIX</span>
-      <ul class="nf-links">
-        <li><a onclick="goTo('profiles')" style="cursor:pointer">Home</a></li>
-        <li><a>Memories</a></li>
-        <li><a>Moments</a></li>
-        <li><a>Our Story</a></li>
-      </ul>
-      <div class="nf-nav-right">
-        <svg class="nf-nav-icon" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.7)" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="6"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        <svg class="nf-nav-icon" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.7)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-        <div class="nf-avatar">P</div>
-      </div>
-    </nav>
-    <div class="nf-hero">
-      <div class="nf-hero-bg" id="home-hero-bg"></div>
-      <div class="nf-hero-overlay"></div>
-      <div class="nf-hero-content">
-        <div class="nf-badge">
-          <svg viewBox="0 0 111 190"><polygon points="0,0 27,0 27,190 0,190" fill="#E50914"/><polygon points="84,0 111,0 111,190 84,190" fill="#E50914"/><polygon points="0,0 27,0 111,190 84,190" fill="#E50914"/></svg>
-          <span class="nf-badge-text">LOVE SERIES</span>
-        </div>
-        <div class="nf-match">100% Match ♡</div>
-        <h1 class="nf-hero-title" id="home-title"></h1>
-        <p  class="nf-hero-meta"  id="home-meta"></p>
-        <p  class="nf-hero-desc"  id="home-desc"></p>
-        <p  class="nf-hero-compliment" id="home-compliment"></p>
-        <div class="nf-hero-btns">
-          <button class="btn-play" id="home-play-btn">
-            <svg width="11" height="11" viewBox="0 0 11 11"><path d="M0 0l11 5.5L0 11V0z" fill="#000"/></svg>Play
-          </button>
-          <button class="btn-ec" onclick="goTo('credits')">View End Credits</button>
-        </div>
+    <div class="billboard-shade"></div>
+    <div class="billboard-body">
+      <div class="series-badge"><svg class="n" viewBox="0 0 111 190"><polygon points="0,0 27,0 27,190 0,190" fill="#E50914"/><polygon points="84,0 111,0 111,190 84,190" fill="#E50914"/><polygon points="0,0 27,0 111,190 84,190" fill="#B20710"/></svg><span>Series</span></div>
+      <h1 class="bb-title" id="bb-title"></h1>
+      <p class="bb-tag" id="bb-tag"></p>
+      <div class="bb-meta" id="bb-meta"></div>
+      <div class="bb-actions">
+        <button class="btn primary" type="button" id="bb-play"><svg viewBox="0 0 24 24"><path d="M6 3l14 9-14 9z" fill="currentColor"/></svg><span>Play</span></button>
+        <button class="btn secondary" type="button" id="bb-info"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5" stroke-linecap="round"/></svg>More Info</button>
       </div>
     </div>
-    <div class="nf-photo-section">
-      <div class="row-label" id="row-label">Our Story</div>
-      <div class="tiles-strip" id="home-tiles"></div>
+    <button class="bb-mute" type="button" id="bb-mute" aria-label="Unmute"><svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 4V5L7 9H3zm13.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4z"/></svg></button>
+  </header>
+
+  <main class="rows" id="rows"></main>
+  <footer class="footer">
+    <button class="link" type="button" id="foot-credits">View end credits ›</button>
+    <p>Shivani &amp; Premal · Toronto · 2023 – forever</p>
+  </footer>
+</section>
+
+<!-- ═══ DETAILS SHEET ═══ -->
+<div class="sheet-wrap" id="sheet-wrap" role="dialog" aria-modal="true" aria-label="Series details">
+  <div class="sheet" id="sheet">
+    <div class="sheet-hero">
+      <img id="sheet-img" src="" alt="">
+      <button class="sheet-close" type="button" id="sheet-close" aria-label="Close">×</button>
+      <h2 class="sheet-title" id="sheet-title"></h2>
     </div>
-    <div class="home-bottom-bar">
-      <button class="hbb-btn" onclick="goTo('profiles')">&#8592; Who's Watching</button>
-      <button class="hbb-btn" onclick="goTo('credits')">View End Credits &#8250;</button>
+    <div class="sheet-body">
+      <div class="sheet-meta" id="sheet-meta"></div>
+      <div class="sheet-actions">
+        <button class="btn primary" type="button" id="sheet-play"><svg viewBox="0 0 24 24"><path d="M6 3l14 9-14 9z" fill="currentColor"/></svg><span>Play</span></button>
+      </div>
+      <p class="sheet-syn" id="sheet-syn"></p>
+      <p class="sheet-cast" id="sheet-cast"></p>
+      <div class="season-pick">
+        <h3>Episodes</h3>
+        <label class="select"><span class="sr">Season</span><select id="season-select"></select></label>
+      </div>
+      <p class="season-blurb" id="season-blurb"></p>
+      <div class="ep-list" id="ep-list"></div>
+      <p class="tbc hide" id="tbc">To be continued…</p>
     </div>
   </div>
-
-  <!-- CREDITS -->
-  <div class="scene" id="s-credits">
-    <button class="credits-back" onclick="goTo('home')" title="Back">&#8592;</button>
-    <div class="credits-photo" id="credits-slideshow"></div>
-    <div class="credits-text-wrap">
-      <div class="credits-inner" id="credits-inner"></div>
-    </div>
-  </div>
-
 </div>
 
-<script>
-/* ── Safari vh fix ── */
-function setVH(){const h=window.innerHeight+'px';document.body.style.height=h;document.getElementById('stage').style.height=h;}
-setVH();window.addEventListener('resize',setVH);
+<!-- ═══ PLAYER ═══ -->
+<div id="player" aria-label="Player">
+  <div class="stage" id="stage">
+    <div class="stage-blur" id="stage-blur"></div>
+    <div class="frame" id="frame-a"></div>
+    <div class="frame" id="frame-b"></div>
+  </div>
+  <div class="pl-shade"></div>
+  <div class="pl-top">
+    <button class="icon-btn" type="button" id="pl-back" aria-label="Back"><svg viewBox="0 0 24 24"><path d="M15.5 4l-8 8 8 8 1.5-1.5L10.5 12l6.5-6.5z"/></svg></button>
+    <div class="pl-title"><b id="pl-ep"></b><span id="pl-name"></span></div>
+    <span style="flex:1"></span>
+    <button class="icon-btn" type="button" id="pl-list" aria-label="Episodes"><svg viewBox="0 0 24 24"><path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/></svg></button>
+  </div>
+  <div class="pl-caption"><div class="date" id="pl-date"></div><div class="story" id="pl-story"></div></div>
+  <div class="pl-hint">swipe or tap · space to pause</div>
+  <div class="next" id="next">
+    <img id="next-img" src="" alt="">
+    <div class="next-body"><small>Next episode</small><b id="next-title"></b>
+      <div class="next-act">
+        <button class="btn primary" type="button" id="next-play"><span class="ring"><svg viewBox="0 0 24 24"><circle class="bg" cx="12" cy="12" r="9"/><circle class="fg" id="ring-fg" cx="12" cy="12" r="9"/></svg></span>Play</button>
+        <button class="btn secondary" type="button" id="next-cancel">Stay</button>
+      </div>
+    </div>
+  </div>
+  <div class="pl-bottom">
+    <div class="scrub" id="scrub">
+      <div class="bar"><div class="ticks" id="ticks"></div><div class="fill" id="fill"></div><div class="knob" id="knob"></div></div>
+      <span class="time" id="pl-time">0 / 0</span>
+    </div>
+    <div class="pl-controls">
+      <div class="grp">
+        <button class="icon-btn" type="button" id="pl-prev" aria-label="Previous"><svg viewBox="0 0 24 24"><path d="M6 5h2v14H6zm12 0v14L9 12z"/></svg></button>
+        <button class="icon-btn big" type="button" id="pl-toggle" aria-label="Pause"><svg id="ico-pause" viewBox="0 0 24 24"><path d="M6 4h4v16H6zm8 0h4v16h-4z"/></svg><svg id="ico-play" class="hide" viewBox="0 0 24 24"><path d="M7 4l13 8-13 8z"/></svg></button>
+        <button class="icon-btn" type="button" id="pl-next" aria-label="Next"><svg viewBox="0 0 24 24"><path d="M16 5h2v14h-2zM6 5v14l9-7z"/></svg></button>
+      </div>
+      <div class="grp">
+        <button class="lbl" type="button" id="pl-nextep"><svg viewBox="0 0 24 24"><path d="M5 4l10 8-10 8zM17 4h2v16h-2z"/></svg>Next Ep.</button>
+      </div>
+    </div>
+  </div>
+</div>
 
-/* ──────────────────────────────────────
-   DATE HELPERS
-────────────────────────────────────── */
-const MONTH_LONG  = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-const MONTH_SHORT = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+<!-- ═══ FINALE ═══ -->
+<section class="screen" id="finale" aria-label="Credits">
+  <div class="credits-wrap">
+    <div class="credits-photo" id="credits-photo"></div>
+    <div class="credits-scroll"><div class="credits-inner" id="credits-inner"></div></div>
+    <button class="credits-skip" type="button" id="credits-skip">Skip ›</button>
+  </div>
+  <div class="closing" id="closing">
+    <div class="closing-bg" id="closing-bg"></div>
+    <div class="closing-body">
+      <small>The End · For Now</small>
+      <h2 id="closing-l1"></h2>
+      <p id="closing-l2"></p>
+      <p class="sign" id="closing-sign"></p>
+      <div class="closing-act">
+        <button class="btn primary" type="button" id="watch-again"><svg viewBox="0 0 24 24"><path d="M12 5V2L7 6l5 4V7a5 5 0 1 1-5 5H5a7 7 0 1 0 7-7z" fill="currentColor"/></svg>Watch again</button>
+        <button class="btn secondary" type="button" id="closing-browse">Browse episodes</button>
+      </div>
+    </div>
+  </div>
+  <audio id="bgm" preload="none"></audio>
+</section>
 
-function _dateFromFile(fn){
-  const m = fn.match(/(\d{4})(\d{2})(\d{2})/);
-  if(!m) return null;
-  return {y:m[1], mo:m[2], d:m[3]};
-}
-function fullDate(fn){
-  if(fn==='valentine.jpg') return 'February 14, 2026';
-  if(SNAP_DATES[fn]) return SNAP_DATES[fn].full;
-  const d=_dateFromFile(fn);
-  if(!d) return '';
-  return `${MONTH_LONG[+d.mo-1]} ${+d.d}, ${d.y}`;
-}
-function shortDate(fn){
-  if(fn==='valentine.jpg') return "Feb '26";
-  if(SNAP_DATES[fn]) return SNAP_DATES[fn].short;
-  const d=_dateFromFile(fn);
-  if(!d) return '';
-  return `${MONTH_SHORT[+d.mo-1]} '${d.y.slice(2)}`;
-}
-function _sortKey(fn){
-  if(SNAP_DATES[fn]) return SNAP_DATES[fn].sort;
-  if(fn==='valentine.jpg') return 20260214;
-  const d=_dateFromFile(fn);
-  if(!d) return 99999999;
-  return +(d.y+d.mo+d.d);
-}
+<div id="toast" role="status"></div>
 
-/* helpers */
-const img = fn => 'images/' + fn;
-const vid = fn => 'videos/' + fn;
-
-/* ── Snapchat date lookup (confirmed by Premal) ── */
-const SNAP_DATES = {
-  'Snapchat-1006342143.jpg': {full:'October 18, 2024',  short:"Oct '24", sort:20241018},
-  'Snapchat-10814446.jpg':   {full:'November 4, 2025',  short:"Nov '25", sort:20251104},
-  'Snapchat-1274994827.jpg': {full:'May 29, 2025',      short:"May '25", sort:20250529},
-  'Snapchat-1282282821.jpg': {full:'April 2, 2026',     short:"Apr '26", sort:20260402},
-  'Snapchat-1409371325.jpg': {full:'August 26, 2024',   short:"Aug '24", sort:20240826},
-  'Snapchat-1433906752.jpg': {full:'January 25, 2025',  short:"Jan '25", sort:20250125},
-  'Snapchat-1493094235.jpg': {full:'',                  short:'',        sort:99999997},
-  'Snapchat-1605463310.jpg': {full:'November 4, 2025',  short:"Nov '25", sort:20251104},
-  'Snapchat-1884807469.jpg': {full:'October 12, 2025',  short:"Oct '25", sort:20251012},
-  'Snapchat-1945727858.jpg': {full:'April 5, 2025',     short:"Apr '25", sort:20250405},
-  'Snapchat-1960320966.jpg': {full:'April 5, 2025',     short:"Apr '25", sort:20250405},
-  'Snapchat-1963777634.jpg': {full:'May 29, 2025',      short:"May '25", sort:20250529},
-  'Snapchat-2117433068.jpg': {full:'October 18, 2024',  short:"Oct '24", sort:20241018},
-  'Snapchat-524185506.jpg':  {full:'May 29, 2025',      short:"May '25", sort:20250529},
-  'Snapchat-552263264.jpg':  {full:'November 20, 2024', short:"Nov '24", sort:20241120},
-  'Snapchat-687287911.jpg':  {full:'May 29, 2025',      short:"May '25", sort:20250529},
-  'Snapchat-790482175.jpg':  {full:'May 29, 2025',      short:"May '25", sort:20250529},
-  'Snapchat-918357969.jpg':  {full:'',                  short:'',        sort:99999998},
-};
-
-/* ── Stories — confirmed by Premal ── */
-const STORIES = {
-  /* G1 — First temple visit Aug 26 */
-  '20240826_182222.jpg':'First time we went to a temple together.',
-  '20240826_182223.jpg':'First time we went to a temple together.',
-  '20240826_182226.jpg':'First time we went to a temple together.',
-  'Snapchat-1409371325.jpg':'First time we went to a temple together.',
-  /* G2 — First date Sep 30 */
-  '20240930_174104.jpg':'Our very first date — Liu Loqum Atelier, College St.',
-  '20240930_174105.jpg':'Our very first date — Liu Loqum Atelier, College St.',
-  '20240930_174109.jpg':'Our very first date — Liu Loqum Atelier, College St.',
-  /* G3 — BarChef Oct 12 */
-  '20241012_012640.jpg':'BarChef Toronto.',
-  '20241012_012827.jpg':'BarChef Toronto.',
-  '20241012_021256.jpg':'BarChef Toronto.',
-  '20241012_021345.jpg':'BarChef Toronto.',
-  '20241012_021837.jpg':'BarChef Toronto.',
-  /* G4 — Atul Purohit Navratri Oct 14 */
-  '20241014_214812.jpg':'Atul Purohit Navratri.',
-  '20241014_214813.jpg':'Atul Purohit Navratri.',
-  '20241014_214823.jpg':'Atul Purohit Navratri.',
-  '20241014_214824.jpg':'Atul Purohit Navratri.',
-  /* G5 — Navratri Oct 18 */
-  'Snapchat-1006342143.jpg':'Navratri 2024.',
-  'Snapchat-2117433068.jpg':'Navratri 2024.',
-  /* G6 — Her first car Nov 3 */
-  '20241103_211756.jpg':'The day she got her first car — all by herself.',
-  '20241103_211837.jpg':'The day she got her first car — all by herself.',
-  /* G7 — Downtown Nov 20 */
-  'IMG_20241120_162835_667.jpg':'A random day exploring downtown together.',
-  'Snapchat-552263264.jpg':'A random day exploring downtown together.',
-  /* G8 — Clockwork Bar Dec 14 */
-  '20241214_233307.jpg':'Clockwork Bar at the Fairmont Royal York.',
-  '20241214_233522.jpg':'Clockwork Bar at the Fairmont Royal York.',
-  /* G9 — Date night Dec 15 */
-  '20241215_002835.jpg':'A date night out, exploring the city together.',
-  '20241215_003011.jpg':'A date night out, exploring the city together.',
-  '20241215_003041.jpg':'A date night out, exploring the city together.',
-  '20241215_003130.jpg':'A date night out, exploring the city together.',
-  '20241215_003241.jpg':'A date night out, exploring the city together.',
-  '20241215_003304.jpg':'A date night out, exploring the city together.',
-  /* G10 — Niagara Falls Jan 5 */
-  'IMG_20250105_232702_246.jpg':'A solo trip to Niagara Falls.',
-  /* G11 — Airport reunion Jan 25 */
-  'Snapchat-1433906752.jpg':'The day she flew back to Canada from India. I was waiting with roses.',
-  /* G12 — Cactus Club Feb 7–8 */
-  '20250207_233941.jpg':'Cactus Club Cafe, downtown Toronto.',
-  '20250207_234003.jpg':'Cactus Club Cafe, downtown Toronto.',
-  '20250207_234008.jpg':'Cactus Club Cafe, downtown Toronto.',
-  '20250207_234919.jpg':'Cactus Club Cafe, downtown Toronto.',
-  '20250207_234924.jpg':'Cactus Club Cafe, downtown Toronto.',
-  '20250207_234928.jpg':'Cactus Club Cafe, downtown Toronto.',
-  '20250208_000143.jpg':'Cactus Club Cafe, downtown Toronto.',
-  /* G13 — Valentine */
-  'valentine.jpg':"Her Valentine's Day letter to me — a note I will keep forever.",
-  /* G14 — Wataly Feb 15 */
-  '20250215_172023.jpg':'Wataly at the Shops at Don Mills.',
-  /* G15 — Home Apr 5 */
-  'Snapchat-1945727858.jpg':'Home. Just us, being us.',
-  'Snapchat-1960320966.jpg':'Home. Just us, being us.',
-  /* G16 — Planta Toronto Apr 12 */
-  '20250412_230943.jpg':'Planta Toronto.',
-  '20250412_231012.jpg':'Planta Toronto.',
-  '20250412_231015.jpg':'Planta Toronto.',
-  '20250412_231130.jpg':'Planta Toronto.',
-  '20250412_231133.jpg':'Planta Toronto.',
-  '20250412_231204.jpg':'Planta Toronto.',
-  /* G17 — Pai Thai Apr 26 */
-  '20250426_190640.jpg':'Pai Thai Uptown.',
-  '20250426_221747.jpg':'Pai Thai Uptown.',
-  '20250426_221751.jpg':'Pai Thai Uptown.',
-  '20250426_221755.jpg':'Pai Thai Uptown.',
-  '20250426_221758.jpg':'Pai Thai Uptown.',
-  '20250426_223101.jpg':'Pai Thai Uptown.',
-  /* G18a — Surprised at work May 21 */
-  '20250521_144010.jpg':'Surprised her at work.',
-  /* G18b — Piano Piano May 23 */
-  '20250523_220814.jpg':'Piano Piano restaurant.',
-  /* G19+G20 — Graduation May 27–29 */
-  '20250527_182137.jpg':'Her graduation from Northeastern University. So incredibly proud of her.',
-  '20250527_182725.jpg':'Her graduation from Northeastern University.',
-  '20250527_182726.jpg':'Her graduation from Northeastern University.',
-  '20250527_182736.jpg':'Her graduation from Northeastern University.',
-  '20250527_182738.jpg':'Her graduation from Northeastern University.',
-  '20250527_182746.jpg':'Her graduation from Northeastern University.',
-  'Snapchat-1274994827.jpg':'Her graduation from Northeastern University.',
-  'Snapchat-1963777634.jpg':'Her graduation from Northeastern University.',
-  'Snapchat-524185506.jpg':'Her graduation from Northeastern University.',
-  'Snapchat-687287911.jpg':'Her graduation from Northeastern University.',
-  'Snapchat-790482175.jpg':'Her graduation from Northeastern University.',
-  /* G21 — Badiali Pizzeria Jun 29 */
-  '20250629_151249.jpg':'Badiali Pizzeria.',
-  '20250629_151320.jpg':'Badiali Pizzeria.',
-  '20250629_151405.jpg':'Badiali Pizzeria.',
-  '20250629_151406.jpg':'Badiali Pizzeria.',
-  '20250629_151523.jpg':'Badiali Pizzeria.',
-  /* G22 — Alfie\'s + Etobicoke Lakeshore Jul 6 */
-  '20250706_141011.jpg':"Alfie's Sandwiches, then a walk along Etobicoke Lakeshore.",
-  '20250706_151749.jpg':'Etobicoke Lakeshore.',
-  '20250706_151818.jpg':'Etobicoke Lakeshore.',
-  '20250706_151820.jpg':'Etobicoke Lakeshore.',
-  '20250706_151912.jpg':'Etobicoke Lakeshore.',
-  /* G23 — Elora Jul 12 */
-  '20250712_202435.jpg':'Elora, the Lobby Bar.',
-  '20250712_202440.jpg':'Elora, the Lobby Bar.',
-  /* G24 — Her birthday Jul 21 */
-  '20250721_151523.jpg':'Her birthday. She wore the dress I gifted her.',
-  '20250721_220526.jpg':"Cactus Club, Yonge & Sheppard. I'm sorry that day wasn't what you deserved, Shivani.",
-  '20250721_220529.jpg':'Her birthday.',
-  '20250721_220605.jpg':'Her birthday.',
-  '20250721_220615.jpg':'Her birthday.',
-  /* G25 — Random day Jul 27 */
-  '20250727_201741.jpg':'Just us, on a random day.',
-  '20250727_201742.jpg':'Just us, on a random day.',
-  /* G26 — Crystal Beach Aug 3 */
-  '20250803_194524.jpg':'Crystal Beach, Ontario.',
-  '20250803_194526.jpg':'Crystal Beach, Ontario.',
-  '20250803_194808.jpg':'Crystal Beach, Ontario.',
-  /* G27+G28 — Navratri 2025 */
-  '20251011_223537.jpg':'Navratri 2025.',
-  '20251011_223614.jpg':'Navratri 2025.',
-  '20251011_223618.jpg':'Navratri 2025.',
-  '20251011_223639.jpg':'Navratri 2025.',
-  'IMG_20251012_172701_525.jpg':'Navratri 2025.',
-  'IMG_20251012_172719_495.jpg':'Navratri 2025.',
-  'IMG_20251012_172727_997.jpg':'Navratri 2025.',
-  'IMG_20251012_172731_352.jpg':'Navratri 2025.',
-  'Snapchat-1884807469.jpg':'Navratri 2025.',
-  /* G29 — Her random day Nov 4 */
-  'Snapchat-10814446.jpg':'Her, just being her.',
-  'Snapchat-1605463310.jpg':'Her, just being her.',
-  /* G30 — Old photo Feb 21 */
-  'Screenshot_20260221_202434_Instagram.jpg':'An old photo I keep coming back to.',
-  /* G31 — Bob haircut Apr 2 */
-  '20260402_145233.jpg':'The day she got her bob haircut.',
-  '20260402_145240.jpg':'The day she got her bob haircut.',
-  'Snapchat-1282282821.jpg':'The day she got her bob haircut.',
-  /* G32 — Last day Apr 23 */
-  '20260423_171132.jpg':'The last day before I left Canada. The photo I cherish the most.',
-};
-
-/* ──────────────────────────────────────
-   MILESTONE DATA
-   Photos sorted by date; Snapchat photos
-   placed by visual analysis of content.
-────────────────────────────────────── */
-const MILESTONES = [
-  {
-    /* ── 1 MONTH: Aug 26 – Sep 30, 2024 ── */
-    label:   '1 month',
-    sublabel:'Aug – Sep 2024',
-    photo:   img('20240826_182222.jpg'),
-    heading: 'the beginning',
-    desc:    'August 2024 · First temple visit. First date at Liu Loqum Atelier.',
-    compliment: 'you walked into my life and made it complete',
-    rowLabel: 'Chapter 1 · The Beginning',
-    hero:    img('20240826_182223.jpg'),
-    photos: [
-      '20240826_182222.jpg','20240826_182223.jpg','20240826_182226.jpg',
-      '20240930_174104.jpg','20240930_174105.jpg','20240930_174109.jpg',
-      'Snapchat-1409371325.jpg', // Aug 26 — first temple visit together
-    ].map(img),
-    vids: ['20240825_220332.mp4'],
-  },
-  {
-    /* ── 3 MONTHS: Oct – Dec 2024 ── */
-    label:   '3 months',
-    sublabel:'Oct – Dec 2024',
-    photo:   img('20241014_214813.jpg'),
-    heading: 'three months of us',
-    desc:    'October 2024 · Navratri nights, her first car, date nights at the Fairmont.',
-    compliment: 'i was falling harder for you every single day',
-    rowLabel: 'Chapter 2 · Growing Together',
-    hero:    img('20241215_002835.jpg'),
-    photos: [
-      '20241012_012640.jpg','20241012_012827.jpg','20241012_021256.jpg',
-      '20241012_021345.jpg','20241012_021837.jpg',
-      '20241014_214812.jpg','20241014_214813.jpg','20241014_214823.jpg','20241014_214824.jpg',
-      '20241103_211756.jpg','20241103_211837.jpg',
-      'IMG_20241120_162835_667.jpg',
-      '20241214_233307.jpg','20241214_233522.jpg',
-      '20241215_002835.jpg','20241215_003011.jpg','20241215_003041.jpg',
-      '20241215_003130.jpg','20241215_003241.jpg','20241215_003304.jpg',
-      'Snapchat-1006342143.jpg', // Oct 18 — Navratri 2024
-      'Snapchat-2117433068.jpg', // Oct 18 — Navratri 2024
-      'Snapchat-552263264.jpg',  // Nov 20
-      'Snapchat-1493094235.jpg', // Premal selfie
-    ].map(img),
-    vids: [],
-  },
-  {
-    /* ── 6 MONTHS: Jan – Jun 2025 ── */
-    label:   '6 months',
-    sublabel:'Jan – Jun 2025',
-    photo:   img('20250207_234919.jpg'),
-    heading: 'half a year in love',
-    desc:    'February 2025 · Airport reunions, Cactus Club, Planta, Pai Thai — and the day she graduated.',
-    compliment: 'watching you succeed makes me the proudest person alive',
-    rowLabel: 'Chapter 3 · Her Biggest Year',
-    hero:    img('20250412_231204.jpg'),
-    photos: [
-      'IMG_20250105_232702_246.jpg',
-      '20250207_233941.jpg','20250207_234003.jpg','20250207_234008.jpg',
-      '20250207_234919.jpg','20250207_234924.jpg','20250207_234928.jpg',
-      '20250208_000143.jpg','20250215_172023.jpg',
-      '20250412_230943.jpg','20250412_231012.jpg','20250412_231015.jpg',
-      '20250412_231130.jpg','20250412_231133.jpg','20250412_231204.jpg',
-      '20250426_190640.jpg','20250426_221747.jpg','20250426_221751.jpg',
-      '20250426_221755.jpg','20250426_221758.jpg','20250426_223101.jpg',
-      '20250521_144010.jpg','20250523_220814.jpg',
-      '20250527_182137.jpg','20250527_182725.jpg','20250527_182726.jpg',
-      '20250527_182736.jpg','20250527_182738.jpg','20250527_182746.jpg',
-      '20250629_151249.jpg','20250629_151320.jpg','20250629_151405.jpg',
-      '20250629_151406.jpg','20250629_151523.jpg',
-      'Snapchat-1433906752.jpg', // Jan 25 — airport pickup from India
-      'Snapchat-1945727858.jpg', // Apr 5
-      'Snapchat-1960320966.jpg', // Apr 5
-      'Snapchat-1274994827.jpg', // May 29 — graduation
-      'Snapchat-1963777634.jpg', // May 29 — graduation
-      'Snapchat-524185506.jpg',  // May 29 — graduation
-      'Snapchat-687287911.jpg',  // May 29 — graduation
-      'Snapchat-790482175.jpg',  // May 29 — graduation
-    ].map(img),
-    vids: ['20250426_190555.mp4','20250511_160519.mp4'],
-  },
-  {
-    /* ── 1 YEAR: Jul 2025 – Apr 2026 ── */
-    label:   '1 year',
-    sublabel:'Jul 2025 – Apr 2026',
-    photo:   img('20250721_220526.jpg'),
-    heading: 'one year & counting',
-    desc:    'July 2025 · Her birthday, Crystal Beach, Navratri, and the hardest goodbye.',
-    compliment: 'a year with you was still not nearly enough',
-    rowLabel: 'Chapter 4 · One Full Year',
-    hero:    img('20250803_194808.jpg'),
-    photos: [
-      '20250706_141011.jpg','20250706_151749.jpg','20250706_151818.jpg',
-      '20250706_151820.jpg','20250706_151912.jpg',
-      '20250712_202435.jpg','20250712_202440.jpg',
-      '20250721_151523.jpg','20250721_220526.jpg','20250721_220529.jpg',
-      '20250721_220605.jpg','20250721_220615.jpg',
-      '20250727_201741.jpg','20250727_201742.jpg',
-      '20250803_194524.jpg','20250803_194526.jpg','20250803_194808.jpg',
-      '20251011_223537.jpg','20251011_223614.jpg','20251011_223618.jpg','20251011_223639.jpg',
-      'IMG_20251012_172701_525.jpg','IMG_20251012_172719_495.jpg',
-      'IMG_20251012_172727_997.jpg','IMG_20251012_172731_352.jpg',
-      'Screenshot_20260221_202434_Instagram.jpg',
-      '20260402_145233.jpg','20260402_145240.jpg','20260423_171132.jpg',
-      'Snapchat-1884807469.jpg', // Oct 12, 2025 — Navratri 2025
-      'Snapchat-10814446.jpg',   // Nov 4, 2025
-      'Snapchat-1605463310.jpg', // Nov 4, 2025
-      'Snapchat-1282282821.jpg', // Apr 2, 2026 — bob haircut
-      'valentine.jpg',           // Feb 14, 2026 — Valentine's letter
-      'Snapchat-918357969.jpg',  // Premal selfie
-    ].map(img),
-    vids: ['VID_20250803_164935_672.mp4','VID_20250803_165003_100.mp4'],
-  },
-];
-
-/* Credits slideshow — each slide is a chapter */
-const SLIDES = [
-  {src:img('valentine.jpg'),          ms:5500, letterbox:true}, // her letter
-  {src:img('20240826_182222.jpg'),    ms:2800}, // first temple
-  {src:img('20240930_174104.jpg'),    ms:2800}, // first date
-  {src:img('20241014_214813.jpg'),    ms:2800}, // navratri
-  {src:img('20241215_002835.jpg'),    ms:2800}, // fairmont date night
-  {src:img('20250207_234919.jpg'),    ms:2800}, // cactus club
-  {src:img('20250412_231204.jpg'),    ms:2800}, // planta
-  {src:img('20250527_182736.jpg'),    ms:2800}, // graduation
-  {src:img('20250629_151249.jpg'),    ms:2800}, // badiali
-  {src:img('20250721_220526.jpg'),    ms:2800}, // birthday
-  {src:img('20250803_194808.jpg'),    ms:2800}, // crystal beach
-  {src:img('20251011_223618.jpg'),    ms:2800}, // navratri 2025
-  {src:img('20260402_145240.jpg'),    ms:2800}, // bob haircut
-  {src:img('20260423_171132.jpg'),    ms:6000}, // last day — the one he cherishes most
-];
-
-const CREDITS_DATA = [
-  ['Directed by',          'God & the universe'],
-  ['Cast',                 ''],
-  ['Boyfriend',            'Premal'],
-  ['Girlfriend',           'Shivani ♡'],
-  ['',                     ''],
-  ['First date',           'Liu Loqum Atelier · Sep 30, 2024'],
-  ['First temple visit',   'Aug 26, 2024 · together'],
-  ['First Navratri',       'Atul Purohit · Oct 14, 2024'],
-  ['Her first car',        'All by herself · Nov 2024'],
-  ['Clockwork Bar',        'Fairmont Royal York · Dec 2024'],
-  ['Airport reunion',      'Jan 25, 2025 · with roses'],
-  ["Valentine's note",     "A letter I'll keep forever"],
-  ['Cactus Club',          'Feb 2025 & Jul 2025'],
-  ['BarChef Toronto',      'Oct 2024'],
-  ['Planta Toronto',       'Apr 2025'],
-  ['Pai Thai Uptown',      'Apr 2025'],
-  ['Piano Piano',          'May 2025'],
-  ['Her graduation',       'Northeastern University · May 29, 2025'],
-  ['Badiali Pizzeria',     'Jun 2025'],
-  ['Etobicoke Lakeshore',  'Jul 2025'],
-  ['Elora, the Lobby Bar', 'Jul 2025'],
-  ['Her birthday',         'Jul 21, 2025 · she wore my gift'],
-  ['A birthday apology',   "That day wasn't what you deserved. I'm sorry, Shivani."],
-  ['Crystal Beach',        'Aug 3, 2025 · Ontario'],
-  ['Navratri 2025',        'Oct 2025 · together again'],
-  ['The hardest goodbye',  'Apr 23, 2026 · but not the last chapter'],
-  ['',                     ''],
-  ['Soundtrack',           'Beete Lamhein'],
-  ['Location',             'Toronto — every corner of it'],
-  ['Shot on',              'Our camera rolls & stolen moments'],
-  ['Written by',           'Every day we chose each other'],
-  ['Executive producer',   'Fate, for planning all of this'],
-  ['',                     ''],
-  ['To Shivani',           'you are my favourite person in the world'],
-  ['',                     '— Premal ♡'],
-];
-
-/* ──────────────────────────────────────
-   ROUTING
-────────────────────────────────────── */
-let _cSsTimer=null, _cSsIdx=0;
-function goTo(key){
-  const hv=document.querySelector('#home-hero-bg video');
-  if(hv) hv.pause();
-  /* Stop credits slideshow & BGM when leaving credits */
-  if(key!=='credits'){
-    clearTimeout(_cSsTimer);
-    const bgm=document.getElementById('bgm');
-    if(bgm&&!bgm.paused) bgm.pause();
-  }
-  document.querySelectorAll('.scene').forEach(el=>el.classList.remove('active'));
-  if(key==='credits') _startCredits();
-  document.getElementById('s-'+key).classList.add('active');
-  if(key==='home'&&hv) hv.play().catch(()=>{});
-}
-
-/* ──────────────────────────────────────
-   INTRO
-────────────────────────────────────── */
-let _started=false, _introTimer=null;
-function resetIntro(){
-  _started=false;
-  clearTimeout(_introTimer);
-  const cover=document.getElementById('tap-cover');
-  const introVid=document.getElementById('intro-video');
-  cover.style.display='';cover.style.transition='';cover.style.opacity='1';
-  introVid.style.opacity='0';introVid.pause();introVid.currentTime=0;
-  goTo('intro');
-}
-function beginExperience(){
-  if(_started)return; _started=true;
-  const cover=document.getElementById('tap-cover');
-  const introVid=document.getElementById('intro-video');
-  cover.style.transition='opacity .45s';cover.style.opacity='0';
-  setTimeout(()=>cover.style.display='none',500);
-  introVid.style.opacity='1';
-  introVid.muted=false; introVid.volume=1;
-  const p=introVid.play();
-  if(p!==undefined){p.catch(()=>{introVid.muted=true;introVid.play().catch(()=>{})})}
-  /* Only one of these fires — whichever comes first clears the other */
-  const _advance=()=>{clearTimeout(_introTimer);goTo('profiles');};
-  introVid.addEventListener('ended',_advance,{once:true});
-  _introTimer=setTimeout(_advance,6500);
-}
-
-/* ──────────────────────────────────────
-   WHO'S WATCHING
-────────────────────────────────────── */
-function _buildProfiles(){
-  document.getElementById('profiles-row').innerHTML=MILESTONES.map((m,i)=>`
-    <div class="profile-item" onclick="openMilestone(${i})">
-      <div class="profile-photo"><img src="${m.photo}" alt="${m.label}" loading="eager"></div>
-      <span class="profile-label">${m.label}</span>
-    </div>`).join('');
-}
-
-/* ──────────────────────────────────────
-   NETFLIX HOME — combined photo + video tiles sorted by date
-────────────────────────────────────── */
-let _curMilestone=null;
-function openMilestone(idx){
-  const m=_curMilestone=MILESTONES[idx];
-  /* Hero — auto-play first video if available, else static image */
-  const heroBg=document.getElementById('home-hero-bg');
-  /* Tear down existing media cleanly */
-  const oldVid=heroBg.querySelector('video');
-  if(oldVid){oldVid.pause();oldVid.src='';}
-  heroBg.innerHTML='';
-  if(m.vids&&m.vids.length){
-    const vEl=document.createElement('video');
-    vEl.autoplay=true; vEl.muted=true; vEl.playsInline=true;
-    vEl.setAttribute('playsinline',''); vEl.loop=true; vEl.preload='auto';
-    vEl.poster=m.hero;
-    /* Inline styles guarantee object-fit:cover regardless of CSS cascade */
-    vEl.style.cssText='position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 20%;display:block';
-    vEl.innerHTML=`<source src="${vid(m.vids[0])}" type="video/mp4">`;
-    heroBg.appendChild(vEl);
-    vEl.play().catch(()=>{});
-  } else {
-    const iEl=document.createElement('img');
-    iEl.src=m.hero; iEl.alt=''; iEl.loading='eager';
-    heroBg.appendChild(iEl);
-  }
-  document.getElementById('home-title').textContent=m.heading;
-  document.getElementById('home-meta').textContent=m.sublabel+' · Romance · Toronto';
-  document.getElementById('home-desc').textContent=m.desc;
-  document.getElementById('home-compliment').textContent=m.compliment||'';
-  document.getElementById('row-label').textContent=m.rowLabel||'Our Story';
-  document.getElementById('home-play-btn').onclick=()=>openSS(m.photos);
-
-  /* Build combined sorted media list */
-  const allMedia=[
-    ...m.photos.map(src=>({type:'img',src,key:src.replace('images/','')})),
-    ...m.vids.map(fn=>({type:'vid',fn,key:fn})),
-  ].sort((a,b)=>_sortKey(a.key)-_sortKey(b.key));
-
-  document.getElementById('home-tiles').innerHTML=allMedia.map(item=>{
-    if(item.type==='img'){
-      const fn=item.key;
-      const sd=shortDate(fn);
-      const story=STORIES[fn]||'';
-      return `<div class="tile" onclick="openLB('${item.src}')">
-        <img class="tile-img" src="${item.src}" alt="" loading="lazy">
-        <div class="tile-info">
-          ${sd?`<div class="tile-info-date">${sd}</div>`:''}
-          ${story?`<div class="tile-info-story">${story}</div>`:''}
-        </div>
-      </div>`;
-    } else {
-      const fn=item.key;
-      const sd=shortDate(fn);
-      const vsrc=vid(item.fn);
-      return `<div class="tile vid-tile" onclick="openVid('${vsrc}')">
-        <div class="tile-vid-box">
-          <div class="vid-play-badge">
-            <svg viewBox="0 0 24 24" fill="#fff"><polygon points="5,3 19,12 5,21"/></svg>
-          </div>
-        </div>
-        <div class="tile-info">
-          ${sd?`<div class="tile-info-date">${sd}</div>`:''}
-          <div class="tile-info-story" style="color:rgba(229,9,20,.55)">&#9654; Video</div>
-        </div>
-      </div>`;
-    }
-  }).join('');
-  goTo('home');
-}
-
-/* ──────────────────────────────────────
-   MILESTONE SLIDESHOW (Play button — photos only)
-────────────────────────────────────── */
-let _ssPhotos=[],_ssIdx=0,_ssAuto=null,_ssTouchX=0;
-function openSS(photos){
-  _ssPhotos=photos; _ssIdx=0;
-  document.getElementById('ss-dots').innerHTML=
-    photos.map((_,i)=>`<div class="ss-dot${i===0?' on':''}"></div>`).join('');
-  _showSS(0);
-  document.getElementById('ss-overlay').classList.add('open');
-  _ssSchedule();
-}
-function closeSS(){clearTimeout(_ssAuto);document.getElementById('ss-overlay').classList.remove('open')}
-function ssStep(dir){clearTimeout(_ssAuto);_showSS((_ssIdx+dir+_ssPhotos.length)%_ssPhotos.length);_ssSchedule()}
-function _showSS(i){
-  _ssIdx=i;
-  const src=_ssPhotos[i];
-  const fn=src.replace('images/','');
-  document.getElementById('ss-img').src=src;
-  document.getElementById('ss-date').textContent=fullDate(fn);
-  document.getElementById('ss-story').textContent=STORIES[fn]||'';
-  document.getElementById('ss-counter').textContent=(i+1)+' / '+_ssPhotos.length;
-  document.querySelectorAll('.ss-dot').forEach((d,j)=>d.classList.toggle('on',j===i));
-}
-function _ssSchedule(){_ssAuto=setTimeout(()=>ssStep(1),3500)}
-const _ssWrap=document.getElementById('ss-img-wrap');
-_ssWrap.addEventListener('touchstart',e=>{_ssTouchX=e.touches[0].clientX},{passive:true});
-_ssWrap.addEventListener('touchend',e=>{const dx=e.changedTouches[0].clientX-_ssTouchX;if(dx>45)ssStep(-1);else if(dx<-45)ssStep(1)});
-
-/* ──────────────────────────────────────
-   LIGHTBOX
-────────────────────────────────────── */
-function openLB(src){
-  const fn=src.replace('images/','');
-  document.getElementById('lb-img').src=src;
-  document.getElementById('lb-date').textContent=fullDate(fn);
-  document.getElementById('lb-story').textContent=STORIES[fn]||'';
-  document.getElementById('lightbox').classList.add('open');
-}
-function closeLB(){document.getElementById('lightbox').classList.remove('open')}
-
-/* ──────────────────────────────────────
-   VIDEO OVERLAY
-────────────────────────────────────── */
-function openVid(src){
-  const v=document.getElementById('vid-player');
-  v.src=src; v.load();
-  v.play().catch(()=>{});
-  document.getElementById('vid-overlay').classList.add('open');
-}
-function closeVid(){
-  const v=document.getElementById('vid-player');
-  v.pause(); v.src='';
-  document.getElementById('vid-overlay').classList.remove('open');
-}
-
-/* ──────────────────────────────────────
-   CREDITS
-────────────────────────────────────── */
-function _buildCreditsList(){
-  document.getElementById('credits-inner').innerHTML=CREDITS_DATA.map(([l,v])=>
-    `<div class="credit-row"><span class="c-label">${l}</span><span class="c-value">${v}</span></div>`
-  ).join('');
-}
-function _buildSlideshowDOM(){
-  document.getElementById('credits-slideshow').innerHTML=
-    SLIDES.map((s,i)=>`<img class="slide-img${i===0?' on':''}${s.letterbox?' letterbox':''}" src="${s.src}" alt="" loading="lazy">`).join('');
-}
-function _startCredits(){
-  const inner=document.getElementById('credits-inner');
-  inner.style.animation='none';void inner.offsetHeight;
-  inner.style.animation='scrollUp 52s linear forwards';
-  clearTimeout(_cSsTimer);_cSsIdx=0;
-  const imgs=document.querySelectorAll('#credits-slideshow .slide-img');
-  imgs.forEach((el,i)=>el.classList.toggle('on',i===0));
-  _nextCSlide(imgs);
-  const audio=document.getElementById('bgm');
-  if(audio){audio.currentTime=47;audio.volume=0.85;audio.play().catch(()=>{})}
-}
-function _nextCSlide(imgs){
-  if(!imgs.length)return;
-  _cSsTimer=setTimeout(()=>{
-    imgs[_cSsIdx].classList.remove('on');
-    _cSsIdx=(_cSsIdx+1)%imgs.length;
-    imgs[_cSsIdx].classList.add('on');
-    _nextCSlide(imgs);
-  },SLIDES[_cSsIdx].ms);
-}
-
-/* keyboard shortcuts */
-document.addEventListener('keydown',e=>{
-  if(e.key==='Escape'){closeLB();closeSS();closeVid()}
-  const ssOpen=document.getElementById('ss-overlay').classList.contains('open');
-  if(ssOpen&&e.key==='ArrowLeft')ssStep(-1);
-  if(ssOpen&&e.key==='ArrowRight')ssStep(1);
-});
-
-/* ── INIT ── */
-_buildProfiles();
-_buildCreditsList();
-_buildSlideshowDOM();
-</script>
+<script src="js/data.js"></script>
+<script src="js/media.js"></script>
+<script src="js/app.js"></script>
 </body>
 </html>
