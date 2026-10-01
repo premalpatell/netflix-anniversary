@@ -40,7 +40,7 @@ SNAP_DATES = {
   'Snapchat-687287911.jpg': '2025-05-29',  'Snapchat-790482175.jpg': '2025-05-29',
   'valentine.jpg': '2026-02-14',
   # Confirmed by Premal (these IMG_ numbers were guessed wrong)
-  'IMG_5230.JPG': '2024-08-25', 'IMG_5231.jpg': '2024-08-25',
+  'IMG_5230.JPG': '2024-08-25', 'IMG_5231.jpg': '2024-08-25', 'IMG_5233.JPG': '2024-08-25',
   # Sept 2026: Shivani's Quebec trip (dated by the user from the contact sheet) + last outing flowers
   'Snapchat-58892558.jpg': '2026-09-17',  # #48
   'Snapchat-379522744.jpg': '2026-09-17',  # #49
@@ -115,6 +115,58 @@ SNAP_DATES = {
   'Snapchat-352657970.jpg': '2026-09-26',  # #56
 }
 SKIP = {'netflix-n.png', 'Snapchat-1493094235.jpg', 'Snapchat-918357969.jpg'}  # not of Shivani
+# Raw files left out on purpose: 18 near-identical car selfies trimmed to 4 (keep 4850, 4856, 4862, 4867)
+SKIP_RAW = {f'IMG_{n}.JPG' for n in (4851, 4852, 4853, 4855, 4857, 4858, 4859, 4860, 4861, 4863, 4864, 4865, 4866)} | {'IMG_4854.jpg'}
+
+import base64, io
+try:
+    import cv2, numpy as np
+    _CASC = [cv2.CascadeClassifier(cv2.data.haarcascades + f) for f in
+             ('haarcascade_frontalface_default.xml', 'haarcascade_profileface.xml')]
+except Exception:   # pragma: no cover
+    cv2 = None
+
+
+def focus(im):
+    """Face-aware focal point (x, y in 0..1) so thumbnails crop around her face."""
+    if cv2 is None:
+        return None
+    g = im.convert('L'); g.thumbnail((640, 640))
+    a = np.asarray(g); a = cv2.equalizeHist(a)
+    faces = []
+    for c in _CASC:
+        f = c.detectMultiScale(a, scaleFactor=1.1, minNeighbors=5, minSize=(max(24, a.shape[1] // 16),) * 2)
+        faces += [tuple(x) for x in f]
+    if not faces:
+        return None
+    x, y, w, h = max(faces, key=lambda f: f[2] * f[3])
+    return [round(float(x + w / 2) / a.shape[1], 2), round(float(y + h / 2) / a.shape[0], 2)]
+
+
+def tiny(im):
+    """Blur-up placeholder: ~12px wide JPEG as a data URI."""
+    t = im.copy(); t.thumbnail((12, 12)); buf = io.BytesIO()
+    t.convert('RGB').save(buf, 'JPEG', quality=40, optimize=True)
+    return 'data:image/jpeg;base64,' + base64.b64encode(buf.getvalue()).decode()
+
+
+def colour(im):
+    """Average colour, nudged toward the most saturated quadrant, as #rrggbb."""
+    t = im.convert('RGB').resize((4, 4), Image.LANCZOS)
+    px = [t.getpixel((i % 4, i // 4)) for i in range(16)]
+    sat = lambda c: max(c) - min(c)
+    px.sort(key=sat, reverse=True)
+    top = px[:6]
+    r, g, b = (sum(c[i] for c in top) // len(top) for i in range(3))
+    return '#%02x%02x%02x' % (r, g, b)
+
+
+def enrich(it, im):
+    im = ImageOps.exif_transpose(im)
+    p = focus(im)
+    if p:
+        it['p'] = p
+    it['b'] = tiny(im); it['c'] = colour(im)
 
 
 def dhash(im):
@@ -203,15 +255,17 @@ def main():
         d = d + 'T12:00:00' if d else name_date(fn)
         w, h = save_img(im, None, f'{ROOT}/images/t/{fn}')
         hashes.append((dhash(ImageOps.exif_transpose(im)), d))
-        items.append({'f': f'images/{fn}', 't': f'images/t/{fn}', 'k': 'img', 'd': d, 'w': w, 'h': h, 'key': fn})
+        it = {'f': f'images/{fn}', 't': f'images/t/{fn}', 'k': 'img', 'd': d, 'w': w, 'h': h, 'key': fn}
+        enrich(it, im); items.append(it)
     for p in sorted(glob.glob(f'{ROOT}/videos/*.mp4')):
         fn = os.path.basename(p)
         if fn.startswith('s_'):
             continue
         poster(p, f'{ROOT}/videos/p/{fn[:-4]}.jpg')
         _, dur = probe(p)
-        items.append({'f': f'videos/{fn}', 't': f'videos/p/{fn[:-4]}.jpg', 'k': 'vid', 'd': name_date(fn),
-                      'dur': round(dur, 1), 'key': fn})
+        it = {'f': f'videos/{fn}', 't': f'videos/p/{fn[:-4]}.jpg', 'k': 'vid', 'd': name_date(fn),
+              'dur': round(dur, 1), 'key': fn}
+        enrich(it, Image.open(it['t'])); items.append(it)
 
     if RAW:
         add_raw(items, hashes)
@@ -232,7 +286,7 @@ def add_raw(items, hashes):
     # Pass 1: EXIF dates; iPhone numbers with dates become anchors for the undated ones
     imgs, anchors = [], {}
     for p, title, ext in raw:
-        if ext in ('mp4', 'mov'):
+        if ext in ('mp4', 'mov') or title in SKIP_RAW:
             continue
         im = Image.open(p)
         d, model = exif_date(im)
@@ -289,7 +343,7 @@ def add_raw(items, hashes):
         it = {'f': f'images/{name}', 't': f'images/t/{name}', 'k': 'img', 'd': d, 'w': w, 'h': hh, 'key': name}
         if est:
             it['est'] = 1
-        items.append(it)
+        enrich(it, im); items.append(it)
 
     seen = set()
     for p, title, ext in raw:
@@ -310,8 +364,8 @@ def add_raw(items, hashes):
         name = slug(d, 'mp4')
         encode_video(p, f'{ROOT}/videos/{name}')
         poster(f'{ROOT}/videos/{name}', f'{ROOT}/videos/p/{name[:-4]}.jpg')
-        items.append({'f': f'videos/{name}', 't': f'videos/p/{name[:-4]}.jpg', 'k': 'vid', 'd': d,
-                      'dur': round(dur, 1), 'key': name})
+        it = {'f': f'videos/{name}', 't': f'videos/p/{name[:-4]}.jpg', 'k': 'vid', 'd': d, 'dur': round(dur, 1), 'key': name}
+        enrich(it, Image.open(it['t'])); items.append(it)
 
 
 if __name__ == '__main__':

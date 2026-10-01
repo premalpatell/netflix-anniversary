@@ -12,7 +12,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@1,400;1,500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/app.css">
-<link rel="preload" as="image" href="images/20250803_194808.jpg" fetchpriority="low">
+<link rel="preload" as="image" href="images/s_20260924_120000_15.jpg" fetchpriority="low">
 </head>
 <body>
 
@@ -51,12 +51,12 @@
 
   <header class="billboard" id="billboard">
     <div class="billboard-media">
-      <img id="bb-poster" src="" alt="">
-      <video id="bb-video" muted playsinline loop preload="metadata"></video>
+      <div class="bb-layer" id="bb-a"></div>
+      <div class="bb-layer" id="bb-b"></div>
     </div>
     <div class="billboard-shade"></div>
-    <div class="billboard-body">
-      <div class="series-badge"><svg class="n" viewBox="0 0 111 190"><polygon points="0,0 27,0 27,190 0,190" fill="#E50914"/><polygon points="84,0 111,0 111,190 84,190" fill="#E50914"/><polygon points="0,0 27,0 111,190 84,190" fill="#B20710"/></svg><span>Series</span></div>
+    <div class="billboard-body" id="bb-body">
+      <div class="series-badge" id="bb-tagline"></div>
       <h1 class="bb-title" id="bb-title"></h1>
       <p class="bb-tag" id="bb-tag"></p>
       <div class="bb-meta" id="bb-meta"></div>
@@ -65,11 +65,13 @@
         <button class="btn secondary" type="button" id="bb-info"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5" stroke-linecap="round"/></svg>More Info</button>
       </div>
     </div>
+    <div class="bb-dots" aria-hidden="true"></div>
     <button class="bb-mute" type="button" id="bb-mute" aria-label="Unmute"><svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 4V5L7 9H3zm13.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4z"/></svg></button>
   </header>
 
   <main class="rows" id="rows"></main>
   <footer class="footer">
+    <button class="link" type="button" id="foot-all">All episodes ›</button>
     <button class="link" type="button" id="foot-credits">View end credits ›</button>
     <p>Shivani &amp; Premal · Toronto · 2023 – forever</p>
   </footer>
@@ -107,18 +109,29 @@
     <div class="stage-blur" id="stage-blur"></div>
     <div class="frame" id="frame-a"></div>
     <div class="frame" id="frame-b"></div>
+    <div class="grain" aria-hidden="true"></div>
   </div>
   <div class="pl-shade"></div>
+  <div class="pl-glow" aria-hidden="true"></div>
   <div class="pl-loader" id="pl-loader" aria-hidden="true"><i></i></div>
   <div class="pl-titlecard" id="pl-titlecard" aria-hidden="true"><small id="tc-ep"></small><b id="tc-title"></b><span id="tc-sub"></span></div>
   <div class="pl-top">
     <button class="icon-btn" type="button" id="pl-back" aria-label="Back"><svg viewBox="0 0 24 24"><path d="M15.5 4l-8 8 8 8 1.5-1.5L10.5 12l6.5-6.5z"/></svg></button>
     <div class="pl-title"><b id="pl-ep"></b><span id="pl-name"></span></div>
     <span style="flex:1"></span>
+    <button class="icon-btn hide" type="button" id="pl-note" aria-label="A note from Premal"><svg viewBox="0 0 24 24"><path d="M3 6h18v12H3z" fill="none" stroke="#fff" stroke-width="1.8"/><path d="M3 7l9 6 9-6" fill="none" stroke="#fff" stroke-width="1.8"/></svg></button>
     <button class="icon-btn" type="button" id="pl-list" aria-label="Episodes"><svg viewBox="0 0 24 24"><path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/></svg></button>
   </div>
   <div class="pl-caption"><div class="date" id="pl-date"></div><div class="story" id="pl-story"></div></div>
   <div class="pl-hint">swipe or tap · space to pause</div>
+  <div class="note" id="note" role="dialog" aria-label="A note from Premal">
+    <div class="note-card">
+      <small>A note from Premal</small>
+      <p id="note-text"></p>
+      <span class="note-date" id="note-date"></span>
+      <button class="btn primary" type="button" id="note-close">Close</button>
+    </div>
+  </div>
   <div class="next" id="next">
     <img id="next-img" src="" alt="">
     <div class="next-body"><small>Next episode</small><b id="next-title"></b>

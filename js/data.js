@@ -14,11 +14,26 @@ window.SHOW = {
   cast: ['Shivani ♡', 'Premal'],
   creator: 'Fate, with a little help from Toronto',
   genres: ['Romance', 'Slice of Life', 'Feel-Good', 'Based on a True Story'],
-  // Billboard preview video + poster (paths relative to index.html)
-  billboardVideo: 'videos/VID_20250803_164935_672.mp4',
-  billboardPoster: 'images/20250803_194808.jpg',
+  // Poster used on the details sheet
+  poster: 'images/20250803_194808.jpg',
   // Closing card photo
   finalePhoto: 'images/20260423_171132.jpg',
+};
+
+/* Billboard features — the home page rotates through these every few seconds.
+   kind: 'series' (the show itself), 'episode' (an episode by date), 'top' (a Top 10 moment by file), 'season' (by number).
+   `video` plays muted when its orientation matches the screen; otherwise the still is shown. */
+window.FEATURES = [
+  { kind: 'series',  tag: 'Series', still: 'images/s_20260924_120000_15.jpg', video: 'videos/s_20260924_114730_1.mp4' },
+  { kind: 'episode', tag: 'New Episode', day: '2026-09-26' },
+  { kind: 'top',     tag: '#1 in Top 10', key: '20260423_171132.jpg' },
+  { kind: 'season',  tag: 'Prequel', n: 0 },
+];
+
+/* Love notes — keyed by date (YYYY-MM-DD). An envelope appears on that episode;
+   tapping it in the player opens the note as a card. Write as many as you like. */
+window.LOVE_NOTES = {
+  '2026-04-23': 'The last day before I left Canada. The photo I cherish the most. — Premal',
 };
 
 /* Profiles on the "Who's watching?" screen */
@@ -183,9 +198,9 @@ window.TOP10 = [
   '20250527_182736.jpg',   // graduation
   'Snapchat-1433906752.jpg', // airport, roses
   '20250803_194808.jpg',   // crystal beach
-  '20241014_214813.jpg',   // navratri
   '20250721_151523.jpg',   // birthday dress
-  '20260402_145240.jpg',   // bob haircut
+  's_20260924_120000_11.jpg', // umbrella street, Québec
+  's_20260926_120000_1.jpg',  // roses, the night before
 ];
 
 /* End credits — in chronological order. */
