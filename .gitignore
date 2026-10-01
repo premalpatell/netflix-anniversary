@@ -1,2 +1,3 @@
 images/PS/
 .tmp/
+__pycache__/

@@ -39,6 +39,8 @@ SNAP_DATES = {
   'Snapchat-524185506.jpg': '2025-05-29',  'Snapchat-552263264.jpg': '2024-11-20',
   'Snapchat-687287911.jpg': '2025-05-29',  'Snapchat-790482175.jpg': '2025-05-29',
   'valentine.jpg': '2026-02-14',
+  # Confirmed by Premal (these IMG_ numbers were guessed wrong)
+  'IMG_5230.JPG': '2024-08-25', 'IMG_5231.jpg': '2024-08-25',
   # Sept 2026: Shivani's Quebec trip (dated by the user from the contact sheet) + last outing flowers
   'Snapchat-58892558.jpg': '2026-09-17',  # #48
   'Snapchat-379522744.jpg': '2026-09-17',  # #49
