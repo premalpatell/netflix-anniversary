@@ -4,17 +4,47 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="S &amp; P">
 <meta name="theme-color" content="#141414">
-<title>Shivani & Premal</title>
-<link rel="icon" href="images/netflix-n.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@1,400;1,500&display=swap" rel="stylesheet">
+<meta name="description" content="Shivani & Premal: a love story in five seasons.">
+<title>Shivani &amp; Premal</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="preload" as="font" type="font/woff2" href="fonts/bebasneue-latin-3c5f3a.woff2" crossorigin>
+<link rel="preload" as="font" type="font/woff2" href="fonts/inter-latin-567244.woff2" crossorigin>
+<link rel="stylesheet" href="fonts/fonts.css">
 <link rel="stylesheet" href="css/app.css">
-<link rel="preload" as="image" href="images/s_20260924_120000_15.jpg" fetchpriority="low">
 </head>
 <body>
+
+<!-- ═══ SVG SPRITE: series logo, Top 10 badge, UI icons ═══ -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="logo" viewBox="0 0 330 206">
+    <text class="lg-amp" x="306" y="198" text-anchor="middle">&amp;</text>
+    <text class="lg-word" x="4" y="94" textLength="300" lengthAdjust="spacingAndGlyphs">SHIVANI</text>
+    <text class="lg-word" x="4" y="196" textLength="262" lengthAdjust="spacingAndGlyphs">PREMAL</text>
+  </symbol>
+  <symbol id="n" viewBox="0 0 111 190"><polygon points="0,0 27,0 27,190 0,190" fill="#E50914"/><polygon points="84,0 111,0 111,190 84,190" fill="#E50914"/><polygon points="0,0 27,0 111,190 84,190" fill="#B20710"/></symbol>
+  <symbol id="top10" viewBox="0 0 28 30"><rect width="28" height="30" rx="2" fill="#e50914"/><text x="14" y="12" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-weight="800" font-size="7.5" fill="#fff" letter-spacing=".4">TOP</text><text x="14" y="25" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-weight="800" font-size="12" fill="#fff">10</text></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24"><path d="M6 3l14 9-14 9z"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M11 4h2v7h7v2h-7v7h-2v-7H4v-2h7z"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/></symbol>
+  <symbol id="i-up" viewBox="0 0 24 24"><path d="M2 21h3V9H2zm19-11a2 2 0 0 0-2-2h-6.3l1-4.6v-.3c0-.4-.2-.8-.4-1.1L12.2 1 5.6 7.6C5.2 8 5 8.5 5 9v10a2 2 0 0 0 2 2h9c.8 0 1.5-.5 1.8-1.2l3-7.1c.1-.2.2-.5.2-.7z"/></symbol>
+  <symbol id="i-down" viewBox="0 0 24 24"><path d="M22 3h-3v12h3zM3 14a2 2 0 0 0 2 2h6.3l-1 4.6v.3c0 .4.2.8.4 1.1l1.1 1 6.6-6.6c.4-.4.6-.9.6-1.4V5a2 2 0 0 0-2-2H8c-.8 0-1.5.5-1.8 1.2l-3 7.1c-.1.2-.2.5-.2.7z"/></symbol>
+  <symbol id="i-love" viewBox="0 0 24 24"><path d="M12 21.4 10.6 20C5.4 15.4 2 12.3 2 8.5 2 5.4 4.4 3 7.5 3c1.7 0 3.4.8 4.5 2.1C13.1 3.8 14.8 3 16.5 3 19.6 3 22 5.4 22 8.5c0 3.8-3.4 6.9-8.6 11.5z"/></symbol>
+  <symbol id="i-info" viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 18a8 8 0 1 1 0-16 8 8 0 0 1 0 16zm-1-5h2v2h-2zm0-8h2v6h-2z" transform="rotate(180 12 12)"/></symbol>
+  <symbol id="i-down-chev" viewBox="0 0 24 24"><path d="M7.4 8.6 12 13.2l4.6-4.6L18 10l-6 6-6-6z"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><path d="M15.5 14h-.8l-.3-.3A6.5 6.5 0 1 0 9.5 16a6.5 6.5 0 0 0 4.2-1.6l.3.3v.8l5 5 1.5-1.5zm-6 0a4.5 4.5 0 1 1 0-9 4.5 4.5 0 0 1 0 9z"/></symbol>
+  <symbol id="i-bell" viewBox="0 0 24 24"><path d="M12 22a2 2 0 0 0 2-2h-4a2 2 0 0 0 2 2zm6-6v-5c0-3.1-1.6-5.6-4.5-6.3V4a1.5 1.5 0 0 0-3 0v.7C7.6 5.4 6 7.9 6 11v5l-2 2v1h16v-1z"/></symbol>
+  <symbol id="i-close" viewBox="0 0 24 24"><path d="M19 6.4 17.6 5 12 10.6 6.4 5 5 6.4 10.6 12 5 17.6 6.4 19l5.6-5.6 5.6 5.6 1.4-1.4-5.6-5.6z"/></symbol>
+  <symbol id="i-left" viewBox="0 0 24 24"><path d="M15.4 7.4 14 6l-6 6 6 6 1.4-1.4L10.8 12z"/></symbol>
+  <symbol id="i-right" viewBox="0 0 24 24"><path d="M8.6 16.6 10 18l6-6-6-6-1.4 1.4 4.6 4.6z"/></symbol>
+  <symbol id="i-note" viewBox="0 0 24 24"><path d="M3 6h18v12H3z" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M3 7l9 6 9-6" fill="none" stroke="currentColor" stroke-width="1.8"/></symbol>
+  <symbol id="i-film" viewBox="0 0 24 24"><path d="M18 4l2 4h-3l-2-4h-2l2 4h-3l-2-4H8l2 4H7L5 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V4z"/></symbol>
+</svg>
 
 <!-- ═══ INTRO ═══ -->
 <section class="screen on" id="intro" aria-label="Intro">
@@ -29,23 +59,29 @@
 
 <!-- ═══ WHO'S WATCHING ═══ -->
 <section class="screen" id="profiles" aria-label="Who's watching">
-  <div class="profiles-top"><button class="link" type="button" id="replay-intro">↻ Replay intro</button></div>
+  <div class="profiles-top"><button class="link" type="button" id="replay-intro">Replay intro</button></div>
+  <svg class="logo profiles-logo" role="img" aria-label="Shivani &amp; Premal"><use href="#logo"/></svg>
   <h1 class="whos">Who's watching?</h1>
-  <p class="whos-sub">every season, a favourite memory</p>
   <div class="profile-row" id="profile-row"></div>
-  <button class="manage" type="button" id="manage-btn">Manage profiles</button>
+  <button class="manage" type="button" id="manage-btn">Manage Profiles</button>
 </section>
 
 <!-- ═══ BROWSE ═══ -->
 <section class="screen" id="browse" aria-label="Browse">
   <nav class="nav" id="nav">
-    <svg class="nav-logo" viewBox="0 0 111 190" aria-label="N"><polygon points="0,0 27,0 27,190 0,190" fill="#E50914"/><polygon points="84,0 111,0 111,190 84,190" fill="#E50914"/><polygon points="0,0 27,0 111,190 84,190" fill="#B20710"/></svg>
+    <svg class="nav-logo" viewBox="0 0 111 190" aria-label="Home"><use href="#n"/></svg>
     <ul class="nav-links">
       <li><button type="button" class="cur" data-nav="top">Home</button></li>
       <li><button type="button" data-nav="seasons">Seasons</button></li>
+      <li><button type="button" data-nav="list">My List</button></li>
       <li><button type="button" data-nav="videos">Videos</button></li>
       <li><button type="button" data-nav="finale">Credits</button></li>
     </ul>
+    <button type="button" class="nav-icon" id="nav-search" aria-label="Search"><svg><use href="#i-search"/></svg></button>
+    <div class="bell-wrap">
+      <button type="button" class="nav-icon" id="nav-bell" aria-label="Notifications" aria-expanded="false"><svg><use href="#i-bell"/></svg><i class="bell-dot" id="bell-dot" hidden></i></button>
+      <div class="bell-menu" id="bell-menu" hidden></div>
+    </div>
     <button type="button" id="nav-profile" aria-label="Switch profile"><img class="nav-avatar" id="nav-avatar" src="images/netflix-n.png" alt=""></button>
   </nav>
 
@@ -58,72 +94,130 @@
     <div class="billboard-body" id="bb-body">
       <div class="series-badge" id="bb-tagline"></div>
       <h1 class="bb-title" id="bb-title"></h1>
+      <div class="bb-rank" id="bb-rank" hidden><svg><use href="#top10"/></svg><span></span></div>
       <p class="bb-tag" id="bb-tag"></p>
       <div class="bb-meta" id="bb-meta"></div>
       <div class="bb-actions">
-        <button class="btn primary" type="button" id="bb-play"><svg viewBox="0 0 24 24"><path d="M6 3l14 9-14 9z" fill="currentColor"/></svg><span>Play</span></button>
-        <button class="btn secondary" type="button" id="bb-info"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5" stroke-linecap="round"/></svg>More Info</button>
+        <button class="btn primary" type="button" id="bb-play"><svg><use href="#i-play"/></svg><span>Play</span></button>
+        <button class="btn secondary" type="button" id="bb-info"><svg><use href="#i-info"/></svg><span>More Info</span></button>
+        <button class="round" type="button" id="bb-trailer" aria-label="Watch trailer" title="Watch Trailer" hidden><svg><use href="#i-film"/></svg></button>
       </div>
     </div>
     <div class="bb-dots" aria-hidden="true"></div>
-    <button class="bb-mute" type="button" id="bb-mute" aria-label="Unmute"><svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 4V5L7 9H3zm13.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4z"/></svg></button>
+    <div class="bb-side">
+      <button class="bb-mute" type="button" id="bb-mute" aria-label="Unmute"><svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 4V5L7 9H3zm13.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4z"/></svg></button>
+      <span class="maturity" id="bb-maturity"></span>
+    </div>
   </header>
 
   <main class="rows" id="rows"></main>
   <footer class="footer">
-    <button class="link" type="button" id="foot-all">All episodes ›</button>
-    <button class="link" type="button" id="foot-credits">View end credits ›</button>
-    <p>Shivani &amp; Premal · Toronto · 2023 – forever</p>
+    <div class="foot-links">
+      <button class="link" type="button" id="foot-all">All Episodes</button>
+      <button class="link" type="button" id="foot-send">Send My Favourites to Premal</button>
+      <button class="link" type="button" id="foot-credits">End Credits</button>
+    </div>
+    <p>Shivani &amp; Premal · Toronto · 2023 to forever</p>
   </footer>
 </section>
+
+<!-- Desktop hover card ("jawbone") -->
+<div class="jaw" id="jaw" hidden>
+  <div class="jaw-media" id="jaw-media"></div>
+  <div class="jaw-body">
+    <div class="jaw-btns">
+      <button class="round solid" type="button" data-act="play" aria-label="Play"><svg><use href="#i-play"/></svg></button>
+      <button class="round" type="button" data-act="list" aria-label="Add to My List"><svg><use href="#i-plus"/></svg></button>
+      <button class="round" type="button" data-act="like" aria-label="Rate"><svg><use href="#i-up"/></svg></button>
+      <span class="grow"></span>
+      <button class="round" type="button" data-act="info" aria-label="Episodes and info"><svg><use href="#i-down-chev"/></svg></button>
+    </div>
+    <div class="jaw-meta" id="jaw-meta"></div>
+    <div class="jaw-tags" id="jaw-tags"></div>
+  </div>
+</div>
+
+<!-- ═══ SEARCH ═══ -->
+<div class="search" id="search" role="dialog" aria-modal="true" aria-label="Search" hidden>
+  <div class="search-bar">
+    <svg><use href="#i-search"/></svg>
+    <input id="search-input" type="search" placeholder="Titles, places, dates, months" autocomplete="off" aria-label="Search episodes">
+    <button class="nav-icon" type="button" id="search-close" aria-label="Close search"><svg><use href="#i-close"/></svg></button>
+  </div>
+  <p class="search-hint" id="search-hint"></p>
+  <div class="search-grid" id="search-grid"></div>
+</div>
 
 <!-- ═══ DETAILS SHEET ═══ -->
 <div class="sheet-wrap" id="sheet-wrap" role="dialog" aria-modal="true" aria-label="Series details">
   <div class="sheet" id="sheet">
-    <div class="sheet-hero">
+    <div class="sheet-hero" id="sheet-hero">
+      <span class="grabber" aria-hidden="true"></span>
       <img id="sheet-img" src="" alt="">
-      <button class="sheet-close" type="button" id="sheet-close" aria-label="Close">×</button>
-      <h2 class="sheet-title" id="sheet-title"></h2>
+      <button class="sheet-close" type="button" id="sheet-close" aria-label="Close"><svg><use href="#i-close"/></svg></button>
+      <div class="sheet-title" id="sheet-title"><svg class="logo" role="img" aria-label="Shivani &amp; Premal"><use href="#logo"/></svg></div>
     </div>
     <div class="sheet-body">
       <div class="sheet-meta" id="sheet-meta"></div>
       <div class="sheet-actions">
-        <button class="btn primary" type="button" id="sheet-play"><svg viewBox="0 0 24 24"><path d="M6 3l14 9-14 9z" fill="currentColor"/></svg><span>Play</span></button>
+        <button class="btn primary" type="button" id="sheet-play"><svg><use href="#i-play"/></svg><span>Play</span></button>
+        <button class="round" type="button" id="sheet-trailer" aria-label="Watch trailer" title="Watch Trailer"><svg><use href="#i-film"/></svg></button>
       </div>
       <p class="sheet-syn" id="sheet-syn"></p>
       <p class="sheet-cast" id="sheet-cast"></p>
-      <div class="season-pick">
-        <h3>Episodes</h3>
-        <label class="select"><span class="sr">Season</span><select id="season-select"></select></label>
+      <div class="sheet-tabs" role="tablist">
+        <button type="button" role="tab" data-tab="eps" aria-selected="true">Episodes</button>
+        <button type="button" role="tab" data-tab="more" aria-selected="false">Trailers &amp; More</button>
+        <button type="button" role="tab" data-tab="like" aria-selected="false">More Like This</button>
       </div>
-      <p class="season-blurb" id="season-blurb"></p>
-      <div class="ep-list" id="ep-list"></div>
-      <p class="tbc hide" id="tbc">To be continued…</p>
+      <div class="tab-panel" id="tab-eps">
+        <div class="season-pick">
+          <label class="select"><span class="sr">Season</span><select id="season-select"></select></label>
+          <span class="season-count" id="season-count"></span>
+        </div>
+        <p class="season-blurb" id="season-blurb"></p>
+        <div class="ep-list" id="ep-list"></div>
+        <p class="tbc hide" id="tbc">To be continued</p>
+      </div>
+      <div class="tab-panel" id="tab-more" hidden></div>
+      <div class="tab-panel" id="tab-like" hidden></div>
     </div>
   </div>
 </div>
 
 <!-- ═══ PLAYER ═══ -->
-<div id="player" aria-label="Player">
+<div id="player" aria-label="Player" role="dialog" aria-modal="true">
   <div class="stage" id="stage">
     <div class="stage-blur" id="stage-blur"></div>
     <div class="frame" id="frame-a"></div>
     <div class="frame" id="frame-b"></div>
     <div class="grain" aria-hidden="true"></div>
+    <span class="ripple left" id="rip-l" aria-hidden="true"><svg><use href="#i-left"/></svg></span>
+    <span class="ripple right" id="rip-r" aria-hidden="true"><svg><use href="#i-right"/></svg></span>
   </div>
+  <aside class="pl-side" id="pl-side" aria-hidden="true">
+    <small id="ps-ep"></small>
+    <h2 id="ps-title"></h2>
+    <p class="ps-date" id="ps-date"></p>
+    <p class="ps-story" id="ps-story"></p>
+    <div class="ps-next" id="ps-next"></div>
+  </aside>
   <div class="pl-shade"></div>
   <div class="pl-glow" aria-hidden="true"></div>
   <div class="pl-loader" id="pl-loader" aria-hidden="true"><i></i></div>
-  <div class="pl-titlecard" id="pl-titlecard" aria-hidden="true"><small id="tc-ep"></small><b id="tc-title"></b><span id="tc-sub"></span></div>
+  <div class="pl-titlecard" id="pl-titlecard" aria-hidden="true"><svg class="logo tc-logo" id="tc-logo"><use href="#logo"/></svg><small id="tc-ep"></small><b id="tc-title"></b><span id="tc-sub"></span></div>
   <div class="pl-top">
     <button class="icon-btn" type="button" id="pl-back" aria-label="Back"><svg viewBox="0 0 24 24"><path d="M15.5 4l-8 8 8 8 1.5-1.5L10.5 12l6.5-6.5z"/></svg></button>
     <div class="pl-title"><b id="pl-ep"></b><span id="pl-name"></span></div>
     <span style="flex:1"></span>
-    <button class="icon-btn hide" type="button" id="pl-note" aria-label="A note from Premal"><svg viewBox="0 0 24 24"><path d="M3 6h18v12H3z" fill="none" stroke="#fff" stroke-width="1.8"/><path d="M3 7l9 6 9-6" fill="none" stroke="#fff" stroke-width="1.8"/></svg></button>
+    <button class="icon-btn hide" type="button" id="pl-note" aria-label="A note from Premal"><svg style="color:#fff"><use href="#i-note"/></svg></button>
+    <button class="icon-btn" type="button" id="pl-like" aria-label="Rate this episode"><svg><use href="#i-up"/></svg></button>
+    <button class="icon-btn" type="button" id="pl-mylist" aria-label="Add to My List"><svg><use href="#i-plus"/></svg></button>
     <button class="icon-btn" type="button" id="pl-list" aria-label="Episodes"><svg viewBox="0 0 24 24"><path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/></svg></button>
   </div>
   <div class="pl-caption"><div class="date" id="pl-date"></div><div class="story" id="pl-story"></div></div>
-  <div class="pl-hint">swipe or tap · space to pause</div>
+  <div class="pl-hint">Double-tap the sides to skip · swipe down to close · hold to pause</div>
+  <button class="skip-recap" type="button" id="skip-recap" hidden>Skip Recap</button>
   <div class="note" id="note" role="dialog" aria-label="A note from Premal">
     <div class="note-card">
       <small>A note from Premal</small>
@@ -134,7 +228,7 @@
   </div>
   <div class="next" id="next">
     <img id="next-img" src="" alt="">
-    <div class="next-body"><small>Next episode</small><b id="next-title"></b>
+    <div class="next-body"><small>Next Episode</small><b id="next-title"></b>
       <div class="next-act">
         <button class="btn primary" type="button" id="next-play"><span class="ring"><svg viewBox="0 0 24 24"><circle class="bg" cx="12" cy="12" r="9"/><circle class="fg" id="ring-fg" cx="12" cy="12" r="9"/></svg></span>Play</button>
         <button class="btn secondary" type="button" id="next-cancel">Stay</button>
@@ -144,16 +238,17 @@
   <div class="pl-bottom">
     <div class="scrub" id="scrub">
       <div class="bar"><div class="ticks" id="ticks"></div><div class="fill" id="fill"></div><div class="knob" id="knob"></div></div>
-      <span class="time" id="pl-time">0 / 0</span>
+      <span class="time" id="pl-time">0:00</span>
     </div>
     <div class="pl-controls">
       <div class="grp">
         <button class="icon-btn" type="button" id="pl-prev" aria-label="Previous"><svg viewBox="0 0 24 24"><path d="M6 5h2v14H6zm12 0v14L9 12z"/></svg></button>
         <button class="icon-btn big" type="button" id="pl-toggle" aria-label="Pause"><svg id="ico-pause" viewBox="0 0 24 24"><path d="M6 4h4v16H6zm8 0h4v16h-4z"/></svg><svg id="ico-play" class="hide" viewBox="0 0 24 24"><path d="M7 4l13 8-13 8z"/></svg></button>
         <button class="icon-btn" type="button" id="pl-next" aria-label="Next"><svg viewBox="0 0 24 24"><path d="M16 5h2v14h-2zM6 5v14l9-7z"/></svg></button>
+        <span class="pl-count" id="pl-count"></span>
       </div>
       <div class="grp">
-        <button class="lbl" type="button" id="pl-nextep"><svg viewBox="0 0 24 24"><path d="M5 4l10 8-10 8zM17 4h2v16h-2z"/></svg>Next Ep.</button>
+        <button class="lbl" type="button" id="pl-nextep"><svg viewBox="0 0 24 24"><path d="M5 4l10 8-10 8zM17 4h2v16h-2z"/></svg>Next Episode</button>
       </div>
     </div>
   </div>
@@ -162,30 +257,34 @@
 <!-- ═══ FINALE ═══ -->
 <section class="screen" id="finale" aria-label="Credits">
   <div class="credits-wrap">
-    <div class="credits-photo" id="credits-photo"></div>
-    <div class="credits-scroll"><div class="credits-inner" id="credits-inner"></div></div>
-    <button class="credits-skip" type="button" id="credits-skip">Skip ›</button>
+    <div class="credits-col">
+      <div class="credits-photo" id="credits-photo"></div>
+      <div class="credits-scroll"><div class="credits-inner" id="credits-inner"></div></div>
+    </div>
+    <div class="credits-post" id="credits-post"></div>
+    <button class="credits-skip" type="button" id="credits-skip">Skip Credits</button>
   </div>
   <div class="closing" id="closing">
     <div class="closing-bg" id="closing-bg"></div>
     <div class="closing-body">
-      <small>The End · For Now</small>
+      <small>To be continued</small>
       <h2 id="closing-l1"></h2>
       <p id="closing-l2"></p>
       <p class="sign" id="closing-sign"></p>
       <div class="closing-act">
-        <button class="btn primary" type="button" id="watch-again"><svg viewBox="0 0 24 24"><path d="M12 5V2L7 6l5 4V7a5 5 0 1 1-5 5H5a7 7 0 1 0 7-7z" fill="currentColor"/></svg>Watch again</button>
-        <button class="btn secondary" type="button" id="closing-browse">Browse episodes</button>
+        <button class="btn primary" type="button" id="watch-again"><svg viewBox="0 0 24 24"><path d="M12 5V2L7 6l5 4V7a5 5 0 1 1-5 5H5a7 7 0 1 0 7-7z" fill="currentColor"/></svg>Watch Again</button>
+        <button class="btn secondary" type="button" id="closing-browse">Browse Episodes</button>
       </div>
     </div>
   </div>
   <audio id="bgm" preload="none"></audio>
 </section>
 
-<div id="toast" role="status"></div>
+<div id="toast" role="status" aria-live="polite"></div>
 
 <script src="js/data.js"></script>
 <script src="js/media.js"></script>
 <script src="js/app.js"></script>
+<script src="js/blur.js" defer></script>
 </body>
 </html>

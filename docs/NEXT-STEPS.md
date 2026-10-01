@@ -1,5 +1,17 @@
 # Shivani & Premal — design audit and next steps
 
+## Status (Oct 1, 2026)
+Built and shipped: everything in sections A, B, C and E below, plus the Cutting Room edits (dates, covers, merges, titles and captions) and 21 Bruce Peninsula photos.
+- `tools/smoke.js` drives the full path on phone and desktop and must print `PASS`.
+- Episode titles and captions live in `EPISODE_NOTES` in `js/data.js`; date corrections live in `USER_DATES` in `tools/build_media.py`.
+- Bump `VERSION` in `sw.js` on every deploy so returning visitors get fresh photos.
+
+Still open, all blocked on file size (the Drive connector can't download files over 10 MB):
+- `graduation video.mp4` (177 MB) for Graduation Day, May 27 2025.
+- `July 21st 2024.mp4` (48 MB) for Her Birthday, 2024.
+- `20250527_175625.mp4` (311 MB), `20240720_232018.mp4` (86 MB), and the four Sept 25–26 2026 files from the original list.
+Export them under 10 MB (or as a shared link to a smaller copy) and they can be added with the normal build.
+
 A brief for whoever builds the next pass. It covers what exists today, what is still wrong screen by screen, how Netflix handles text and titles and how to copy that, and a prioritised backlog with implementation pointers.
 
 Live site: https://premalpatell.github.io/netflix-anniversary/ (serves `master`).

@@ -14,6 +14,11 @@ window.SHOW = {
   cast: ['Shivani ♡', 'Premal'],
   creator: 'Fate, with a little help from Toronto',
   genres: ['Romance', 'Slice of Life', 'Feel-Good', 'Based on a True Story'],
+  // Netflix's "This show is:" line
+  moods: ['Heartfelt', 'Romantic', 'Feel-Good'],
+  // Maturity box + reasons, as Netflix prints them
+  maturity: 'L',
+  advisories: 'late-night drives, too much pizza, happy tears',
   // Poster used on the details sheet
   poster: 'images/20250803_194808.jpg',
   // Closing card photo
@@ -24,7 +29,7 @@ window.SHOW = {
    kind: 'series' (the show itself), 'episode' (an episode by date), 'top' (a Top 10 moment by file), 'season' (by number).
    `video` plays muted when its orientation matches the screen; otherwise the still is shown. */
 window.FEATURES = [
-  { kind: 'series',  tag: 'Series', still: 'images/s_20260924_120000_15.jpg', video: 'videos/s_20260924_114730_1.mp4' },
+  { kind: 'series',  tag: 'Series', trailer: true, still: 'images/s_20260924_120000_15.jpg', video: 'videos/s_20260924_114730_1.mp4' },
   { kind: 'episode', tag: 'New Episode', day: '2026-09-26' },
   { kind: 'top',     tag: '#1 in Top 10', key: '20260423_171132.jpg' },
   { kind: 'season',  tag: 'Prequel', n: 0 },
@@ -36,10 +41,17 @@ window.LOVE_NOTES = {
   '2026-04-23': 'The last day before I left Canada. The photo I cherish the most. — Premal',
 };
 
+/* "Coming Soon" row */
+window.COMING_SOON = [
+  { title: 'Season 6', name: 'Long Distance', tag: 'Coming soon',
+    blurb: 'Two cities, one story. The next season starts the day Premal leaves Canada.',
+    still: 'images/20260423_171132.jpg' },
+];
+
 /* Profiles on the "Who's watching?" screen */
 window.PROFILES = [
   { name: 'Shivani ♡', photo: 'images/t/20250721_151523.jpg', greeting: 'Welcome back, Shivani. Your story is ready.' },
-  { name: 'Premal',    photo: 'images/t/20260423_171132.jpg', greeting: 'Welcome back, Premal.' },
+  { name: 'Premal',    photo: 'images/avatar-premal.svg',     greeting: 'Welcome back, Premal.' },
 ];
 
 /* Seasons — every photo/video is placed by its capture date (local Toronto time).
@@ -179,14 +191,70 @@ window.STORIES = {
 /* Episode notes — keyed by date (YYYY-MM-DD). Fill these in for the new photos:
      '2023-09-23': { title: 'Where it started', story: 'The first time we…', thumb: 'file.jpg' },
    `title` names the episode; `story` shows under every photo of that day;
-   `thumb` (optional) is the media file name to use as the episode's cover. */
+   `thumb` (optional) is the media file name to use as the episode's cover;
+   `merge: 'next' | 'prev'` folds that day into the neighbouring episode. */
 window.EPISODE_NOTES = {
-  '2026-07-21': { title: 'Her birthday, 2026', story: '' },
-  '2026-09-17': { title: 'Bruce Peninsula', story: '' },
-  '2026-09-23': { title: 'Montréal, on the way to Québec', story: 'Shivani\'s Québec trip, day one.', thumb: 's_20260923_120000_3.jpg' },
-  '2026-09-24': { title: 'Old Québec & Montmorency Falls', story: 'Umbrella street, the Château Frontenac and the falls.', thumb: 's_20260924_120000_11.jpg' },
-  '2026-09-25': { title: 'Lakes & lookouts, Québec', story: 'The last day of the trip.' },
-  '2026-09-26': { title: 'Roses, before the goodbye', story: 'Our last outing before Premal left Canada on September 27.' },
+  // ── Season 0 · Before Us
+  '2023-12-03': { title: 'A Toronto Bar', story: 'A night out at a Toronto bar whose name neither of them can quite remember.', thumb: 's_20231203_215002_1.jpg' },
+  '2023-12-31': { title: "New Year's Eve", story: "Shivani rings in the new year at her brother's restaurant.", thumb: 's_20231231_210403_1.jpg' },
+  '2024-05-11': { title: 'Louix Louis', story: 'Dinner at Louix Louis, high above the city at the St. Regis.', thumb: 's_20240511_000600_1.jpg' },
+  '2024-07-21': { title: 'Her Birthday, 2024', story: "Shivani's birthday, in front of the flower wall at Befikr." },
+  '2024-05-20': { thumb: 's_20240520_161758_1.jpg' },
+  '2023-11-03': { thumb: 's_20231103_185218_1.mp4' },
+  '2023-10-21': { thumb: 's_20231021_172016_1.jpg' },
+  '2023-12-09': { thumb: 's_20231209_211928_1.jpg' },
+  '2024-06-10': { thumb: 's_20240610_174308_1.jpg' },
+  '2024-03-15': { thumb: 's_20240315_234335_1.jpg' },
+  // ── Season 1 · The Beginning
+  '2024-08-25': { title: 'The CNE', story: 'Rides, lights and fair food at the Canadian National Exhibition.' },
+  '2024-08-26': { title: 'The Temple', story: 'Shivani and Premal visit a temple together for the first time.' },
+  '2024-09-30': { title: 'First Date', story: 'Their very first date, at Liu Loqum Atelier on College Street.' },
+  // ── Season 2 · Growing Together
+  '2024-10-12': { title: 'BarChef', story: 'Cocktails and a late night at BarChef Toronto.' },
+  '2024-10-14': { title: 'Navratri Nights', story: 'Their first Navratri together, dancing garba to Atul Purohit.' },
+  '2024-10-18': { title: 'Navratri, Again', story: 'One more night of garba before the festival ends.' },
+  '2024-11-03': { title: 'Her First Car', story: 'Shivani buys her first car, all by herself.' },
+  '2024-11-20': { title: 'Downtown', story: 'A random weekday spent wandering downtown together.' },
+  '2024-12-14': { title: 'Clockwork', story: 'Drinks at the Clockwork bar inside the Fairmont Royal York.' },
+  '2024-12-15': { title: 'Date Night', story: 'A night out exploring the city together.' },
+  // ── Season 3 · Her Biggest Year
+  '2025-01-05': { title: 'Niagara Falls', story: 'Premal at Niagara Falls on a cold January day.' },
+  '2025-01-09': { title: 'Bastian, Mumbai', story: 'Shivani home in India, at Bastian in Mumbai. The weeks apart felt much longer to Premal.' },
+  '2025-01-25': { title: 'Roses at Arrivals', story: 'Shivani flies back from India. Premal is waiting at the airport with roses.' },
+  '2025-02-07': { title: 'Cactus Club', story: "One of the good ones. Dinner downtown, and she doesn't stop smiling all night." },
+  '2025-02-08': { merge: 'prev' },
+  '2025-02-15': { title: 'Eataly', story: 'A slow afternoon at Eataly at the Shops at Don Mills.' },
+  '2025-04-05': { title: 'Home', story: 'Home. Just the two of them, being them.' },
+  '2025-04-12': { title: 'Planta Queen', story: 'Dinner at Planta Queen. Good food, better company, and a date neither of them wants to end.' },
+  '2025-04-26': { title: 'Pai', story: "Pai Thai uptown, sharing plates and stealing bites off each other's." },
+  '2025-05-21': { title: 'The Surprise', story: 'Premal surprises Shivani at work.' },
+  '2025-05-23': { title: 'Piano Piano', story: "Dinner at Piano Piano. She looks unreal tonight, and he can't stop telling her." },
+  '2025-05-27': { title: 'Graduation Day', story: 'Shivani graduates from Northeastern University. Premal has never been prouder.' },
+  '2025-06-29': { title: 'Badiali', story: 'Pizza at Badiali, with Shivani looking far too good for a pizza place.' },
+  // ── Season 4 · One Full Year
+  '2025-07-06': { title: 'The Lakeshore', story: "Sandwiches at Alfie's, then a long walk along the Etobicoke lakeshore. A perfect day, with the perfect person." },
+  '2025-07-12': { title: 'Elora', story: 'Drinks at the Lobby Bar in Elora.' },
+  '2025-07-21': { title: 'Her Birthday', story: "Shivani's birthday, in the dress Premal gave her. The day doesn't go the way she deserves, and he is still sorry it didn't." },
+  '2025-07-27': { title: 'Just Us', story: 'A random Sunday, just the two of them.' },
+  '2025-08-03': { title: 'Crystal Beach', story: "Premal's birthday trip, together at Crystal Beach." },
+  '2025-10-11': { merge: 'next' },
+  '2025-10-12': { title: 'Navratri 2025', story: 'Navratri again, and this time it already feels like tradition.' },
+  '2025-11-04': { title: 'Just Her', story: "Shivani, just being Shivani. Premal's favourite thing to look at." },
+  '2026-02-14': { title: 'The Letter', story: "Her Valentine's Day letter to me. A note I will keep forever." },
+  '2026-02-21': { title: 'An Old Favourite' },
+  '2026-03-21': { title: 'Nobu', story: 'Dinner at Nobu. One of their best dates ever.' },
+  '2026-04-02': { title: 'The Bob', story: 'Shivani gets her bob. It suits her perfectly, and she loves it this way.' },
+  '2026-04-23': { title: 'The Last Day' },
+  // ── Season 5 · Still Us
+  '2026-04-25': { title: 'Balayage', story: 'Shivani colours her hair, a soft balayage.' },
+  '2026-05-27': { title: 'Algonquin', story: "Shivani's trip to Algonquin Park." },
+  '2026-06-06': { merge: 'next' },
+  '2026-07-21': { title: 'Her Birthday, 2026' },
+  '2026-09-17': { title: 'Bruce Peninsula' },
+  '2026-09-23': { title: 'Montréal', story: 'Day one of Shivani\'s Québec trip, with the whole city below her.', thumb: 's_20260923_120000_3.jpg' },
+  '2026-09-24': { title: 'Old Québec', story: 'Umbrella Street, the Château Frontenac and Montmorency Falls.', thumb: 's_20260924_120000_11.jpg' },
+  '2026-09-25': { title: 'Lakes & Lookouts', story: 'The last day of the Québec trip.' },
+  '2026-09-26': { title: 'Roses, Again', story: 'Their last outing before Premal leaves Canada on September 27.', thumb: 's_20260926_120000_1.jpg' },
 };
 
 /* Top 10 Moments — in order. Media keys (file names). */
@@ -209,42 +277,46 @@ window.CREDITS = [
   ['Starring',             'Shivani ♡ · Premal'],
   ['',                     ''],
   ['Before us',            'Toronto, 2023'],
-  ['First temple visit',   'Aug 26, 2024 · together'],
-  ['First date',           'Liu Loqum Atelier · Sep 30, 2024'],
+  ['Louix Louis',          'May 2024'],
+  ['Her birthday, 2024',   'Jul 21, 2024'],
+  ['The CNE',              'Aug 25, 2024'],
+  ['First temple visit',   'Aug 26, 2024'],
+  ['First date',           'Liu Loqum Atelier'],
   ['BarChef Toronto',      'Oct 12, 2024'],
-  ['First Navratri',       'Atul Purohit · Oct 14, 2024'],
-  ['Her first car',        'All by herself · Nov 2024'],
-  ['Clockwork Bar',        'Fairmont Royal York · Dec 2024'],
-  ['Airport reunion',      'Jan 25, 2025 · with roses'],
+  ['First Navratri',       'Oct 14, 2024'],
+  ['Her first car',        'All by herself'],
+  ['Clockwork',            'Fairmont Royal York'],
+  ['Airport reunion',      'With roses'],
   ['Cactus Club',          'Feb 2025'],
-  ["Valentine's note",     "A letter I'll keep forever"],
-  ['Planta Toronto',       'Apr 2025'],
-  ['Pai Thai Uptown',      'Apr 2025'],
+  ["Valentine's note",     'Kept forever'],
+  ['Planta Queen',         'Apr 2025'],
+  ['Pai',                  'Apr 2025'],
   ['Piano Piano',          'May 2025'],
-  ['Her graduation',       'Northeastern University · May 29, 2025'],
-  ['Badiali Pizzeria',     'Jun 2025'],
-  ['Etobicoke Lakeshore',  'Jul 2025'],
-  ['Elora, the Lobby Bar', 'Jul 2025'],
-  ['Her birthday',         'Jul 21, 2025 · she wore my gift'],
-  ['A birthday apology',   "That day wasn't what you deserved. I'm sorry, Shivani."],
-  ['Crystal Beach',        'Aug 3, 2025 · Ontario'],
-  ['Navratri 2025',        'Oct 2025 · together again'],
+  ['Her graduation',       'May 27, 2025'],
+  ['Badiali',              'Jun 2025'],
+  ['The lakeshore',        'Jul 2025'],
+  ['Elora',                'Jul 2025'],
+  ['Her birthday',         'Jul 21, 2025'],
+  ['A birthday apology',   "I'm sorry, Shivani"],
+  ['Crystal Beach',        'My birthday trip'],
+  ['Navratri 2025',        'Together again'],
   ['The bob haircut',      'Apr 2, 2026'],
-  ['The hardest goodbye',  'Apr 23, 2026 · but not the last chapter'],
+  ['Nobu',                 'Mar 21, 2026'],
+  ['The hardest goodbye',  'Apr 23, 2026'],
   ['Her birthday, 2026',   'Jul 21, 2026'],
   ['Bruce Peninsula',      'Sep 17, 2026'],
   ['Her Québec trip',      'Sep 23 – 25, 2026'],
-  ['Roses',                'Sep 26, 2026 · the night before'],
-  ['Another goodbye',      'Sep 27, 2026 · still not the last chapter'],
+  ['Roses, again',         'Sep 26, 2026'],
+  ['Another goodbye',      'Sep 27, 2026'],
   ['Still us',             'Every day since'],
   ['',                     ''],
   ['Soundtrack',           'Beete Lamhein'],
-  ['Location',             'Toronto — every corner of it'],
-  ['Shot on',              'Our camera rolls & stolen moments'],
-  ['Written by',           'Every day we chose each other'],
-  ['Executive producer',   'Fate, for planning all of this'],
+  ['Location',             'Toronto, mostly'],
+  ['Shot on',              'Our camera rolls'],
+  ['Written by',           'Every day together'],
+  ['Executive producer',   'Fate'],
   ['',                     ''],
-  ['To Shivani',           'you are my favourite person in the world'],
+  ['To Shivani',           'my favourite person'],
   ['',                     '— Premal ♡'],
 ];
 

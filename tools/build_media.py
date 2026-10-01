@@ -114,6 +114,68 @@ SNAP_DATES = {
   'IMG_1281.JPG': '2026-09-26',  # #43
   'Snapchat-352657970.jpg': '2026-09-26',  # #56
 }
+SOURCES = {}
+# Dates Premal set in the Cutting Room review page (Oct 2026). These win over everything above.
+USER_DATES = {
+  # Bruce Peninsula, Sept 17 2026 (resized copies, dates stripped by the resizer)
+  'IMG_5929-3mb.jpg': '2026-09-17',
+  'IMG_5930-3mb.jpg': '2026-09-17',
+  'IMG_5939-3mb.jpg': '2026-09-17',
+  'IMG_5940-3mb.jpg': '2026-09-17',
+  'IMG_5941-3mb.jpg': '2026-09-17',
+  'IMG_5942-3mb.jpg': '2026-09-17',
+  'IMG_5946-3mb.jpg': '2026-09-17',
+  'IMG_5947-3mb.jpg': '2026-09-17',
+  'IMG_5948-3mb.jpg': '2026-09-17',
+  'IMG_5954-3mb.jpg': '2026-09-17',
+  'IMG_5955-3mb.jpg': '2026-09-17',
+  'IMG_5956-3mb.jpg': '2026-09-17',
+  'IMG_5958-3mb.jpg': '2026-09-17',
+  'IMG_5960-3mb.jpg': '2026-09-17',
+  'IMG_5961-3mb.jpg': '2026-09-17',
+  'IMG_5990-3mb.jpg': '2026-09-17',
+  'IMG_5991-3mb.jpg': '2026-09-17',
+  'IMG_5992-3mb.jpg': '2026-09-17',
+  'IMG_5993-3mb.jpg': '2026-09-17',
+  'IMG_5994-3mb.jpg': '2026-09-17',
+  'IMG_5995-3mb.jpg': '2026-09-17',
+  'IMG_8810.JPG': '2023-09-23',
+  '0743e95b7d824f4c96eb3ae51df6bdc7.MOV': '2023-09-30',
+  'IMG_9372.JPG': '2023-10-04',
+  'IMG_9278.JPG': '2023-10-21',
+  'SNAP_20231126-015602.MP4': '2023-12-09',
+  'IMG_5233.JPG': '2024-05-20',
+  'IMG_1234.jpg': '2024-07-21',
+  'IMG_1265.jpg': '2024-07-21',
+  'IMG_1281.JPG': '2024-07-21',
+  'Snapchat-1274994827.jpg': '2025-05-27',
+  'Snapchat-1963777634.jpg': '2025-05-27',
+  'Snapchat-524185506.jpg': '2025-05-27',
+  'Snapchat-687287911.jpg': '2025-05-27',
+  'Snapchat-790482175.jpg': '2025-05-27',
+  'IMG_4764.JPG': '2026-03-21',
+  'IMG_4765.JPG': '2026-03-21',
+  'IMG_4766.JPG': '2026-03-21',
+  'IMG_4767.JPG': '2026-03-21',
+  'IMG_4768.JPG': '2026-03-21',
+  'IMG_4769.JPG': '2026-03-21',
+  'IMG_4770.JPG': '2026-03-21',
+  'IMG_4771.JPG': '2026-03-21',
+  'IMG_4772.JPG': '2026-03-21',
+  'IMG_4773.JPG': '2026-03-21',
+  'IMG_4845.HEIC': '2026-04-02',
+  'IMG_4846.HEIC': '2026-04-02',
+  'IMG_4847.heic': '2026-04-02',
+  'IMG_4850.JPG': '2026-04-02',
+  'IMG_4856.JPG': '2026-04-02',
+  'IMG_4862.JPG': '2026-04-02',
+  'IMG_4867.JPG': '2026-04-02',
+  'IMG_4917.JPG': '2026-04-25',
+  'Snapchat-379522744.jpg': '2026-09-25',
+  'Snapchat-58892558.jpg': '2026-09-25',
+}
+SNAP_DATES.update(USER_DATES)
+
 SKIP = {'netflix-n.png', 'Snapchat-1493094235.jpg', 'Snapchat-918357969.jpg'}  # not of Shivani
 # Raw files left out on purpose: 18 near-identical car selfies trimmed to 4 (keep 4850, 4856, 4862, 4867)
 SKIP_RAW = {f'IMG_{n}.JPG' for n in (4851, 4852, 4853, 4855, 4857, 4858, 4859, 4860, 4861, 4863, 4864, 4865, 4866)} | {'IMG_4854.jpg'}
@@ -213,21 +275,30 @@ def probe(path):
     return dt.strftime('%Y-%m-%dT%H:%M:%S'), dur
 
 
-def save_img(im, out_full, out_thumb):
+def webp(im, path, q):
+    im.save(path[:-4] + '.webp', 'WEBP', quality=q, method=5)
+
+
+def save_img(im, out_full, out_thumb, repo_full=None):
     im = ImageOps.exif_transpose(im).convert('RGB')
     w, h = im.size
     if out_full:
         f = im.copy(); f.thumbnail((FULL, FULL), Image.LANCZOS)
         f.save(out_full, 'JPEG', quality=80, optimize=True, progressive=True)
+        webp(f, out_full, 76)
         w, h = f.size
+    elif repo_full and not os.path.exists(repo_full[:-4] + '.webp'):
+        webp(im, repo_full, 76)          # repo originals keep their JPEG; add a WebP twin
     t = im.copy(); t.thumbnail((THUMB, THUMB), Image.LANCZOS)
     t.save(out_thumb, 'JPEG', quality=72, optimize=True, progressive=True)
+    webp(t, out_thumb, 70)
     return w, h
 
 
 def poster(src, dst):
     subprocess.run(['ffmpeg', '-y', '-v', 'error', '-ss', '0.3', '-i', src, '-frames:v', '1',
                     '-vf', f'scale={THUMB}:-2', '-q:v', '4', dst], check=True)
+    webp(Image.open(dst).convert('RGB'), dst, 70)
 
 
 def encode_video(src, dst):
@@ -253,7 +324,7 @@ def main():
         im = Image.open(p)
         d = SNAP_DATES.get(fn)
         d = d + 'T12:00:00' if d else name_date(fn)
-        w, h = save_img(im, None, f'{ROOT}/images/t/{fn}')
+        w, h = save_img(im, None, f'{ROOT}/images/t/{fn}', repo_full=p)
         hashes.append((dhash(ImageOps.exif_transpose(im)), d))
         it = {'f': f'images/{fn}', 't': f'images/t/{fn}', 'k': 'img', 'd': d, 'w': w, 'h': h, 'key': fn}
         enrich(it, im); items.append(it)
@@ -263,7 +334,8 @@ def main():
             continue
         poster(p, f'{ROOT}/videos/p/{fn[:-4]}.jpg')
         _, dur = probe(p)
-        it = {'f': f'videos/{fn}', 't': f'videos/p/{fn[:-4]}.jpg', 'k': 'vid', 'd': name_date(fn),
+        vd = SNAP_DATES.get(fn)
+        it = {'f': f'videos/{fn}', 't': f'videos/p/{fn[:-4]}.jpg', 'k': 'vid', 'd': (vd + 'T12:00:00') if vd else name_date(fn),
               'dur': round(dur, 1), 'key': fn}
         enrich(it, Image.open(it['t'])); items.append(it)
 
@@ -271,10 +343,17 @@ def main():
         add_raw(items, hashes)
 
     items.sort(key=lambda x: (x['d'] or '9999', x['f']))
+    blur = {it['key']: it.pop('b') for it in items if 'b' in it}
     with open(f'{ROOT}/js/media.js', 'w') as fh:
         fh.write('/* Generated by tools/build_media.py - do not edit by hand. */\n')
         fh.write('window.MEDIA = ' + json.dumps(items, separators=(',', ':')).replace('},{', '},\n{') + ';\n')
+    with open(f'{ROOT}/js/blur.js', 'w') as fh:
+        fh.write('/* Generated: 12px blur-up placeholders, loaded after first paint. */\n')
+        fh.write('window.BLUR = ' + json.dumps(blur, separators=(',', ':')) + ';\n')
+        fh.write("document.dispatchEvent(new Event('blur-ready'));\n")
     print(f'{len(items)} items -> js/media.js')
+    if RAW:
+        json.dump(SOURCES, open(os.path.join(os.path.dirname(os.path.abspath(RAW)), 'sources.json'), 'w'), indent=0)
 
 
 def add_raw(items, hashes):
@@ -323,8 +402,8 @@ def add_raw(items, hashes):
 
     for p, title, im, d, num in imgs:
         est = False
-        if not d and title in SNAP_DATES:
-            d = SNAP_DATES[title] + 'T12:00:00'
+        if title in SNAP_DATES:
+            d = SNAP_DATES[title] + (d[10:] if d else 'T12:00:00')
         if not d:
             d = name_date(title)
         if not d and num:
@@ -341,6 +420,7 @@ def add_raw(items, hashes):
         name = slug(d, 'jpg')
         w, hh = save_img(im, f'{ROOT}/images/{name}', f'{ROOT}/images/t/{name}')
         it = {'f': f'images/{name}', 't': f'images/t/{name}', 'k': 'img', 'd': d, 'w': w, 'h': hh, 'key': name}
+        SOURCES[name] = title
         if est:
             it['est'] = 1
         enrich(it, im); items.append(it)
@@ -355,6 +435,8 @@ def add_raw(items, hashes):
         # Chat-exported clips with hex names carry the Drive upload time, not a capture time
         if re.match(r'^[0-9a-f]{32}\.', title) and d and d.startswith('2026-09-17T18'):
             d = None
+        if title in SNAP_DATES:
+            d = SNAP_DATES[title] + (d[10:] if d else 'T12:00:00')
         if dur < 1.5:          # Live Photo motion clips, not real videos
             print('skip', title); continue
         sig = (round(dur, 1), os.path.getsize(p))
@@ -365,6 +447,7 @@ def add_raw(items, hashes):
         encode_video(p, f'{ROOT}/videos/{name}')
         poster(f'{ROOT}/videos/{name}', f'{ROOT}/videos/p/{name[:-4]}.jpg')
         it = {'f': f'videos/{name}', 't': f'videos/p/{name[:-4]}.jpg', 'k': 'vid', 'd': d, 'dur': round(dur, 1), 'key': name}
+        SOURCES[name] = title
         enrich(it, Image.open(it['t'])); items.append(it)
 
 
