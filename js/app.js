@@ -34,7 +34,8 @@ const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '
 
 /* ── media helpers ──────────────────────────────────────── */
 // WebP twins exist for every photo, thumbnail and poster; fall back to JPEG if one fails.
-const pic = p => /^(images|videos\/p)\/.*\.jpg$/i.test(p || '') ? p.replace(/\.jpg$/i, '.webp') : p;
+// Generated photos, thumbnails and posters are WebP; Premal's original photos are served untouched as JPEG.
+const pic = p => /^(images\/s_|images\/t\/|videos\/p\/).*\.jpg$/i.test(p || '') ? p.replace(/\.jpg$/i, '.webp') : p;
 document.addEventListener('error', e => { const t = e.target; if (t.tagName === 'IMG' && /\.webp$/.test(t.src)) t.src = t.src.replace(/\.webp$/, '.jpg'); }, true);
 document.addEventListener('load', e => { if (e.target.tagName === 'IMG') e.target.classList.add('ld'); }, true);
 const pos = m => m && m.p ? `${Math.round(m.p[0] * 100)}% ${Math.round(m.p[1] * 100)}%` : '50% 30%';
@@ -334,8 +335,9 @@ const browse = (() => {
         play: () => playEp(s.episodes[0].id, 0), playLabel: 'Play', info: () => overlay('sheet', { season: s.n }) };
     }
     const ep = epByDay[h.day]; if (!ep) return null;
-    const photos = ep.items.filter(m => m.k === 'img'), faces = photos.filter(m => m.p);
-    const m = faces.length ? rnd(faces) : (photos.length ? rnd(photos) : ep.cover);
+    // prefer sharp, high-resolution photos with her face; fall back gracefully
+    const photos = ep.items.filter(m => m.k === 'img'), faces = photos.filter(m => m.p), big = faces.filter(m => Math.max(m.w, m.h) >= 1400);
+    const m = big.length ? rnd(big) : faces.length ? rnd(faces) : (photos.length ? rnd(photos) : ep.cover);
     return { key: h.day, badge: 'Series', tagNew: isRecent(ep) ? 'Recently Added' : badge, title: ep.title, sub: h.line, filmy: true, m,
       meta: `<span>${ep.label}</span><span>${fmtMD(ep.day)}</span><span>${esc(ep.len)}</span><span class="box hd">HD</span>`,
       play: () => playEp(ep.id, ep.items.indexOf(m) > -1 ? ep.items.indexOf(m) : 0), playLabel: isNew(ep) ? 'Watch Now' : 'Play', info: () => overlay('sheet', { season: ep.season.n }) };
@@ -355,7 +357,9 @@ const browse = (() => {
   function showFeature(k, first) {
     const f = feats[fi = k], L = layers[li = 1 - li], old = layers[1 - li];
     const useVideo = f.video && (window.innerHeight > window.innerWidth || window.innerWidth < 720) && !reduced;
-    L.innerHTML = `<img src="${pic(f.m.f)}" alt="" style="object-position:${pos(f.m)}" decoding="async">${useVideo ? `<video muted playsinline loop preload="auto" src="${f.video}"></video>` : ''}`;
+    const lowres = Math.max(f.m.w || 0, f.m.h || 0) < 1400 && window.innerWidth >= 900;   // don't stretch small photos across a wide screen
+    L.classList.toggle('lowres', lowres);
+    L.innerHTML = `${lowres ? `<img class="bb-back" src="${pic(f.m.t)}" alt="">` : ''}<img src="${pic(f.m.f)}" alt="" style="object-position:${pos(f.m)}" decoding="async">${useVideo ? `<video muted playsinline loop preload="auto" src="${f.video}"></video>` : ''}`;
     L.style.setProperty('--ox', pos(f.m).split(' ')[0]); L.style.setProperty('--oy', pos(f.m).split(' ')[1]);
     bb.style.setProperty('--amb', amb(f.m));
     if (curVideo) { curVideo.pause(); curVideo = null; }
@@ -363,7 +367,7 @@ const browse = (() => {
     if (v) { curVideo = v; v.addEventListener('playing', () => v.classList.add('ready'), { once: true }); if (!paused) v.play().catch(() => {}); }
     $('#bb-mute').hidden = !v;
     const swap = () => { L.classList.add('on'); old.classList.remove('on'); setTimeout(() => { if (old !== layers[li]) old.innerHTML = ''; }, 1300); };
-    const im = $('img', L); (im.decode ? im.decode() : Promise.resolve()).then(swap, swap);
+    const im = $('img:not(.bb-back)', L); (im.decode ? im.decode() : Promise.resolve()).then(swap, swap);
     const body = $('#bb-body');
     const fill = () => {
       $('#bb-tagline').innerHTML = `<svg viewBox="0 0 111 190"><use href="#n"/></svg><span>${esc(f.badge)}</span>${f.tagNew ? `<span class="tag-new">${esc(f.tagNew)}</span>` : ''}`;

@@ -26,7 +26,7 @@ pillow_heif.register_heif_opener()
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 RAW = sys.argv[1] if len(sys.argv) > 1 else None
 TOR = ZoneInfo('America/Toronto')
-FULL, THUMB = 1440, 480
+FULL, THUMB = 1920, 720
 
 # Dates confirmed by hand for files whose names carry no date (from the old index.html)
 SNAP_DATES = {
@@ -276,22 +276,22 @@ def probe(path):
 
 
 def webp(im, path, q):
-    im.save(path[:-4] + '.webp', 'WEBP', quality=q, method=5)
+    im.save(path[:-4] + '.webp', 'WEBP', quality=q, method=6)
 
 
 def save_img(im, out_full, out_thumb, repo_full=None):
     im = ImageOps.exif_transpose(im).convert('RGB')
     w, h = im.size
     if out_full:
+        # Full-size photos ship as high-quality WebP only (every current browser supports it)
         f = im.copy(); f.thumbnail((FULL, FULL), Image.LANCZOS)
-        f.save(out_full, 'JPEG', quality=80, optimize=True, progressive=True)
-        webp(f, out_full, 76)
+        webp(f, out_full, 86)
         w, h = f.size
-    elif repo_full and not os.path.exists(repo_full[:-4] + '.webp'):
-        webp(im, repo_full, 76)          # repo originals keep their JPEG; add a WebP twin
+    elif repo_full and os.path.exists(repo_full[:-4] + '.webp'):
+        os.remove(repo_full[:-4] + '.webp')   # repo originals are served as-is, never re-compressed
     t = im.copy(); t.thumbnail((THUMB, THUMB), Image.LANCZOS)
-    t.save(out_thumb, 'JPEG', quality=72, optimize=True, progressive=True)
-    webp(t, out_thumb, 70)
+    t.save(out_thumb, 'JPEG', quality=84, optimize=True, progressive=True)
+    webp(t, out_thumb, 84)
     return w, h
 
 
@@ -326,8 +326,8 @@ def poster(src, dst):
         subprocess.run(['ffmpeg', '-y', '-v', 'error', '-ss', '0', '-i', src, '-frames:v', '1',
                         '-vf', f'scale={THUMB}:-2', '-q:v', '4', dst], check=True)
         best = (0, Image.open(dst).convert('RGB'))
-    best[1].save(dst, 'JPEG', quality=80, optimize=True)
-    webp(best[1], dst, 70)
+    best[1].save(dst, 'JPEG', quality=86, optimize=True)
+    webp(best[1], dst, 84)
 
 
 def encode_video(src, dst):

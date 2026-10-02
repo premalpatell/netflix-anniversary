@@ -2,7 +2,7 @@
    - App shell (HTML, CSS, JS, fonts, icons): network first, cache fallback, so updates always arrive.
    - Photos and posters: cache first, filled as they are viewed.
    - Videos and audio stream from the network (range requests are not cached). */
-const VERSION = 'sp-v5';
+const VERSION = 'sp-v6';
 const SHELL = `${VERSION}-shell`;
 const MEDIA = `${VERSION}-media`;
 const SHELL_FILES = [

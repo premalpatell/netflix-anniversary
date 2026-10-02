@@ -111,7 +111,7 @@ button:disabled{opacity:.5;cursor:default}
 .bb-layer.on{opacity:1}
 .bb-layer img,.bb-layer video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:var(--ox,50%) var(--oy,30%)}
 .bb-layer img{animation:bbkb 14s linear both;transform-origin:var(--ox,50%) var(--oy,30%)}
-@keyframes bbkb{from{transform:scale(1)}to{transform:scale(1.08)}}
+@keyframes bbkb{from{transform:scale(1)}to{transform:scale(1.04)}}
 .bb-layer video{opacity:0;transition:opacity .8s}
 .bb-layer video.ready{opacity:1}
 .billboard-shade{position:absolute;inset:0;transition:background .8s;
@@ -342,8 +342,8 @@ button:disabled{opacity:.5;cursor:default}
 #player.on{display:block;animation:fade .3s}
 #player.pulling{transition:none}
 .stage{position:absolute;inset:0;overflow:hidden}
-.stage::after{content:'';position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at center,transparent 55%,rgba(0,0,0,.5) 100%);z-index:2}
-.grain{position:absolute;inset:-50%;width:200%;height:200%;pointer-events:none;opacity:.055;z-index:3;mix-blend-mode:overlay;
+.stage::after{content:'';position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at center,transparent 65%,rgba(0,0,0,.3) 100%);z-index:2}
+.grain{display:none;position:absolute;inset:-50%;width:200%;height:200%;pointer-events:none;opacity:.055;z-index:3;mix-blend-mode:overlay;
   background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .6 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
   animation:grain 1.2s steps(4) infinite;animation-play-state:var(--play,running)}
 @keyframes grain{0%{transform:translate(0,0)}25%{transform:translate(-4%,2%)}50%{transform:translate(3%,-3%)}75%{transform:translate(-2%,-4%)}100%{transform:translate(0,0)}}
@@ -353,12 +353,12 @@ button:disabled{opacity:.5;cursor:default}
 .frame img.kb-left{animation-name:kb-left}.frame img.kb-up{animation-name:kb-up}.frame img.kb-out{animation-name:kb-out}.frame img.kb-right{animation-name:kb-right}
 .frame img.fit{object-fit:contain;animation-name:kbFit}
 .frame video{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#000}
-@keyframes kb-in{from{transform:scale(1.02)}to{transform:scale(1.13)}}
-@keyframes kb-out{from{transform:scale(1.13)}to{transform:scale(1.03)}}
-@keyframes kb-left{from{transform:scale(1.1) translateX(2.5%)}to{transform:scale(1.14) translateX(-2.5%)}}
-@keyframes kb-right{from{transform:scale(1.1) translateX(-2.5%)}to{transform:scale(1.14) translateX(2.5%)}}
-@keyframes kb-up{from{transform:scale(1.1) translateY(2.5%)}to{transform:scale(1.14) translateY(-2.5%)}}
-@keyframes kbFit{from{transform:scale(1)}to{transform:scale(1.04)}}
+@keyframes kb-in{from{transform:scale(1)}to{transform:scale(1.06)}}
+@keyframes kb-out{from{transform:scale(1.06)}to{transform:scale(1)}}
+@keyframes kb-left{from{transform:scale(1.05) translateX(1.5%)}to{transform:scale(1.06) translateX(-1.5%)}}
+@keyframes kb-right{from{transform:scale(1.05) translateX(-1.5%)}to{transform:scale(1.06) translateX(1.5%)}}
+@keyframes kb-up{from{transform:scale(1.05) translateY(1.5%)}to{transform:scale(1.06) translateY(-1.5%)}}
+@keyframes kbFit{from{transform:scale(1)}to{transform:scale(1.03)}}
 .stage-blur{position:absolute;inset:0;background-size:cover;background-position:center;filter:blur(22px) brightness(.4) saturate(1.3);transform:scale(1.2) translateZ(0);opacity:0;transition:opacity .6s;will-change:opacity}
 .stage-blur.on{opacity:1}
 .ripple{position:absolute;top:0;bottom:0;width:38%;display:grid;place-items:center;z-index:4;pointer-events:none;opacity:0}
@@ -541,3 +541,6 @@ button:disabled{opacity:.5;cursor:default}
 #player.zoomed .pl-caption,#player.zoomed .pl-titlecard{opacity:0!important}
 .frame img{transition:transform .12s linear}
 .bb-tag.filmy{font-family:var(--serif);font-style:italic;font-size:clamp(18px,4.4vw,24px);line-height:1.35;color:#fff}
+/* small originals on wide screens: shown at natural size on the right, over a blurred copy */
+.bb-layer.lowres .bb-back{filter:blur(28px) brightness(.55) saturate(1.2);transform:scale(1.15);animation:none}
+.bb-layer.lowres img:not(.bb-back){left:auto;right:6%;top:6%;bottom:auto;width:auto;height:88%;max-width:56%;object-fit:contain;border-radius:6px;box-shadow:0 20px 60px rgba(0,0,0,.6);animation:none}
