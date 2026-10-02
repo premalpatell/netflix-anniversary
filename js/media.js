@@ -292,7 +292,7 @@ window.MEDIA = [{"f":"images/s_20230923_120000_1.jpg","t":"images/t/s_20230923_1
 {"f":"images/IMG_20251012_172731_352.jpg","t":"images/t/IMG_20251012_172731_352.jpg","k":"img","d":"2025-10-12T17:27:31","w":586,"h":780,"key":"IMG_20251012_172731_352.jpg","p":[0.38,0.33],"c":"#81614b"},
 {"f":"images/Snapchat-10814446.jpg","t":"images/t/Snapchat-10814446.jpg","k":"img","d":"2025-11-04T12:00:00","w":600,"h":800,"key":"Snapchat-10814446.jpg","c":"#a18361"},
 {"f":"images/Snapchat-1605463310.jpg","t":"images/t/Snapchat-1605463310.jpg","k":"img","d":"2025-11-04T12:00:00","w":600,"h":800,"key":"Snapchat-1605463310.jpg","p":[0.27,0.46],"c":"#a6835e"},
-{"f":"images/valentine.jpg","t":"images/t/valentine.jpg","k":"img","d":"2026-02-14T12:00:00","w":400,"h":225,"key":"valentine.jpg","c":"#a29987"},
+{"f":"images/valentine.jpg","t":"images/t/valentine.jpg","k":"img","d":"2026-02-14T12:00:00","w":1920,"h":1231,"key":"valentine.jpg","c":"#e6e7df"},
 {"f":"images/Screenshot_20260221_202434_Instagram.jpg","t":"images/t/Screenshot_20260221_202434_Instagram.jpg","k":"img","d":"2026-02-21T20:24:34","w":667,"h":800,"key":"Screenshot_20260221_202434_Instagram.jpg","p":[0.51,0.19],"c":"#a48762"},
 {"f":"images/s_20260321_120000_1.jpg","t":"images/t/s_20260321_120000_1.jpg","k":"img","d":"2026-03-21T12:00:00","w":1080,"h":1920,"key":"s_20260321_120000_1.jpg","p":[0.6,0.53],"c":"#231811"},
 {"f":"images/s_20260321_120000_10.jpg","t":"images/t/s_20260321_120000_10.jpg","k":"img","d":"2026-03-21T12:00:00","w":1080,"h":1920,"key":"s_20260321_120000_10.jpg","p":[0.53,0.52],"c":"#20170e"},
