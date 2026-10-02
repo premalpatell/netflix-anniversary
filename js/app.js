@@ -119,6 +119,8 @@ const epByDay = {}; allEpisodes.forEach(e => (e.days.length ? e.days : [e.day]).
 const nextEpisode = ep => ep.virtual ? null : (allEpisodes[allEpisodes.indexOf(ep) + 1] || null);
 const latestDay = allEpisodes.filter(e => e.day !== 'undated').map(e => e.day).sort().pop() || '';
 const isNew = ep => ep.day !== 'undated' && dayDiff(latestDay, ep.day) <= 45;
+const isRecent = ep => ep.day !== 'undated' && dayDiff(todayStr(), ep.day) <= 14 && dayDiff(todayStr(), ep.day) >= 0;
+const newLabel = ep => isRecent(ep) ? 'Recently Added' : 'New Episode';
 const realSeasons = () => seasons.filter(s => s.n !== EXTRAS.n && s.episodes.length);
 const isPortrait = m => m && m.k === 'img' && m.h > m.w * 1.05;
 
@@ -274,7 +276,7 @@ const cardHTML = (ep, opts = {}) => {
   return `<button class="card ${opts.vid ? 'vid' : ''}" type="button" data-ep="${ep.id}" ${opts.i != null ? `data-i="${opts.i}"` : ''} ${opts.vid ? `data-vid="${opts.m.f}"` : ''} aria-label="${esc(`${opts.ep || ep.label}: ${opts.title || ep.title}`)}">
     ${imgHTML(m, '', ep.alt)}
     ${opts.vid ? `<span class="card-vid">${svgPlay}</span><span class="dur">${secs(m.dur)}</span>` : ''}
-    ${opts.badge !== false && isNew(ep) ? '<span class="badge-new">New Episode</span>' : ''}
+    ${opts.badge !== false && isNew(ep) ? `<span class="badge-new">${newLabel(ep)}</span>` : ''}
     ${ep.note && !opts.vid ? `<span class="card-note" title="A note from Premal">${use('i-note')}</span>` : ''}
     <div class="card-body"><div class="card-ep">${esc(opts.ep || ep.label)}${ep.est ? ' · approx.' : ''}</div><div class="card-title">${esc(opts.title || ep.title)}</div>${opts.len === '' ? '' : `<div class="card-len">${esc(opts.len != null ? opts.len : [ep.sub, ep.len].filter(Boolean).join(' · '))}</div>`}</div>
     ${p && opts.prog !== false ? `<div class="card-prog"><i style="width:${Math.round(p.frac * 100)}%"></i></div>` : ''}
@@ -301,7 +303,7 @@ const browse = (() => {
       }
       if (f.kind === 'episode') {
         const ep = epByDay[f.day]; if (!ep) return null;
-        return { badge: 'Series', tagNew: f.tag, title: ep.title, sub: ep.story || ep.len, meta: `<span class="match">New</span><span>${ep.label}</span><span>${fmtMD(ep.day)}</span><span class="box hd">HD</span>`, m: ep.cover,
+        return { badge: 'Series', tagNew: isRecent(ep) ? 'Recently Added' : f.tag, title: ep.title, sub: ep.story || ep.len, meta: `<span class="match">New</span><span>${ep.label}</span><span>${fmtMD(ep.day)}</span><span class="box hd">HD</span>`, m: ep.cover,
           play: () => playEp(ep.id, 0), playLabel: 'Watch Now', info: () => overlay('sheet', { season: ep.season.n }) };
       }
       if (f.kind === 'top') {
@@ -317,6 +319,36 @@ const browse = (() => {
       }
       return null;
     }).filter(Boolean);
+  }
+  /* Bollywood highlights: a fresh mix on every visit, never repeating the last ones shown */
+  const rnd = a => a[Math.floor(Math.random() * a.length)];
+  const shuffle = a => { const b = [...a]; for (let k = b.length - 1; k > 0; k--) { const j = Math.floor(Math.random() * (k + 1)); [b[k], b[j]] = [b[j], b[k]]; } return b; };
+  function highlight(h) {
+    const badge = rnd(window.HIGHLIGHT_BADGES || ['Superhit']);
+    if (h.season != null) {
+      const s = seasons.find(x => x.n === h.season); if (!s || !s.episodes.length) return null;
+      const photos = s.episodes.map(e => e.cover).filter(m => m.k === 'img');
+      const m = rnd(photos.filter(x => x.p).length ? photos.filter(x => x.p) : photos);
+      return { key: 's' + h.season, badge: 'Series', tagNew: badge, title: s.title, sub: h.line, filmy: true, m,
+        meta: `<span>Season ${s.n}</span><span>${s.episodes.length} episodes</span><span>${esc(s.tag)}</span><span class="box hd">HD</span>`,
+        play: () => playEp(s.episodes[0].id, 0), playLabel: 'Play', info: () => overlay('sheet', { season: s.n }) };
+    }
+    const ep = epByDay[h.day]; if (!ep) return null;
+    const photos = ep.items.filter(m => m.k === 'img'), faces = photos.filter(m => m.p);
+    const m = faces.length ? rnd(faces) : (photos.length ? rnd(photos) : ep.cover);
+    return { key: h.day, badge: 'Series', tagNew: isRecent(ep) ? 'Recently Added' : badge, title: ep.title, sub: h.line, filmy: true, m,
+      meta: `<span>${ep.label}</span><span>${fmtMD(ep.day)}</span><span>${esc(ep.len)}</span><span class="box hd">HD</span>`,
+      play: () => playEp(ep.id, ep.items.indexOf(m) > -1 ? ep.items.indexOf(m) : 0), playLabel: isNew(ep) ? 'Watch Now' : 'Play', info: () => overlay('sheet', { season: ep.season.n }) };
+  }
+  function pickFeatures() {
+    const series = resolveFeatures().find(f => f.logo);
+    const pool = (window.HIGHLIGHTS || []).map(highlight).filter(Boolean);
+    let seen = store.get('bbSeen', []);
+    let fresh = pool.filter(f => !seen.includes(f.key));
+    if (fresh.length < 5) { seen = []; fresh = pool; }
+    const take = shuffle(fresh).slice(0, 5);
+    store.set('bbSeen', [...seen, ...take.map(f => f.key)].slice(-30));
+    return series ? [take[0], series, ...take.slice(1)].filter(Boolean) : take;
   }
   const playFirst = () => { const lw = lastWatched()[0]; const ep = lw && lw.frac < 0.98 ? lw.ep : (seasons.find(s => s.n === 1).episodes[0] || allEpisodes[0]); playEp(ep.id, lw && lw.ep === ep ? lw.i : 0); };
 
@@ -338,6 +370,7 @@ const browse = (() => {
       $('#bb-title').innerHTML = f.logo ? logoSVG() : `<span class="bb-h">${esc(f.title)}</span>`;
       $('#bb-rank').hidden = !f.rank; $('#bb-rank span').textContent = f.rank || '';
       $('#bb-tag').textContent = f.sub || '';
+      $('#bb-tag').classList.toggle('filmy', !!f.filmy);
       $('#bb-meta').innerHTML = f.meta + (f.logo ? `<span class="stats">${stats}</span>` : '');
       $('#bb-play span').textContent = f.playLabel;
       $('#bb-trailer').hidden = !f.trailer;
@@ -349,7 +382,7 @@ const browse = (() => {
   function rotate() { clearTimeout(rotT); if (paused || feats.length < 2 || document.hidden) return; rotT = setTimeout(() => { showFeature((fi + 1) % feats.length); rotate(); }, 8000); }
 
   function build() {
-    feats = resolveFeatures();
+    feats = pickFeatures();
     $('.bb-dots').innerHTML = feats.map(() => '<i></i>').join('');
     $('#bb-maturity').textContent = SHOW.maturity;
     showFeature(0, true);
@@ -467,7 +500,7 @@ const jaw = (() => {
       let k = 0; if (ims.length > 1 && !reduced) slideT = setInterval(() => { const all = $$('img', media); all[k].classList.add('off'); k = (k + 1) % all.length; all[k].classList.remove('off'); }, 1400);
     }
     const p = progress[ep.id];
-    $('#jaw-meta').innerHTML = `<span class="match">${ratings[ep.id] === 'down' ? '' : '100% Match'}</span><span class="box">${SHOW.maturity}</span><b>${esc(ep.label)}</b><span>${mins(ep.runtime)}</span><span class="box hd">HD</span>${p && p.frac < 0.98 ? `<span>${Math.round(p.frac * 100)}% watched</span>` : ''}<span style="flex-basis:100%;color:#fff;font-weight:600">${esc(ep.title)}</span>`;
+    $('#jaw-meta').innerHTML = `${isNew(ep) ? `<span class="badge-inline">${newLabel(ep)}</span>` : ''}<span class="match">${ratings[ep.id] === 'down' ? '' : '100% Match'}</span><span class="box">${SHOW.maturity}</span><b>${esc(ep.label)}</b><span>${mins(ep.runtime)}</span><span class="box hd">HD</span>${p && p.frac < 0.98 ? `<span>${Math.round(p.frac * 100)}% watched</span>` : ''}<span style="flex-basis:100%;color:#fff;font-weight:600">${esc(ep.title)}</span>`;
     $('#jaw-tags').innerHTML = [ep.season.title, ep.day !== 'undated' ? String(parseD(ep.day).getFullYear()) : '', ep.vids ? 'Videos' : 'Photos', ...(SHOW.moods || []).slice(0, 1)].filter(Boolean).map(x => `<span>${esc(x)}</span>`).join('');
     $('[data-act="list"] use', el).setAttribute('href', inList(ep.id) ? '#i-check' : '#i-plus');
     $('[data-act="like"] use', el).setAttribute('href', '#' + rateIcon(ep.id));
@@ -503,7 +536,7 @@ const bell = (() => {
   function open() {
     const u = unread(), s = seen(), otd = onThisDay().slice(0, 4), fresh = allEpisodes.filter(isNew).reverse().slice(0, 6);
     menu.innerHTML = (otd.length ? `<h4>On this day</h4>${otd.map(x => item(x.e, `${x.years} year${x.years > 1 ? 's' : ''} ago today`, fmtMD(x.e.day), u.otd)).join('')}` : '') +
-      (fresh.length ? `<h4>New episodes</h4>${fresh.map(e => item(e, 'New Episode', `${e.label} · ${fmtMD(e.day)}`, e.day > (s.latest || ''))).join('')}` : '') || '<p class="bell-empty">You’re all caught up.</p>';
+      (fresh.length ? `<h4>New episodes</h4>${fresh.map(e => item(e, newLabel(e), `${e.label} · ${fmtMD(e.day)}`, e.day > (s.latest || ''))).join('')}` : '') || '<p class="bell-empty">You’re all caught up.</p>';
     menu.hidden = false; btn.setAttribute('aria-expanded', 'true');
     store.set('seen', { latest: latestDay, otd: todayStr() }); refreshDot();
   }
@@ -568,11 +601,12 @@ const sheet = (() => {
       const when = ep.day === 'undated' ? 'Date unknown' : (dateIsTitle ? fmtWeekday(ep.day) : fmtLong(ep.day));
       const extra = ep.days.length > 1 ? ` + ${ep.days.length - 1} more day${ep.days.length > 2 ? 's' : ''}` : '';
       const fav = ratings[ep.id] === 'love' || ratings[ep.id] === 'up' ? `<i class="ep-fav">${use(rateIcon(ep.id))}</i>` : '';
-      return `<button class="ep" type="button" data-ep="${ep.id}">
+      return `<div class="ep-row"><button class="ep" type="button" data-ep="${ep.id}">
         <span class="ep-n">${ep.n}</span>
         <span class="ep-thumb">${imgHTML(ep.cover, '', ep.alt)}<span class="play"><i>${svgPlay}</i></span>${p ? `<span class="card-prog"><i style="width:${Math.round(p.frac * 100)}%"></i></span>` : ''}</span>
         <span class="ep-body"><span class="ep-title"><span>${esc(ep.title)}${ep.note ? `<i class="ep-note">${use('i-note')}</i>` : ''}${fav}</span><small>${mins(ep.runtime)}</small></span>
-        <span class="ep-story">${esc(hasStory ? ep.story : ep.len)}</span><span class="ep-date">${when}${extra}${ep.est ? ' (approx.)' : ''}${hasStory ? ' · ' + ep.len : ''}</span></span></button>`;
+        <span class="ep-story">${esc(hasStory ? ep.story : ep.len)}</span><span class="ep-date">${when}${extra}${ep.est ? ' (approx.)' : ''}${hasStory ? ' · ' + ep.len : ''}</span></span></button>
+        <button class="round ep-add" type="button" data-add="${ep.id}" aria-label="${inList(ep.id) ? 'Remove from' : 'Add to'} My List: ${esc(ep.title)}" aria-pressed="${inList(ep.id)}">${use(inList(ep.id) ? 'i-check' : 'i-plus')}</button></div>`;
     }).join('');
     $('#tbc').classList.toggle('hide', !s.toBeContinued);
     const lw = lastWatched()[0]; $('#sheet-play span').textContent = lw && lw.frac < 0.98 ? 'Resume' : 'Play';
@@ -589,6 +623,8 @@ const sheet = (() => {
   sel.addEventListener('change', () => { cur = +sel.value; renderSeason(); });
   $('.sheet-tabs').addEventListener('click', e => { const b = e.target.closest('[data-tab]'); if (b) setTab(b.dataset.tab); });
   box.addEventListener('click', e => {
+    const add = e.target.closest('[data-add]');
+    if (add) { const on = toggleList(add.dataset.add); add.innerHTML = use(on ? 'i-check' : 'i-plus'); add.setAttribute('aria-pressed', on); add.setAttribute('aria-label', `${on ? 'Remove from' : 'Add to'} My List`); return; }
     if (e.target.closest('[data-trailer]')) return swapOverlay('player', { ep: 'trailer', i: 0 });
     const s = e.target.closest('[data-season]'); if (s && s.closest('#tab-like')) { cur = +s.dataset.season; sel.value = cur; renderSeason(); setTab('eps'); box.scrollTo({ top: $('#tab-eps').offsetTop - 60, behavior: 'smooth' }); return; }
     const b = e.target.closest('[data-ep]'); if (!b || !box.contains(b)) return;
@@ -607,7 +643,8 @@ const sheet = (() => {
 })();
 
 /* ═══ PLAYER ═════════════════════════════════════════════ */
-const player = (() => {
+const player = {};
+Object.assign(player, (() => {
   const el = $('#player'), frames = [$('#frame-a'), $('#frame-b')], blur = $('#stage-blur');
   const fill = $('#fill'), knob = $('#knob'), timeEl = $('#pl-time'), countEl = $('#pl-count'), next = $('#next'), loader = $('#pl-loader'), titleCard = $('#pl-titlecard'), noteEl = $('#note');
   let ep = null, i = 0, playing = true, fi = 0, raf = 0, t0 = 0, elapsed = 0, curDur = PHOTO_MS, video = null, hideT = 0, nextTick = 0, seq = 0, cardT = 0, prefixes = [], wasPlaying = true;
@@ -669,6 +706,7 @@ const player = (() => {
     ep = null; seq++;
   }
   function show(idx) {
+    if (player.resetZoom) player.resetZoom();
     i = idx; clearInterval(nextTick); next.classList.remove('on');
     const m = ep.items[i], f = frames[fi = 1 - fi], old = frames[1 - fi], my = ++seq;
     if (video) { video.pause(); video.removeAttribute('src'); video.load(); video = null; }
@@ -784,6 +822,13 @@ const player = (() => {
      swipe down = close, press and hold = pause while held */
   const stage = $('#stage');
   let sx = 0, sy = 0, st = 0, moved = false, pulling = false, holding = false, holdT = 0, lastTap = { t: 0, side: 0 }, tapT = 0;
+  /* pinch to zoom: two fingers scale the current photo, one finger pans while zoomed */
+  const Z = { on: false, scale: 1, x: 0, y: 0, d0: 0, s0: 1, px: 0, py: 0, x0: 0, y0: 0, paused: false };
+  const dist = t => Math.hypot(t[0].clientX - t[1].clientX, t[0].clientY - t[1].clientY);
+  const zoomEl = () => $('.frame.on img', stage);
+  function applyZoom() { const im = zoomEl(); if (!im) return; const lim = (Z.scale - 1) * 0.5; Z.x = Math.max(-lim * innerWidth, Math.min(lim * innerWidth, Z.x)); Z.y = Math.max(-lim * innerHeight, Math.min(lim * innerHeight, Z.y)); if (Z.scale > 1.01) { im.style.animation = 'none'; im.style.transform = `translate(${Z.x}px,${Z.y}px) scale(${Z.scale})`; } else { im.style.transform = ''; } }
+  function resetZoom() { const was = Z.scale > 1.01; Z.on = false; Z.scale = 1; Z.x = Z.y = 0; const im = zoomEl(); if (im) { im.style.transform = ''; im.style.animation = ''; } el.classList.remove('zoomed'); if (was && Z.paused) { Z.paused = false; playing = true; setPlayState(); } }
+  player.resetZoom = resetZoom;
   const sideOf = x => x < window.innerWidth * 0.35 ? -1 : x > window.innerWidth * 0.65 ? 1 : 0;
   function tap(x) {
     const side = sideOf(x), now = Date.now();
@@ -793,16 +838,26 @@ const player = (() => {
   }
   stage.addEventListener('touchstart', e => {
     if (noteEl.classList.contains('on')) return;
+    if (e.touches.length === 2 && ep && ep.items[i].k === 'img') {
+      clearTimeout(holdT); clearTimeout(tapT); Z.on = true; Z.d0 = dist(e.touches); Z.s0 = Z.scale; moved = true;
+      if (playing) { Z.paused = true; playing = false; setPlayState(); }
+      el.classList.add('zoomed'); return;
+    }
+    if (Z.scale > 1.01 && e.touches.length === 1) { Z.px = e.touches[0].clientX; Z.py = e.touches[0].clientY; Z.x0 = Z.x; Z.y0 = Z.y; }
     sx = e.touches[0].clientX; sy = e.touches[0].clientY; st = Date.now(); moved = false; pulling = false;
     clearTimeout(holdT); holdT = setTimeout(() => { if (!moved && playing) { holding = true; wasPlaying = true; playing = false; setPlayState(); } }, 450);
   }, { passive: true });
   stage.addEventListener('touchmove', e => {
+    if (Z.on && e.touches.length === 2) { Z.scale = Math.max(1, Math.min(4, Z.s0 * dist(e.touches) / Z.d0)); applyZoom(); return; }
+    if (Z.scale > 1.01) { Z.x = Z.x0 + e.touches[0].clientX - Z.px; Z.y = Z.y0 + e.touches[0].clientY - Z.py; moved = true; applyZoom(); return; }
     const dx = e.touches[0].clientX - sx, dy = e.touches[0].clientY - sy;
     if (Math.abs(dx) > 10 || Math.abs(dy) > 10) { moved = true; clearTimeout(holdT); }
     if (!holding && dy > 12 && dy > Math.abs(dx) * 1.3) { pulling = true; el.classList.add('pulling'); el.style.transform = `translate3d(0,${dy * 0.6}px,0) scale(${1 - Math.min(dy, 400) / 2000})`; el.style.opacity = String(1 - Math.min(dy, 400) / 900); }
   }, { passive: true });
   stage.addEventListener('touchend', e => {
     clearTimeout(holdT);
+    if (Z.on) { if (e.touches.length < 2) { Z.on = false; if (Z.scale < 1.08) resetZoom(); } return; }
+    if (Z.scale > 1.01) { if (!moved && Date.now() - st < 300) resetZoom(); return; }   // tap while zoomed = zoom out
     if (holding) { holding = false; playing = true; setPlayState(); return; }
     const dx = e.changedTouches[0].clientX - sx, dy = e.changedTouches[0].clientY - sy;
     el.classList.remove('pulling');
@@ -823,7 +878,7 @@ const player = (() => {
     else if (!state.overlay && state.screen === 'browse' && e.key === '/' ) { e.preventDefault(); overlay('search'); }
   });
   return { open, close };
-})();
+})());
 
 /* ═══ FINALE ═════════════════════════════════════════════ */
 const finale = (() => {

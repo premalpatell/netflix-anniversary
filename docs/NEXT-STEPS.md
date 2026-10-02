@@ -5,6 +5,8 @@ Built and shipped: everything in sections A, B, C and E below, plus the Cutting 
 - `tools/smoke.js` drives the full path on phone and desktop and must print `PASS`.
 - Episode titles and captions live in `EPISODE_NOTES` in `js/data.js`; date corrections live in `USER_DATES` in `tools/build_media.py`.
 - Bump `VERSION` in `sw.js` on every deploy so returning visitors get fresh photos.
+- Oct 2: added My List on episode rows, a "Recently Added" tag (last 14 days), pinch-to-zoom in the player, Netflix-voice captions for every photo, Bollywood-style titles for all 64 episodes and 6 seasons, a pool of 40 Bollywood billboard highlights that rotate a fresh mix each visit (`HIGHLIGHTS` in `js/data.js`), and face-first video poster frames.
+- Checks (Oct 2): Lighthouse mobile, served gzipped like GitHub Pages: Performance 99, Accessibility 100, Best Practices 100 (FCP 1.1 s, LCP 2.1 s, TBT 0 ms, CLS 0). All text colours pass WCAG AA 4.5:1 on every background (muted grey is now #9e9e9e, red text #ff6b71).
 
 Still open, all blocked on file size (the Drive connector can't download files over 10 MB):
 - `graduation video.mp4` (177 MB) for Graduation Day, May 27 2025.

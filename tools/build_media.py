@@ -295,10 +295,39 @@ def save_img(im, out_full, out_thumb, repo_full=None):
     return w, h
 
 
+def face_area(im):
+    """Area of the largest detected face (0 if none), used to pick the best video frame."""
+    if cv2 is None:
+        return 0
+    g = im.convert('L'); g.thumbnail((480, 480)); a = cv2.equalizeHist(np.asarray(g))
+    best = 0
+    for c in _CASC:
+        for (x, y, w, h) in c.detectMultiScale(a, scaleFactor=1.1, minNeighbors=5, minSize=(24, 24)):
+            best = max(best, int(w) * int(h))
+    return best
+
+
 def poster(src, dst):
-    subprocess.run(['ffmpeg', '-y', '-v', 'error', '-ss', '0.3', '-i', src, '-frames:v', '1',
-                    '-vf', f'scale={THUMB}:-2', '-q:v', '4', dst], check=True)
-    webp(Image.open(dst).convert('RGB'), dst, 70)
+    """Poster frame: sample a few moments and keep the one with the largest visible face."""
+    dur = probe(src)[1] or 1
+    tmp = dst + '.cand.jpg'; best = (-1, None)
+    for t in sorted({0.3, dur * 0.2, dur * 0.4, dur * 0.6, dur * 0.8}):
+        if t >= dur:
+            continue
+        subprocess.run(['ffmpeg', '-y', '-v', 'error', '-ss', f'{t:.2f}', '-i', src, '-frames:v', '1',
+                        '-vf', f'scale={THUMB}:-2', '-q:v', '4', tmp], check=True)
+        if not os.path.exists(tmp):
+            continue
+        im = Image.open(tmp).convert('RGB'); area = face_area(im)
+        if area > best[0]:
+            best = (area, im.copy())
+    os.remove(tmp) if os.path.exists(tmp) else None
+    if best[1] is None:
+        subprocess.run(['ffmpeg', '-y', '-v', 'error', '-ss', '0', '-i', src, '-frames:v', '1',
+                        '-vf', f'scale={THUMB}:-2', '-q:v', '4', dst], check=True)
+        best = (0, Image.open(dst).convert('RGB'))
+    best[1].save(dst, 'JPEG', quality=80, optimize=True)
+    webp(best[1], dst, 70)
 
 
 def encode_video(src, dst):

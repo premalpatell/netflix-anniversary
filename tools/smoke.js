@@ -24,6 +24,8 @@ require('fs').mkdirSync(OUT, { recursive: true });
     await click('#tap'); await p.waitForTimeout(6500); await shot('profiles');
     await click('.profile'); await p.waitForTimeout(1500); await shot('home');
     log('rows:', (await p.$$eval('.row-title', e => e.map(x => x.textContent))).join(' | '));
+    const firstVisit = await p.$eval('#bb-title', e => e.textContent.trim() + ' / ' + document.querySelector('#bb-tag').textContent);
+    log('billboard slide 1:', firstVisit, '| slides:', await p.$$eval('.bb-dots i', e => e.length));
     await p.evaluate(() => window.scrollTo(0, 800)); await p.waitForTimeout(800); await shot('rows');
 
     if (!mobile) {   // hover card + row arrows
@@ -45,6 +47,9 @@ require('fs').mkdirSync(OUT, { recursive: true });
     await click('#bb-info'); await p.waitForTimeout(800); await shot('sheet');
     await click('[data-tab="more"]'); await p.waitForTimeout(200); await shot('sheet-more');
     await click('[data-tab="eps"]');
+    // My List button on an episode row
+    await click('#ep-list .ep-add'); await p.waitForTimeout(200);
+    log('episode-row My List:', await p.$eval('#ep-list .ep-add', e => e.getAttribute('aria-pressed')));
     // first episode of Season 1 plays the recap first
     await p.selectOption('#season-select', '1'); await p.waitForTimeout(200);
     await click('#ep-list .ep'); await p.waitForTimeout(1500);
@@ -54,6 +59,20 @@ require('fs').mkdirSync(OUT, { recursive: true });
     await p.waitForTimeout(4500);
     log('time:', await p.$eval('#pl-time', e => e.textContent), '| count:', await p.$eval('#pl-count', e => e.textContent), '| split:', await p.$eval('#player', e => e.classList.contains('split')));
     await shot('player2');
+    if (mobile) {   // two-finger pinch on the current photo
+      const z = await p.evaluate(async () => {
+        const st = document.querySelector('#stage');
+        const T = (id, x, y) => new Touch({ identifier: id, target: st, clientX: x, clientY: y });
+        const fire = (type, ts) => st.dispatchEvent(new TouchEvent(type, { touches: ts, changedTouches: ts, bubbles: true, cancelable: true }));
+        fire('touchstart', [T(1, 180, 450), T(2, 250, 450)]);
+        fire('touchmove', [T(1, 120, 450), T(2, 310, 450)]);
+        await new Promise(r => setTimeout(r, 50));
+        const im = document.querySelector('.frame.on img'); const tf = im ? im.style.transform : '';
+        fire('touchend', []);
+        return tf;
+      });
+      log('pinch zoom transform:', z || '(none)');
+    }
     await p.keyboard.press('ArrowRight'); await p.waitForTimeout(600);
     await click('#pl-like'); await click('#pl-mylist');
     await p.goBack(); await p.waitForTimeout(400);
@@ -69,6 +88,9 @@ require('fs').mkdirSync(OUT, { recursive: true });
     // credits
     await click('#foot-credits'); await p.waitForTimeout(5000); await shot('credits');
     await click('#credits-skip'); await p.waitForTimeout(1800); await shot('closing');
+    await p.goto(URL); await p.waitForTimeout(300); await click('#tap'); await p.waitForTimeout(6500); await click('.profile'); await p.waitForTimeout(1200);
+    const second = await p.$eval('#bb-title', e => e.textContent.trim() + ' / ' + document.querySelector('#bb-tag').textContent);
+    log('billboard on next visit:', second, second !== firstVisit ? '(different)' : '(SAME)');
     const overflow = await p.evaluate(() => document.documentElement.scrollWidth > innerWidth + 1);
     log('horizontal overflow:', overflow);
     log('errors:', errs.length ? '\n  ' + errs.join('\n  ') : 'none');
