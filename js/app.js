@@ -42,6 +42,10 @@ const pos = m => m && m.p ? `${Math.round(m.p[0] * 100)}% ${Math.round(m.p[1] * 
 const amb = m => (m && m.c) || '#5a1016';
 /* title treatment class for a title (see TITLE_LOOKS in data.js and .look-* in app.css) */
 const lookCls = t => { const k = (window.TITLE_LOOKS || {})[t]; return k ? `look look-${k}` : ''; };
+/* Title treatment: the generated logo when there is one, otherwise the CSS look */
+const logoOf = t => (window.LOGOS || {})[t];
+const titleHTML = (t, ctx) => { const L = logoOf(t); return L ? `<img class="tlogo tl-${ctx}" src="${L.f}" width="${L.w}" height="${L.h}" alt="${esc(t)}" loading="lazy" decoding="async">` : esc(t); };
+const titleCls = (t, base) => logoOf(t) ? `${base} has-logo` : `${base} ${lookCls(t)}`;
 const blurOf = m => (window.BLUR && m && BLUR[m.key]) || '';
 /* blur-up image: tiny placeholder behind the real one, which fades in on load */
 const imgHTML = (m, cls = '', alt = '') => `<span class="ph ${cls}" data-k="${m.key}"${blurOf(m) ? ` style="background-image:url(${blurOf(m)})"` : ''}><img src="${pic(m.t)}" alt="${esc(alt)}" loading="lazy" decoding="async" style="object-position:${pos(m)}"></span>`;
@@ -273,6 +277,13 @@ function toast(msg) { const t = $('#toast'); t.textContent = msg; t.classList.ad
 const svgPlay = '<svg viewBox="0 0 24 24"><path d="M6 3l14 9-14 9z"/></svg>';
 const use = (id, cls = '') => `<svg class="${cls}"><use href="#${id}"/></svg>`;
 const logoSVG = (cls = '') => `<svg class="logo ${cls}" role="img" aria-label="${esc(SHOW.title)}"><use href="#logo"/></svg>`;
+const ART = window.ART || {};
+/* Swap the drawn SVG wordmark and Top 10 badge for the generated artwork */
+(() => {
+  const L = logoOf(SHOW.title);
+  if (L) $$('svg.logo').forEach(svg => { const im = new Image(L.w, L.h); im.src = L.f; im.alt = svg.getAttribute('aria-label') || ''; im.className = `${svg.getAttribute('class')} logo-img`; if (svg.id) im.id = svg.id; svg.replaceWith(im); });
+  if (ART.top10) $$('.bb-rank svg').forEach(svg => { const im = new Image(26, 26); im.src = ART.top10; im.alt = ''; im.className = 'top10-img'; svg.replaceWith(im); });
+})();
 
 const cardHTML = (ep, opts = {}) => {
   const p = progress[ep.id], m = opts.m || ep.cover;
@@ -281,12 +292,12 @@ const cardHTML = (ep, opts = {}) => {
     ${opts.vid ? `<span class="card-vid">${svgPlay}</span><span class="dur">${secs(m.dur)}</span>` : ''}
     ${opts.badge !== false && isNew(ep) ? `<span class="badge-new">${newLabel(ep)}</span>` : ''}
     ${ep.note && !opts.vid ? `<span class="card-note" title="A note from Premal">${use('i-note')}</span>` : ''}
-    <div class="card-body"><div class="card-ep">${esc(opts.ep || ep.label)}${ep.est ? ' · approx.' : ''}</div><div class="card-title ${lookCls(opts.title || ep.title)}">${esc(opts.title || ep.title)}</div>${opts.len === '' ? '' : `<div class="card-len">${esc(opts.len != null ? opts.len : [ep.sub, ep.len].filter(Boolean).join(' · '))}</div>`}</div>
+    <div class="card-body"><div class="card-ep">${esc(opts.ep || ep.label)}${ep.est ? ' · approx.' : ''}</div><div class="${titleCls(opts.title || ep.title, 'card-title')}">${titleHTML(opts.title || ep.title, 'card')}</div>${opts.len === '' ? '' : `<div class="card-len">${esc(opts.len != null ? opts.len : [ep.sub, ep.len].filter(Boolean).join(' · '))}</div>`}</div>
     ${p && opts.prog !== false ? `<div class="card-prog"><i style="width:${Math.round(p.frac * 100)}%"></i></div>` : ''}
   </button>`;
 };
-const posterHTML = s => { const m = MEDIA.find(x => x.f === s.hero) || s.episodes[0].cover; return `<button class="poster" type="button" data-season="${s.n}" style="--amb:${amb(m)}" aria-label="Season ${s.n}: ${esc(s.title)}">${imgHTML(m, '', `Season ${s.n}, ${s.title}`)}<span class="poster-num">${s.n}</span><div class="poster-body"><div class="card-ep">Season ${s.n}</div><div class="poster-title ${lookCls(s.title)}">${esc(s.title)}</div><div class="card-len">${s.episodes.length} episodes · ${esc(s.tag)}</div></div></button>`; };
-const topCardHTML = (m, i) => { const at = epOf.get(m); return `<button class="top-card" type="button" data-ep="${at.ep.id}" data-i="${at.i}" aria-label="Number ${i + 1}: ${esc(at.ep.title)}"><span class="top-num" aria-hidden="true">${i + 1}</span>${imgHTML(m, 'top-img', at.ep.alt)}<div class="card-body"><div class="card-ep">${at.ep.label}</div><div class="card-title ${lookCls(at.ep.title)}">${esc(at.ep.title)}</div></div></button>`; };
+const posterHTML = s => { const m = MEDIA.find(x => x.f === s.hero) || s.episodes[0].cover; return `<button class="poster" type="button" data-season="${s.n}" style="--amb:${amb(m)}" aria-label="Season ${s.n}: ${esc(s.title)}">${imgHTML(m, '', `Season ${s.n}, ${s.title}`)}<span class="poster-num">${s.n}</span><div class="poster-body"><div class="card-ep">Season ${s.n}</div><div class="${titleCls(s.title, 'poster-title')}">${titleHTML(s.title, 'poster')}</div><div class="card-len">${s.episodes.length} episodes · ${esc(s.tag)}</div></div></button>`; };
+const topCardHTML = (m, i) => { const at = epOf.get(m); return `<button class="top-card" type="button" data-ep="${at.ep.id}" data-i="${at.i}" aria-label="Number ${i + 1}: ${esc(at.ep.title)}"><span class="top-num" aria-hidden="true">${i + 1}</span>${imgHTML(m, 'top-img', at.ep.alt)}<div class="card-body"><div class="card-ep">${at.ep.label}</div><div class="${titleCls(at.ep.title, 'card-title')}">${titleHTML(at.ep.title, 'card')}</div></div></button>`; };
 const rowHTML = (id, title, inner, cls = '', act = '') => `<section class="row ${cls}" id="row-${id}" aria-label="${esc(title)}"><div class="row-head"><h2 class="row-title">${esc(title)}</h2>${act}<span class="pager" aria-hidden="true"></span></div><button class="chev l" type="button" aria-label="Scroll left" tabindex="-1">${use('i-left')}</button><div class="strip ${cls === 'top10-row' ? 'top10' : ''}">${inner}</div><button class="chev r" type="button" aria-label="Scroll right" tabindex="-1">${use('i-right')}</button></section>`;
 
 /* ═══ BROWSE ═════════════════════════════════════════════ */
@@ -373,7 +384,8 @@ const browse = (() => {
     const body = $('#bb-body');
     const fill = () => {
       $('#bb-tagline').innerHTML = `<svg viewBox="0 0 111 190"><use href="#n"/></svg><span>${esc(f.badge)}</span>${f.tagNew ? `<span class="tag-new">${esc(f.tagNew)}</span>` : ''}`;
-      $('#bb-title').innerHTML = f.logo ? logoSVG() : `<span class="bb-h ${lookCls(f.title)}">${esc(f.title)}</span>`;
+      const t = f.logo ? SHOW.title : f.title;
+      $('#bb-title').innerHTML = logoOf(t) ? titleHTML(t, 'bb').replace(' loading="lazy"', '') : f.logo ? logoSVG() : `<span class="bb-h ${lookCls(t)}">${esc(t)}</span>`;
       $('#bb-rank').hidden = !f.rank; $('#bb-rank span').textContent = f.rank || '';
       $('#bb-tag').textContent = f.sub || '';
       $('#bb-tag').classList.toggle('filmy', !!f.filmy);
@@ -408,7 +420,7 @@ const browse = (() => {
     const vids = MEDIA.filter(m => m.k === 'vid' && epOf.get(m));
     rows.push(rowHTML('videos', 'Videos', vids.map(m => { const at = epOf.get(m); return cardHTML(at.ep, { i: at.i, m, vid: true, title: at.ep.title, len: at.ep.sub, prog: false, badge: false }); }).join('')));
     const remind = store.get('remind', false);
-    rows.push(rowHTML('soon', 'Coming Soon', (window.COMING_SOON || []).map(c => { const m = MEDIA.find(x => x.f === c.still) || allEpisodes[allEpisodes.length - 1].cover; return `<div class="soon">${imgHTML(m, '', c.title)}<div class="soon-body"><small>${esc(c.tag)}</small><b>${esc(c.title)} · ${esc(c.name)}</b><p>${esc(c.blurb)}</p><button class="remind ${remind ? 'on' : ''}" type="button" data-act="remind">${use(remind ? 'i-check' : 'i-bell')}${remind ? 'Reminder set' : 'Remind Me'}</button></div></div>`; }).join('')));
+    rows.push(rowHTML('soon', 'Coming Soon', (window.COMING_SOON || []).map(c => { const m = MEDIA.find(x => x.f === c.still) || allEpisodes[allEpisodes.length - 1].cover; return `<div class="soon">${ART.comingSoon ? `<img src="${ART.comingSoon}" alt="" loading="lazy" decoding="async">` : imgHTML(m, '', c.title)}<div class="soon-body"><small>${esc(c.tag)}</small><b>${esc(c.title)} · ${esc(c.name)}</b><p>${esc(c.blurb)}</p><button class="remind ${remind ? 'on' : ''}" type="button" data-act="remind">${use(remind ? 'i-check' : 'i-bell')}${remind ? 'Reminder set' : 'Remind Me'}</button></div></div>`; }).join('')));
     const ex = seasons.find(s => s.n === EXTRAS.n);
     if (ex.episodes.length) rows.push(rowHTML('extras', 'Extras', ex.episodes.map(e => cardHTML(e)).join('')));
     $('#rows').innerHTML = rows.join('');
@@ -506,7 +518,7 @@ const jaw = (() => {
       let k = 0; if (ims.length > 1 && !reduced) slideT = setInterval(() => { const all = $$('img', media); all[k].classList.add('off'); k = (k + 1) % all.length; all[k].classList.remove('off'); }, 1400);
     }
     const p = progress[ep.id];
-    $('#jaw-meta').innerHTML = `${isNew(ep) ? `<span class="badge-inline">${newLabel(ep)}</span>` : ''}<span class="match">${ratings[ep.id] === 'down' ? '' : '100% Match'}</span><span class="box">${SHOW.maturity}</span><b>${esc(ep.label)}</b><span>${mins(ep.runtime)}</span><span class="box hd">HD</span>${p && p.frac < 0.98 ? `<span>${Math.round(p.frac * 100)}% watched</span>` : ''}<span style="flex-basis:100%;font-size:20px" class="${lookCls(ep.title) || 'jaw-t'}">${esc(ep.title)}</span>`;
+    $('#jaw-meta').innerHTML = `${isNew(ep) ? `<span class="badge-inline">${newLabel(ep)}</span>` : ''}<span class="match">${ratings[ep.id] === 'down' ? '' : '100% Match'}</span><span class="box">${SHOW.maturity}</span><b>${esc(ep.label)}</b><span>${mins(ep.runtime)}</span><span class="box hd">HD</span>${p && p.frac < 0.98 ? `<span>${Math.round(p.frac * 100)}% watched</span>` : ''}<span style="flex-basis:100%;font-size:20px" class="${logoOf(ep.title) ? 'jaw-logo' : lookCls(ep.title) || 'jaw-t'}">${titleHTML(ep.title, 'jaw')}</span>`;
     $('#jaw-tags').innerHTML = [ep.season.title, ep.day !== 'undated' ? String(parseD(ep.day).getFullYear()) : '', ep.vids ? 'Videos' : 'Photos', ...(SHOW.moods || []).slice(0, 1)].filter(Boolean).map(x => `<span>${esc(x)}</span>`).join('');
     $('[data-act="list"] use', el).setAttribute('href', inList(ep.id) ? '#i-check' : '#i-plus');
     $('[data-act="like"] use', el).setAttribute('href', '#' + rateIcon(ep.id));
@@ -619,7 +631,7 @@ const sheet = (() => {
   }
   function renderMore() {
     const vids = MEDIA.filter(m => m.k === 'vid' && epOf.get(m));
-    $('#tab-more').innerHTML = `<button class="trailer-card" type="button" data-trailer>${imgHTML(trailerEp.cover, '', 'Trailer')}<span class="play"><i>${svgPlay}</i></span><span class="tc-body"><b>Official Trailer</b><span>${secs(trailerEp.runtime / 1000)} · Top 10 moments and a few clips</span></span></button>
+    $('#tab-more').innerHTML = `<button class="trailer-card" type="button" data-trailer>${ART.trailer ? `<img src="${ART.trailer}" alt="" loading="lazy" decoding="async">` : imgHTML(trailerEp.cover, '', 'Trailer')}<span class="play"><i>${svgPlay}</i></span><span class="tc-body"><b>Official Trailer</b><span>${secs(trailerEp.runtime / 1000)} · Top 10 moments and a few clips</span></span></button>
       <h3 class="sub-h">Clips</h3><div class="more-grid">${vids.map(m => { const at = epOf.get(m); return cardHTML(at.ep, { i: at.i, m, vid: true, len: at.ep.sub, prog: false, badge: false }); }).join('')}</div>`;
   }
   function renderLike() {
@@ -687,11 +699,15 @@ Object.assign(player, (() => {
     $('#skip-recap').hidden = !ep.recap;
     if (ep.virtual) music.play(0.6); else music.stop(600);
     $('#tc-ep').textContent = ep.virtual ? (ep.recap ? 'Previously on' : 'Official Trailer') : `${sLabel} · Episode ${ep.n}`;
-    $('#tc-title').textContent = ep.recap ? ep.prevTitle : ep.title;
-    $('#tc-title').className = ep.virtual ? '' : lookCls(ep.title);
+    const tct = ep.recap ? ep.prevTitle : ep.title;
+    $('#tc-title').innerHTML = ep.virtual ? esc(tct) : titleHTML(tct, 'tc').replace(' loading="lazy"', '');
+    $('#tc-title').className = ep.virtual ? '' : logoOf(tct) ? 'has-logo' : lookCls(tct);
     $('#tc-sub').textContent = ep.virtual ? SHOW.title : (ep.day === 'undated' ? ep.len : `${fmtLong(ep.day)}${ep.est ? ' (approx.)' : ''} · ${ep.len}`);
     titleCard.classList.toggle('first', ep.virtual || ep.n === 1);
-    clearTimeout(cardT); titleCard.classList.add('on'); cardT = setTimeout(() => titleCard.classList.remove('on'), 3400);
+    const art = ep.virtual && (ep.recap ? ART.previously : ART.trailer), artEl = $('#pl-art');
+    if (art) artEl.style.backgroundImage = `url("${art}")`;
+    artEl.classList.toggle('on', !!art);
+    clearTimeout(cardT); titleCard.classList.add('on'); cardT = setTimeout(() => { titleCard.classList.remove('on'); artEl.classList.remove('on'); }, 3400);
     const nx = nextEpisode(ep);
     $('#ps-next').innerHTML = nx ? `${imgHTML(nx.cover, '', nx.alt)}<span>Next<b>${esc(nx.label)} · ${esc(nx.title)}</b></span>` : '';
     playing = true; setIcon(); showUI(); show(i);
@@ -707,7 +723,7 @@ Object.assign(player, (() => {
     cancelAnimationFrame(raf); clearTimeout(hideT); clearInterval(nextTick); clearTimeout(cardT);
     if (video) { video.pause(); video.removeAttribute('src'); video.load(); video = null; }
     frames.forEach(f => { f.innerHTML = ''; f.classList.remove('on'); });
-    next.classList.remove('on'); titleCard.classList.remove('on'); loader.classList.remove('on'); blur.classList.remove('on'); noteEl.classList.remove('on');
+    next.classList.remove('on'); titleCard.classList.remove('on'); $('#pl-art').classList.remove('on'); loader.classList.remove('on'); blur.classList.remove('on'); noteEl.classList.remove('on');
     el.classList.remove('on', 'split'); el.style.transform = ''; el.style.opacity = '';
     if (ep && ep.virtual) music.stop();
     ep = null; seq++;
@@ -727,7 +743,7 @@ Object.assign(player, (() => {
     el.style.setProperty('--amb', amb(m));
     const split = splitOK() && isPortrait(m) && !ep.virtual;
     el.classList.toggle('split', split);
-    if (split) { $('#ps-ep').textContent = `${ep.season.n === EXTRAS.n ? 'Extras' : 'Season ' + ep.season.n} · Episode ${ep.n}`; $('#ps-title').textContent = ep.title; $('#ps-title').className = lookCls(ep.title); $('#ps-date').textContent = [fmtLong(m.d), fmtTime(m.d)].filter(Boolean).join(' · '); $('#ps-story').textContent = story || ''; }
+    if (split) { $('#ps-ep').textContent = `${ep.season.n === EXTRAS.n ? 'Extras' : 'Season ' + ep.season.n} · Episode ${ep.n}`; $('#ps-title').innerHTML = titleHTML(ep.title, 'ps'); $('#ps-title').className = logoOf(ep.title) ? 'has-logo' : lookCls(ep.title); $('#ps-date').textContent = [fmtLong(m.d), fmtTime(m.d)].filter(Boolean).join(' · '); $('#ps-story').textContent = story || ''; }
     preload(ep.items[i + 1]); preload(ep.items[i + 2]);
     const commit = () => {
       if (my !== seq) return;

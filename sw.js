@@ -2,12 +2,12 @@
    - App shell (HTML, CSS, JS, fonts, icons): network first, cache fallback, so updates always arrive.
    - Photos and posters: cache first, filled as they are viewed.
    - Videos and audio stream from the network (range requests are not cached). */
-const VERSION = 'sp-v7';
+const VERSION = 'sp-v8';
 const SHELL = `${VERSION}-shell`;
 const MEDIA = `${VERSION}-media`;
 const SHELL_FILES = [
-  './', 'index.html', 'css/app.css', 'fonts/fonts.css', 'fonts/titles.css', 'js/data.js', 'js/media.js', 'js/blur.js', 'js/app.js',
-  'manifest.webmanifest', 'icons/icon-192.png', 'icons/favicon-32.png', 'images/avatar-premal.svg', 'images/netflix-n.png',
+  './', 'index.html', 'css/app.css', 'fonts/fonts.css', 'fonts/titles.css', 'js/data.js', 'js/media.js', 'js/art.js', 'js/blur.js', 'js/app.js',
+  'manifest.webmanifest', 'icons/icon-192.png', 'icons/favicon-32.png', 'images/art/avatar-premal.webp', 'images/netflix-n.png',
 ];
 
 self.addEventListener('install', e => {

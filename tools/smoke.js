@@ -24,7 +24,7 @@ require('fs').mkdirSync(OUT, { recursive: true });
     await click('#tap'); await p.waitForTimeout(6500); await shot('profiles');
     await click('.profile'); await p.waitForTimeout(1500); await shot('home');
     log('rows:', (await p.$$eval('.row-title', e => e.map(x => x.textContent))).join(' | '));
-    const firstVisit = await p.$eval('#bb-title', e => e.textContent.trim() + ' / ' + document.querySelector('#bb-tag').textContent);
+    const firstVisit = await p.$eval('#bb-title', e => (e.textContent.trim() || (e.querySelector('img') || {}).alt || '') + ' / ' + document.querySelector('#bb-tag').textContent);
     log('billboard slide 1:', firstVisit, '| slides:', await p.$$eval('.bb-dots i', e => e.length));
     await p.evaluate(() => window.scrollTo(0, 800)); await p.waitForTimeout(800); await shot('rows');
 
@@ -89,7 +89,7 @@ require('fs').mkdirSync(OUT, { recursive: true });
     await click('#foot-credits'); await p.waitForTimeout(5000); await shot('credits');
     await click('#credits-skip'); await p.waitForTimeout(1800); await shot('closing');
     await p.goto(URL); await p.waitForTimeout(300); await click('#tap'); await p.waitForTimeout(6500); await click('.profile'); await p.waitForTimeout(1200);
-    const second = await p.$eval('#bb-title', e => e.textContent.trim() + ' / ' + document.querySelector('#bb-tag').textContent);
+    const second = await p.$eval('#bb-title', e => (e.textContent.trim() || (e.querySelector('img') || {}).alt || '') + ' / ' + document.querySelector('#bb-tag').textContent);
     log('billboard on next visit:', second, second !== firstVisit ? '(different)' : '(SAME)');
     const overflow = await p.evaluate(() => document.documentElement.scrollWidth > innerWidth + 1);
     log('horizontal overflow:', overflow);

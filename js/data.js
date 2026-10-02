@@ -173,7 +173,7 @@ window.COMING_SOON = [
 /* Profiles on the "Who's watching?" screen */
 window.PROFILES = [
   { name: 'Shivani ♡', photo: 'images/t/20250721_151523.jpg', greeting: 'Welcome back, Shivani. Your story is ready.' },
-  { name: 'Premal',    photo: 'images/avatar-premal.svg',     greeting: 'Welcome back, Premal.' },
+  { name: 'Premal',    photo: 'images/art/avatar-premal.webp', greeting: 'Welcome back, Premal.' },
 ];
 
 /* Seasons — every photo/video is placed by its capture date (local Toronto time).
