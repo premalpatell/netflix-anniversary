@@ -194,7 +194,7 @@ let state = { screen: 'intro' };
 let opener = null;   // element focused before an overlay opened, to restore focus
 function apply(s, fromPop) {
   const prev = state; state = s;
-  if (prev.overlay && prev.overlay !== s.overlay) { if (prev.overlay === 'player') player.close(); if (prev.overlay === 'sheet') sheet.hide(); if (prev.overlay === 'search') search.hide(); if (prev.overlay === 'clips') clips.hide(); if (opener && document.contains(opener)) opener.focus({ preventScroll: true }); opener = null; }
+  if (prev.overlay && prev.overlay !== s.overlay) { if (prev.overlay === 'player') player.close(); if (prev.overlay === 'sheet') sheet.hide(); if (prev.overlay === 'search') search.hide(); if (prev.overlay === 'clips') clips.hide(); if (prev.overlay === 'gallery') gallery.hide(); if (opener && document.contains(opener)) opener.focus({ preventScroll: true }); opener = null; }
   if (prev.screen === 'finale' && s.screen !== 'finale') finale.stop();
   if (prev.screen === 'intro' && s.screen !== 'intro') intro.stop();
   screens.forEach(n => $('#' + n).classList.toggle('on', n === s.screen));
@@ -202,7 +202,7 @@ function apply(s, fromPop) {
   if (s.screen === 'browse') browse.ensure(); else browse.pause();
   if (s.screen === 'finale' && prev.screen !== 'finale') finale.start();
   if (s.overlay && s.overlay !== prev.overlay) opener = document.activeElement;
-  if (s.overlay === 'sheet') sheet.show(s.season, s.tab); else if (s.overlay === 'search') search.show(); else if (s.overlay === 'clips' && !fromPop) clips.show(s.k || 0); else if (s.overlay === 'player' && !fromPop) player.open(s.ep, s.i);
+  if (s.overlay === 'sheet') sheet.show(s.season, s.tab); else if (s.overlay === 'search') search.show(); else if (s.overlay === 'clips' && !fromPop) clips.show(s.k || 0); else if (s.overlay === 'gallery') gallery.show(); else if (s.overlay === 'player' && !fromPop) player.open(s.ep, s.i);
   if (!s.overlay && !fromPop) window.scrollTo({ top: s.scroll || 0 });
   browse.setPaused(!!s.overlay || s.screen !== 'browse');
   jaw.hide(); bell.close();
@@ -222,7 +222,7 @@ const playEp = (id, i) => (state.overlay ? swapOverlay : overlay)('player', { ep
 /* focus stays inside an open overlay */
 document.addEventListener('keydown', e => {
   if (e.key !== 'Tab' || !state.overlay) return;
-  const box = { sheet: $('#sheet'), player: $('#player'), search: $('#search'), clips: $('#clips') }[state.overlay]; if (!box) return;
+  const box = { sheet: $('#sheet'), player: $('#player'), search: $('#search'), clips: $('#clips'), gallery: $('#gallery') }[state.overlay]; if (!box) return;
   const f = $$('button:not([disabled]),select,input,[tabindex]:not([tabindex="-1"])', box).filter(el => el.offsetParent !== null);
   if (!f.length) return;
   const first = f[0], last = f[f.length - 1];
@@ -433,6 +433,7 @@ const browse = (() => {
     if (fresh.length) rows.push(rowHTML('new', 'New Episodes', fresh.map(e => cardHTML(e, { badge: false })).join('')));
     if (myList.length) rows.push(rowHTML('list', 'My List', myList.map(id => cardHTML(epById[id], { badge: false })).join(''), '', `<button class="row-act" type="button" data-act="send">Send to Premal</button>`));
     rows.push(rowHTML('videos', 'Clips', clips.list().map(clipCardHTML).join(''), 'clips-row', `<button class="row-act" type="button" data-act="clips">Watch all</button>`));
+    rows.push(`<section class="row gal-row" id="row-gallery" aria-label="Gallery"><button class="gal-banner" type="button" data-act="gallery">${gallery.collage()}<span class="gal-banner-body"><small>Gallery</small><b>Every Moment</b><span>${gallery.count()} photos and videos, in the order they happened</span><span class="btn primary">${svgPlay}Open Gallery</span></span></button></section>`);
     // every episode, season by season, under the season's own title design
     realSeasons().forEach(se => rows.push(rowHTML(`s${se.n}`, `Season ${se.n}: ${se.title}`,
       se.episodes.map(e => cardHTML(e, { ep: `E${e.n} · ${e.sub || e.len}`, len: '' })).join(''), 'season-eps', '',
@@ -479,6 +480,7 @@ const browse = (() => {
     const act = e.target.closest('[data-act]');
     if (act && act.dataset.act === 'send') return sendFavourites();
     if (act && act.dataset.act === 'clips') return overlay('clips', { k: 0 });
+    if (act && act.dataset.act === 'gallery') return overlay('gallery');
     const clip = e.target.closest('[data-clip]'); if (clip) return overlay('clips', { k: +clip.dataset.clip });
     if (act && act.dataset.act === 'remind') { const on = !store.get('remind', false); store.set('remind', on); toast(on ? 'We’ll remind you when Season 6 starts' : 'Reminder removed'); renderRows(); return; }
     const c = e.target.closest('[data-ep],[data-season]'); if (!c) return;
@@ -497,6 +499,7 @@ const browse = (() => {
   navBtns.forEach(b => b.addEventListener('click', () => {
     const t = b.dataset.nav; if (t === 'finale') return go('finale');
     if (t === 'videos') return overlay('clips', { k: 0 });
+    if (t === 'gallery') return overlay('gallery');
     if (t === 'list' && !myList.length) return toast('Tap + on any episode to add it to My List');
     const el = t === 'top' ? null : $('#row-' + (t === 'seasons' ? 's0' : t)) || $('#row-' + t);
     window.scrollTo({ top: el ? el.offsetTop - 70 : 0, behavior: reduced ? 'auto' : 'smooth' });
@@ -937,11 +940,46 @@ Object.assign(player, (() => {
       if (e.key === ' ' || e.key === 'k') { e.preventDefault(); toggle(); }
       else if (e.key === 'ArrowRight') skip(1); else if (e.key === 'ArrowLeft') skip(-1);
       else if (e.key === 'Escape') back();
-    } else if ((state.overlay === 'sheet' || state.overlay === 'search' || state.overlay === 'clips') && e.key === 'Escape') back();
+    } else if ((state.overlay === 'sheet' || state.overlay === 'search' || state.overlay === 'clips' || state.overlay === 'gallery') && e.key === 'Escape') back();
     else if (!state.overlay && state.screen === 'browse' && e.key === '/' ) { e.preventDefault(); overlay('search'); }
   });
   return { open, close };
 })());
+
+/* ═══ GALLERY: every photo and video, oldest first, grouped by month ═══ */
+const gallery = (() => {
+  const el = $('#gallery'), body = $('#gal-body'), scroller = $('#gal-scroll');
+  const all = MEDIA.filter(m => epOf.get(m) && m.d).sort((a, b) => a.d.localeCompare(b.d));
+  let built = false;
+  const monthKey = d => d.slice(0, 7);
+  const monthName = k => `${MONTHS[+k.slice(5, 7) - 1]} ${k.slice(0, 4)}`;
+  function build() {
+    const groups = [];
+    all.forEach(m => { const k = monthKey(m.d); if (!groups.length || groups[groups.length - 1].k !== k) groups.push({ k, items: [] }); groups[groups.length - 1].items.push(m); });
+    body.innerHTML = groups.map(g => `<section class="gal-month" id="gal-${g.k}"><h3>${monthName(g.k)}<small>${g.items.length}</small></h3><div class="gal-grid">${g.items.map(m => {
+      const at = epOf.get(m);
+      return `<button class="gal-tile${m.k === 'vid' ? ' vid' : ''}" type="button" data-ep="${at.ep.id}" data-i="${at.i}" aria-label="${esc(`${at.ep.title}, ${fmtMD(m.d)}`)}">${imgHTML(m, '', '')}${m.k === 'vid' ? `<span class="gal-dur">${svgPlay}${secs(m.dur)}</span>` : ''}</button>`;
+    }).join('')}</div></section>`).join('');
+    const years = [...new Set(groups.map(g => g.k.slice(0, 4)))];
+    $('#gal-years').innerHTML = years.map(y => `<button type="button" data-year="${y}">${y}</button>`).join('');
+    $('#gal-count').textContent = `${all.filter(m => m.k === 'img').length} photos · ${all.filter(m => m.k === 'vid').length} videos`;
+    built = true;
+  }
+  $('#gal-years').addEventListener('click', e => { const b = e.target.closest('[data-year]'); if (!b) return; const s = $(`.gal-month[id^="gal-${b.dataset.year}"]`); if (s) scroller.scrollTo({ top: s.offsetTop - 4, behavior: reduced ? 'auto' : 'smooth' }); });
+  body.addEventListener('click', e => { const t = e.target.closest('[data-ep]'); if (t) overlay('player', { ep: t.dataset.ep, i: +t.dataset.i }); });   // back returns to the gallery
+  scroller.addEventListener('scroll', () => {   // highlight the year being viewed
+    const y = scroller.scrollTop + 60; let cur = '';
+    for (const s of $$('.gal-month', body)) { if (s.offsetTop <= y) cur = s.id.slice(4, 8); else break; }
+    $$('#gal-years button').forEach(b => b.classList.toggle('on', b.dataset.year === cur));
+  }, { passive: true });
+  $('#gal-back').addEventListener('click', back);
+  return {
+    count: () => all.length,
+    collage: () => { const pick = all.filter(m => m.k === 'img' && m.p).sort((a, b) => qOf(b) - qOf(a)).slice(0, 24); const step = Math.max(1, Math.floor(pick.length / 6)); return `<span class="gal-collage">${[0, 1, 2, 3, 4, 5].map(k => pick[k * step]).filter(Boolean).sort((a, b) => a.d.localeCompare(b.d)).map(m => imgHTML(m, '', '')).join('')}</span>`; },
+    show() { if (!built) build(); el.classList.add('on'); setTimeout(() => $('#gal-back').focus({ preventScroll: true }), 60); },
+    hide() { el.classList.remove('on'); },
+  };
+})();
 
 /* ═══ CLIPS: a vertical, swipeable feed of every video (like Netflix's mobile Clips) ═══ */
 const clips = (() => {

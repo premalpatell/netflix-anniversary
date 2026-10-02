@@ -76,7 +76,8 @@
       <li><button type="button" class="cur" data-nav="top">Home</button></li>
       <li><button type="button" data-nav="seasons">Seasons</button></li>
       <li><button type="button" data-nav="list">My List</button></li>
-      <li><button type="button" data-nav="videos">Videos</button></li>
+      <li><button type="button" data-nav="gallery">Gallery</button></li>
+      <li><button type="button" data-nav="videos">Clips</button></li>
       <li><button type="button" data-nav="finale">Credits</button></li>
     </ul>
     <button type="button" class="nav-icon" id="nav-search" aria-label="Search"><svg><use href="#i-search"/></svg></button>
@@ -188,6 +189,14 @@
 </div>
 
 <!-- ═══ PLAYER ═══ -->
+<div id="gallery" role="dialog" aria-modal="true" aria-label="Gallery">
+  <div class="gal-top">
+    <button class="icon-btn" type="button" id="gal-back" aria-label="Back"><svg viewBox="0 0 24 24"><path d="M15.5 4l-8 8 8 8 1.5-1.5L10.5 12l6.5-6.5z"/></svg></button>
+    <div class="gal-title"><b>Every Moment</b><small id="gal-count"></small></div>
+  </div>
+  <div class="gal-years" id="gal-years"></div>
+  <div class="gal-scroll" id="gal-scroll"><div class="gal-body" id="gal-body"></div></div>
+</div>
 <div id="clips" role="dialog" aria-modal="true" aria-label="Clips">
   <div class="clips-feed" id="clips-feed"></div>
   <div class="clips-top">
