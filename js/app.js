@@ -40,6 +40,8 @@ document.addEventListener('error', e => { const t = e.target; if (t.tagName === 
 document.addEventListener('load', e => { if (e.target.tagName === 'IMG') e.target.classList.add('ld'); }, true);
 const pos = m => m && m.p ? `${Math.round(m.p[0] * 100)}% ${Math.round(m.p[1] * 100)}%` : '50% 30%';
 const amb = m => (m && m.c) || '#5a1016';
+/* title treatment class for a title (see TITLE_LOOKS in data.js and .look-* in app.css) */
+const lookCls = t => { const k = (window.TITLE_LOOKS || {})[t]; return k ? `look look-${k}` : ''; };
 const blurOf = m => (window.BLUR && m && BLUR[m.key]) || '';
 /* blur-up image: tiny placeholder behind the real one, which fades in on load */
 const imgHTML = (m, cls = '', alt = '') => `<span class="ph ${cls}" data-k="${m.key}"${blurOf(m) ? ` style="background-image:url(${blurOf(m)})"` : ''}><img src="${pic(m.t)}" alt="${esc(alt)}" loading="lazy" decoding="async" style="object-position:${pos(m)}"></span>`;
@@ -279,12 +281,12 @@ const cardHTML = (ep, opts = {}) => {
     ${opts.vid ? `<span class="card-vid">${svgPlay}</span><span class="dur">${secs(m.dur)}</span>` : ''}
     ${opts.badge !== false && isNew(ep) ? `<span class="badge-new">${newLabel(ep)}</span>` : ''}
     ${ep.note && !opts.vid ? `<span class="card-note" title="A note from Premal">${use('i-note')}</span>` : ''}
-    <div class="card-body"><div class="card-ep">${esc(opts.ep || ep.label)}${ep.est ? ' · approx.' : ''}</div><div class="card-title">${esc(opts.title || ep.title)}</div>${opts.len === '' ? '' : `<div class="card-len">${esc(opts.len != null ? opts.len : [ep.sub, ep.len].filter(Boolean).join(' · '))}</div>`}</div>
+    <div class="card-body"><div class="card-ep">${esc(opts.ep || ep.label)}${ep.est ? ' · approx.' : ''}</div><div class="card-title ${lookCls(opts.title || ep.title)}">${esc(opts.title || ep.title)}</div>${opts.len === '' ? '' : `<div class="card-len">${esc(opts.len != null ? opts.len : [ep.sub, ep.len].filter(Boolean).join(' · '))}</div>`}</div>
     ${p && opts.prog !== false ? `<div class="card-prog"><i style="width:${Math.round(p.frac * 100)}%"></i></div>` : ''}
   </button>`;
 };
-const posterHTML = s => { const m = MEDIA.find(x => x.f === s.hero) || s.episodes[0].cover; return `<button class="poster" type="button" data-season="${s.n}" style="--amb:${amb(m)}" aria-label="Season ${s.n}: ${esc(s.title)}">${imgHTML(m, '', `Season ${s.n}, ${s.title}`)}<span class="poster-num">${s.n}</span><div class="poster-body"><div class="card-ep">Season ${s.n}</div><div class="poster-title">${esc(s.title)}</div><div class="card-len">${s.episodes.length} episodes · ${esc(s.tag)}</div></div></button>`; };
-const topCardHTML = (m, i) => { const at = epOf.get(m); return `<button class="top-card" type="button" data-ep="${at.ep.id}" data-i="${at.i}" aria-label="Number ${i + 1}: ${esc(at.ep.title)}"><span class="top-num" aria-hidden="true">${i + 1}</span>${imgHTML(m, 'top-img', at.ep.alt)}<div class="card-body"><div class="card-ep">${at.ep.label}</div><div class="card-title">${esc(at.ep.title)}</div></div></button>`; };
+const posterHTML = s => { const m = MEDIA.find(x => x.f === s.hero) || s.episodes[0].cover; return `<button class="poster" type="button" data-season="${s.n}" style="--amb:${amb(m)}" aria-label="Season ${s.n}: ${esc(s.title)}">${imgHTML(m, '', `Season ${s.n}, ${s.title}`)}<span class="poster-num">${s.n}</span><div class="poster-body"><div class="card-ep">Season ${s.n}</div><div class="poster-title ${lookCls(s.title)}">${esc(s.title)}</div><div class="card-len">${s.episodes.length} episodes · ${esc(s.tag)}</div></div></button>`; };
+const topCardHTML = (m, i) => { const at = epOf.get(m); return `<button class="top-card" type="button" data-ep="${at.ep.id}" data-i="${at.i}" aria-label="Number ${i + 1}: ${esc(at.ep.title)}"><span class="top-num" aria-hidden="true">${i + 1}</span>${imgHTML(m, 'top-img', at.ep.alt)}<div class="card-body"><div class="card-ep">${at.ep.label}</div><div class="card-title ${lookCls(at.ep.title)}">${esc(at.ep.title)}</div></div></button>`; };
 const rowHTML = (id, title, inner, cls = '', act = '') => `<section class="row ${cls}" id="row-${id}" aria-label="${esc(title)}"><div class="row-head"><h2 class="row-title">${esc(title)}</h2>${act}<span class="pager" aria-hidden="true"></span></div><button class="chev l" type="button" aria-label="Scroll left" tabindex="-1">${use('i-left')}</button><div class="strip ${cls === 'top10-row' ? 'top10' : ''}">${inner}</div><button class="chev r" type="button" aria-label="Scroll right" tabindex="-1">${use('i-right')}</button></section>`;
 
 /* ═══ BROWSE ═════════════════════════════════════════════ */
@@ -371,7 +373,7 @@ const browse = (() => {
     const body = $('#bb-body');
     const fill = () => {
       $('#bb-tagline').innerHTML = `<svg viewBox="0 0 111 190"><use href="#n"/></svg><span>${esc(f.badge)}</span>${f.tagNew ? `<span class="tag-new">${esc(f.tagNew)}</span>` : ''}`;
-      $('#bb-title').innerHTML = f.logo ? logoSVG() : `<span class="bb-h">${esc(f.title)}</span>`;
+      $('#bb-title').innerHTML = f.logo ? logoSVG() : `<span class="bb-h ${lookCls(f.title)}">${esc(f.title)}</span>`;
       $('#bb-rank').hidden = !f.rank; $('#bb-rank span').textContent = f.rank || '';
       $('#bb-tag').textContent = f.sub || '';
       $('#bb-tag').classList.toggle('filmy', !!f.filmy);
@@ -504,7 +506,7 @@ const jaw = (() => {
       let k = 0; if (ims.length > 1 && !reduced) slideT = setInterval(() => { const all = $$('img', media); all[k].classList.add('off'); k = (k + 1) % all.length; all[k].classList.remove('off'); }, 1400);
     }
     const p = progress[ep.id];
-    $('#jaw-meta').innerHTML = `${isNew(ep) ? `<span class="badge-inline">${newLabel(ep)}</span>` : ''}<span class="match">${ratings[ep.id] === 'down' ? '' : '100% Match'}</span><span class="box">${SHOW.maturity}</span><b>${esc(ep.label)}</b><span>${mins(ep.runtime)}</span><span class="box hd">HD</span>${p && p.frac < 0.98 ? `<span>${Math.round(p.frac * 100)}% watched</span>` : ''}<span style="flex-basis:100%;color:#fff;font-weight:600">${esc(ep.title)}</span>`;
+    $('#jaw-meta').innerHTML = `${isNew(ep) ? `<span class="badge-inline">${newLabel(ep)}</span>` : ''}<span class="match">${ratings[ep.id] === 'down' ? '' : '100% Match'}</span><span class="box">${SHOW.maturity}</span><b>${esc(ep.label)}</b><span>${mins(ep.runtime)}</span><span class="box hd">HD</span>${p && p.frac < 0.98 ? `<span>${Math.round(p.frac * 100)}% watched</span>` : ''}<span style="flex-basis:100%;font-size:20px" class="${lookCls(ep.title) || 'jaw-t'}">${esc(ep.title)}</span>`;
     $('#jaw-tags').innerHTML = [ep.season.title, ep.day !== 'undated' ? String(parseD(ep.day).getFullYear()) : '', ep.vids ? 'Videos' : 'Photos', ...(SHOW.moods || []).slice(0, 1)].filter(Boolean).map(x => `<span>${esc(x)}</span>`).join('');
     $('[data-act="list"] use', el).setAttribute('href', inList(ep.id) ? '#i-check' : '#i-plus');
     $('[data-act="like"] use', el).setAttribute('href', '#' + rateIcon(ep.id));
@@ -686,6 +688,7 @@ Object.assign(player, (() => {
     if (ep.virtual) music.play(0.6); else music.stop(600);
     $('#tc-ep').textContent = ep.virtual ? (ep.recap ? 'Previously on' : 'Official Trailer') : `${sLabel} · Episode ${ep.n}`;
     $('#tc-title').textContent = ep.recap ? ep.prevTitle : ep.title;
+    $('#tc-title').className = ep.virtual ? '' : lookCls(ep.title);
     $('#tc-sub').textContent = ep.virtual ? SHOW.title : (ep.day === 'undated' ? ep.len : `${fmtLong(ep.day)}${ep.est ? ' (approx.)' : ''} · ${ep.len}`);
     titleCard.classList.toggle('first', ep.virtual || ep.n === 1);
     clearTimeout(cardT); titleCard.classList.add('on'); cardT = setTimeout(() => titleCard.classList.remove('on'), 3400);
@@ -724,7 +727,7 @@ Object.assign(player, (() => {
     el.style.setProperty('--amb', amb(m));
     const split = splitOK() && isPortrait(m) && !ep.virtual;
     el.classList.toggle('split', split);
-    if (split) { $('#ps-ep').textContent = `${ep.season.n === EXTRAS.n ? 'Extras' : 'Season ' + ep.season.n} · Episode ${ep.n}`; $('#ps-title').textContent = ep.title; $('#ps-date').textContent = [fmtLong(m.d), fmtTime(m.d)].filter(Boolean).join(' · '); $('#ps-story').textContent = story || ''; }
+    if (split) { $('#ps-ep').textContent = `${ep.season.n === EXTRAS.n ? 'Extras' : 'Season ' + ep.season.n} · Episode ${ep.n}`; $('#ps-title').textContent = ep.title; $('#ps-title').className = lookCls(ep.title); $('#ps-date').textContent = [fmtLong(m.d), fmtTime(m.d)].filter(Boolean).join(' · '); $('#ps-story').textContent = story || ''; }
     preload(ep.items[i + 1]); preload(ep.items[i + 2]);
     const commit = () => {
       if (my !== seq) return;
