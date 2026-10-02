@@ -611,3 +611,19 @@ img.logo{aspect-ratio:auto;height:auto;object-fit:contain}
 
 .closing-lights{position:absolute;inset:0;background:url(../images/art/closing.webp) center/cover;mix-blend-mode:screen;opacity:.55;pointer-events:none}
 .closing-body{position:relative;z-index:1}
+
+/* ═══ STORY MODE: tap right/left, segment bars, header always on, whole photo visible ═══ */
+.segs{position:absolute;top:calc(var(--sat) + 8px);left:10px;right:10px;display:flex;gap:3px;z-index:8;pointer-events:none}
+.segs i{flex:1;height:3px;border-radius:2px;background:rgba(255,255,255,.32);overflow:hidden}
+.segs b{display:block;height:100%;width:0;background:#fff;border-radius:2px}
+.pl-topshade{position:absolute;top:0;left:0;right:0;height:calc(var(--sat) + 120px);background:linear-gradient(to bottom,rgba(0,0,0,.55),transparent);pointer-events:none;z-index:5}
+.pl-top{opacity:1;transform:none;pointer-events:auto;padding-top:calc(var(--sat) + 16px)}
+.pl-shade{background:linear-gradient(to top,rgba(0,0,0,.75),transparent 34%)}
+.pl-caption{opacity:1;transform:none;bottom:calc(var(--sab) + 26px)}
+#player.ui .pl-caption{bottom:calc(var(--sab) + 120px)}
+.pl-caption::before{content:'';position:absolute;left:0;right:0;bottom:-40px;height:200%;min-height:120px;background:linear-gradient(to top,rgba(0,0,0,.6),transparent);z-index:-1}
+.frame img.fit{object-fit:contain}
+#player.paused .segs b{opacity:.85}
+#player.paused #pl-pause{background:rgba(255,255,255,.16)}
+.skip-recap{bottom:calc(var(--sab) + 130px)}
+@media (min-width:900px){ .segs{left:48px;right:48px} }

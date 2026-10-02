@@ -665,7 +665,7 @@ const player = {};
 Object.assign(player, (() => {
   const el = $('#player'), frames = [$('#frame-a'), $('#frame-b')], blur = $('#stage-blur');
   const fill = $('#fill'), knob = $('#knob'), timeEl = $('#pl-time'), countEl = $('#pl-count'), next = $('#next'), loader = $('#pl-loader'), titleCard = $('#pl-titlecard'), noteEl = $('#note');
-  let ep = null, i = 0, playing = true, fi = 0, raf = 0, t0 = 0, elapsed = 0, curDur = PHOTO_MS, video = null, hideT = 0, nextTick = 0, seq = 0, cardT = 0, prefixes = [], wasPlaying = true;
+  let segCur = null, ep = null, i = 0, playing = true, fi = 0, raf = 0, t0 = 0, elapsed = 0, curDur = PHOTO_MS, video = null, hideT = 0, nextTick = 0, seq = 0, cardT = 0, prefixes = [], wasPlaying = true;
   const cache = new Map();
   const preload = m => {
     if (!m || m.k !== 'img' || cache.has(m.f)) return;
@@ -691,6 +691,7 @@ Object.assign(player, (() => {
     const sLabel = ep.virtual ? '' : (ep.season.n === EXTRAS.n ? 'Extras' : `Season ${ep.season.n}`);
     $('#pl-ep').textContent = ep.virtual ? SHOW.title : `${ep.label}`;
     $('#pl-name').textContent = ep.title;
+    $('#segs').innerHTML = ep.items.map(() => '<i><b></b></i>').join('');
     $('#ticks').innerHTML = ep.items.length > 24 ? '' : ep.items.slice(1).map((_, k) => `<i style="left:${(prefix(k + 1) / ep.runtime * 100).toFixed(2)}%"></i>`).join('');
     const n = nextEpisode(ep); $('#pl-nextep').style.visibility = n ? '' : 'hidden';
     $('#pl-note').classList.toggle('hide', !ep.note); noteEl.classList.remove('on');
@@ -740,6 +741,8 @@ Object.assign(player, (() => {
     $('#pl-date').textContent = ep.recap ? '' : [fmtLong(m.d), fmtTime(m.d)].filter(Boolean).join(' · ') + (m.est ? ' · approx.' : '');
     $('#pl-story').textContent = showStory ? story : '';
     countEl.textContent = `${i + 1} / ${ep.items.length}`;
+    $$('#segs b').forEach((b, k) => { b.style.width = k < i ? '100%' : '0%'; });
+    segCur = $$('#segs b')[i] || null;
     el.style.setProperty('--amb', amb(m));
     const split = splitOK() && isPortrait(m) && !ep.virtual;
     el.classList.toggle('split', split);
@@ -757,8 +760,9 @@ Object.assign(player, (() => {
     if (m.k === 'img') {
       const img = cache.get(m.f) || new Image(); if (!img.src) { img.decoding = 'async'; img.src = pic(m.f); }
       cache.delete(m.f); img.alt = ep.virtual ? '' : ep.alt;
-      const tall = window.innerHeight > window.innerWidth;
-      if (isPortrait(m) !== tall && !split) img.classList.add('fit');
+      // like a story: the whole photo stays visible, unless it already matches the screen's shape
+      const ar = (m.w || 3) / (m.h || 4), sr = window.innerWidth / window.innerHeight;
+      if (!split && Math.abs(Math.log(ar / sr)) > 0.16) img.classList.add('fit');
       const p = m.p || [0.5, 0.35];
       img.style.setProperty('--ox', `${Math.round(p[0] * 100)}%`); img.style.setProperty('--oy', `${Math.round(p[1] * 100)}%`);
       img.style.objectPosition = `${Math.round(p[0] * 100)}% ${Math.round(p[1] * 100)}%`;
@@ -786,6 +790,7 @@ Object.assign(player, (() => {
       if (!video && playing) elapsed = now - t0;
       const done = prefix(i) + Math.min(elapsed, curDur), frac = Math.min(1, done / ep.runtime);
       fill.style.width = knob.style.left = `${(frac * 100).toFixed(2)}%`;
+      if (segCur) segCur.style.width = `${Math.min(100, elapsed / curDur * 100).toFixed(1)}%`;
       timeEl.textContent = `${secs(Math.max(0, (ep.runtime - done) / 1000))} left`;
       if (!video && playing && elapsed >= curDur) { advance(1); return; }
       raf = requestAnimationFrame(loop);
@@ -818,16 +823,21 @@ Object.assign(player, (() => {
     if (!video && playing) t0 = performance.now() - elapsed;
     setIcon();
   }
-  function setIcon() { $('#ico-pause').classList.toggle('hide', !playing); $('#ico-play').classList.toggle('hide', playing); $('#pl-toggle').setAttribute('aria-label', playing ? 'Pause' : 'Play'); }
+  function setIcon() {
+    $('#ico-pause').classList.toggle('hide', !playing); $('#ico-play').classList.toggle('hide', playing); $('#pl-toggle').setAttribute('aria-label', playing ? 'Pause' : 'Play');
+    $('#pl-pause-ico').setAttribute('d', playing ? 'M6 4h4v16H6zm8 0h4v16h-4z' : 'M7 4l13 8-13 8z'); $('#pl-pause').setAttribute('aria-label', playing ? 'Pause' : 'Play');
+    el.classList.toggle('paused', !playing);
+  }
   function toggle() { playing = !playing; setPlayState(); showUI(); if (!playing) clearTimeout(hideT); }
   function showUI(sticky) { el.classList.add('ui'); clearTimeout(hideT); if (!sticky && playing) hideT = setTimeout(() => { el.classList.remove('ui', 'first'); }, 3200); }
   function openNote() { if (!ep || !ep.note) return; $('#note-text').textContent = ep.note; $('#note-date').textContent = fmtLong(ep.day); wasPlaying = playing; playing = false; setPlayState(); noteEl.classList.add('on'); showUI(true); $('#note-close').focus(); }
   function closeNote() { noteEl.classList.remove('on'); if (wasPlaying) { playing = true; setPlayState(); } showUI(); }
-  function skip(dir) { const r = $(dir < 0 ? '#rip-l' : '#rip-r'); r.classList.remove('go'); void r.offsetWidth; r.classList.add('go'); advance(dir); showUI(); }
+  function skip(dir, quiet) { const r = $(dir < 0 ? '#rip-l' : '#rip-r'); r.classList.remove('go'); void r.offsetWidth; r.classList.add('go'); advance(dir); if (!quiet) showUI(); }
 
   /* buttons */
   $('#pl-back').addEventListener('click', back);
   $('#pl-toggle').addEventListener('click', toggle);
+  $('#pl-pause').addEventListener('click', () => { toggle(); if (!playing) showUI(true); });
   $('#pl-prev').addEventListener('click', () => { advance(-1); showUI(); });
   $('#pl-next').addEventListener('click', () => { advance(1); showUI(); });
   $('#pl-nextep').addEventListener('click', () => { saveProgress(ep, ep.items.length - 1, 1); playNext(); });
@@ -841,10 +851,10 @@ Object.assign(player, (() => {
   $('#pl-list').addEventListener('click', () => { const s = ep && !ep.virtual ? ep.season.n : 1; swapOverlay('sheet', { season: s }); });
   $('#scrub').addEventListener('click', e => { const r = $('#scrub .bar').getBoundingClientRect(); const x = (e.clientX - r.left) / r.width * ep.runtime; let k = 0; while (k < ep.items.length - 1 && prefix(k + 1) <= x) k++; show(k); showUI(); });
 
-  /* gestures: tap = controls/pause, double-tap a side = skip, swipe = next/prev,
+  /* gestures, like a story: tap right = next, tap left = back, swipe sideways = next/previous episode,
      swipe down = close, press and hold = pause while held */
   const stage = $('#stage');
-  let sx = 0, sy = 0, st = 0, moved = false, pulling = false, holding = false, holdT = 0, lastTap = { t: 0, side: 0 }, tapT = 0;
+  let sx = 0, sy = 0, st = 0, moved = false, pulling = false, holding = false, holdT = 0, tapT = 0;
   /* pinch to zoom: two fingers scale the current photo, one finger pans while zoomed */
   const Z = { on: false, scale: 1, x: 0, y: 0, d0: 0, s0: 1, px: 0, py: 0, x0: 0, y0: 0, paused: false };
   const dist = t => Math.hypot(t[0].clientX - t[1].clientX, t[0].clientY - t[1].clientY);
@@ -852,12 +862,20 @@ Object.assign(player, (() => {
   function applyZoom() { const im = zoomEl(); if (!im) return; const lim = (Z.scale - 1) * 0.5; Z.x = Math.max(-lim * innerWidth, Math.min(lim * innerWidth, Z.x)); Z.y = Math.max(-lim * innerHeight, Math.min(lim * innerHeight, Z.y)); if (Z.scale > 1.01) { im.style.animation = 'none'; im.style.transform = `translate(${Z.x}px,${Z.y}px) scale(${Z.scale})`; } else { im.style.transform = ''; } }
   function resetZoom() { const was = Z.scale > 1.01; Z.on = false; Z.scale = 1; Z.x = Z.y = 0; const im = zoomEl(); if (im) { im.style.transform = ''; im.style.animation = ''; } el.classList.remove('zoomed'); if (was && Z.paused) { Z.paused = false; playing = true; setPlayState(); } }
   player.resetZoom = resetZoom;
-  const sideOf = x => x < window.innerWidth * 0.35 ? -1 : x > window.innerWidth * 0.65 ? 1 : 0;
   function tap(x) {
-    const side = sideOf(x), now = Date.now();
-    if (side && lastTap.side === side && now - lastTap.t < 320) { clearTimeout(tapT); lastTap = { t: 0, side: 0 }; skip(side); return; }
-    lastTap = { t: now, side };
-    clearTimeout(tapT); tapT = setTimeout(() => { el.classList.contains('ui') ? toggle() : showUI(); }, side ? 300 : 0);
+    if (next.classList.contains('on')) return;
+    const r = el.classList.contains('split') ? $('.frame.on', stage)?.getBoundingClientRect() : null;
+    const left = r && r.width ? r.left : 0, width = r && r.width ? r.width : window.innerWidth;
+    const dir = x - left < width * 0.3 ? -1 : 1;
+    if (!playing && !holding) { playing = true; setPlayState(); }
+    if (dir < 0 && i === 0 && !ep.virtual && prevEpisode()) return swipeEpisode(-1);
+    skip(dir, true);
+  }
+  function prevEpisode() { const all = allEpisodes, k = all.indexOf(ep); return k > 0 ? all[k - 1] : null; }
+  function swipeEpisode(dir) {
+    if (!ep || ep.virtual) return advance(dir);
+    if (dir > 0) { const n = nextEpisode(ep); if (n) { saveProgress(ep, ep.items.length - 1, 1); replaceWith(n.id); } else finish(); }
+    else { const p = prevEpisode(); if (p) replaceWith(p.id); else show(0); }
   }
   stage.addEventListener('touchstart', e => {
     if (noteEl.classList.contains('on')) return;
@@ -885,7 +903,7 @@ Object.assign(player, (() => {
     const dx = e.changedTouches[0].clientX - sx, dy = e.changedTouches[0].clientY - sy;
     el.classList.remove('pulling');
     if (pulling) { pulling = false; if (dy > 120) back(); else { el.style.transform = ''; el.style.opacity = ''; } return; }
-    if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) { advance(dx < 0 ? 1 : -1); showUI(); }
+    if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) swipeEpisode(dx < 0 ? 1 : -1);
     else if (!moved && Date.now() - st < 300) tap(e.changedTouches[0].clientX);
   }, { passive: true });
   stage.addEventListener('click', e => { if (!('ontouchstart' in window) && !noteEl.classList.contains('on')) tap(e.clientX); });
