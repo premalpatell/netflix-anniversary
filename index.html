@@ -188,6 +188,14 @@
 </div>
 
 <!-- ═══ PLAYER ═══ -->
+<div id="clips" role="dialog" aria-modal="true" aria-label="Clips">
+  <div class="clips-feed" id="clips-feed"></div>
+  <div class="clips-top">
+    <button class="icon-btn" type="button" id="clips-back" aria-label="Back"><svg viewBox="0 0 24 24"><path d="M15.5 4l-8 8 8 8 1.5-1.5L10.5 12l6.5-6.5z"/></svg></button>
+    <b>Clips</b><span style="flex:1"></span>
+    <button class="icon-btn" type="button" id="clips-sound" aria-label="Unmute"><svg viewBox="0 0 24 24"><path d="M4 9v6h4l5 5V4L8 9H4zm12.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4z"/></svg></button>
+  </div>
+</div>
 <div id="player" aria-label="Player" role="dialog" aria-modal="true">
   <div class="stage" id="stage">
     <div class="stage-blur" id="stage-blur"></div>
@@ -288,10 +296,16 @@
 </section>
 
 <div id="toast" role="status" aria-live="polite"></div>
+<div class="install" id="install" role="dialog" aria-label="Add to Home Screen">
+  <img src="icons/apple-touch-icon.png" alt="" width="48" height="48">
+  <p><b>Get the app</b>Tap <svg viewBox="0 0 24 24" aria-label="Share"><path d="M12 3l4 4-1.4 1.4L13 6.8V15h-2V6.8L9.4 8.4 8 7zM5 10h3v2H6v8h12v-8h-2v-2h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V11a1 1 0 0 1 1-1z"/></svg> then <b class="inl">Add to Home Screen</b> to keep Shivani &amp; Premal on your iPhone, full screen.</p>
+  <button class="icon-btn" type="button" id="install-close" aria-label="Close"><svg><use href="#i-close"/></svg></button>
+</div>
 
 <script src="js/data.js" defer></script>
 <script src="js/media.js" defer></script>
 <script src="js/art.js" defer></script>
+<script src="js/quality.js" defer></script>
 <script src="js/app.js" defer></script>
 <script src="js/blur.js" defer></script>
 </body>

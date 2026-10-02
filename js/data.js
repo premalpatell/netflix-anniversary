@@ -87,6 +87,9 @@ window.HIGHLIGHTS = [
    Keys are episode or season titles; values are the styles in css/app.css (.look-…). */
 window.TITLE_LOOKS = {
   'Stranger Things': 'stranger',
+  'Om Shanti Om': 'bolly',
+  'Happy New Year': 'bollymod',
+  'Red Notice': 'heist',
   'Stranger Things Have Happened': 'stranger',
   'Squid Game: CNE Edition': 'squid',
   'Money Heist': 'heist',
@@ -319,11 +322,12 @@ window.STORIES = {
 window.EPISODE_NOTES = {
   // ── Season 0 · Before Us
   '2023-12-03': { title: 'Cocktail', story: 'A Toronto bar with every wall covered in pictures, and the best one standing in front of them.', thumb: 's_20231203_215002_1.jpg' },
-  '2023-12-31': { title: 'Kabhi Khushi Kabhie Gham', story: 'Shivani rings in the new year at her brother\'s restaurant. It\'s all about loving your family.', thumb: 's_20231231_210403_1.jpg' },
+  '2023-12-31': { title: 'Kabhi Khushi Kabhie Gham', story: 'Shivani rings in the new year at her brother\'s restaurant. It\'s all about loving your family.', thumb: 's_20231231_210401_1.jpg' },
   '2024-05-11': { title: 'Selling Sunset', story: 'Dinner at Louix Louis, high above the city at the St. Regis. Very Selling Sunset.', thumb: 's_20240511_000600_1.jpg' },
   '2024-07-21': { title: 'Befikre', story: 'Her birthday, in front of the flower wall at Befikr. Carefree, just like the name says.' },
   '2024-05-20': { title: 'Summertime', story: 'A blue top, a bluer sky, and summer arriving early.', thumb: 's_20240520_161758_1.jpg' },
   '2023-11-03': { title: 'Fabulous Lives', story: 'Seven mirror clips, zero bad angles. The fabulous life, fully documented.', thumb: 's_20231103_185218_1.mp4' },
+  '2023-10-22': { title: 'Om Shanti Om', story: 'Gold walls, a golden bar and a black dress. The night after Stranger Things looked like a film set.' },
   '2023-10-21': { title: 'Stranger Things', story: 'A neon sign that says Eleven, a black dress and a bunch of balloons. Stranger things have happened.', thumb: 's_20231021_172016_1.jpg' },
   '2023-12-09': { title: 'Heeramandi', story: 'Chandeliers, marble floors and a princess in black. Bhansali would approve.', thumb: 's_20231209_211928_1.jpg' },
   '2024-06-10': { title: 'The Circle', story: 'Selfie after selfie. She would win The Circle without trying.', thumb: 's_20240610_193550_1.jpg' },
@@ -341,6 +345,7 @@ window.EPISODE_NOTES = {
   '2024-12-14': { title: 'The Crown', story: 'A royal date at the Royal York. Her Majesty orders the cocktail.' },
   '2024-12-15': { title: 'Taare Zameen Par', story: 'A night out under a window full of stars. Taare zameen par.' },
   // ── Season 3 · Her Biggest Year
+  '2025-01-01': { title: 'Happy New Year', story: 'A party hat, a glitter cup and the first hours of 2025. She rang it in like the lead of a Shah Rukh Khan film.' },
   '2025-01-05': { title: 'Missing You', story: 'Premal at Niagara Falls on a cold January day, missing her more than he notices the view.' },
   '2025-01-09': { title: 'Indian Matchmaking', story: 'Shivani is home in Mumbai, at Bastian. Sima Aunty would approve of the outfit.' },
   '2025-01-25': { title: 'Love Is Blind', story: 'Not at Arrivals. He would spot her in any crowd, roses in hand.' },
@@ -373,6 +378,8 @@ window.EPISODE_NOTES = {
   '2026-05-27': { title: 'Queen', story: 'Shivani\'s solo trip to Algonquin Park. Pure Queen energy.' },
   '2026-06-06': { merge: 'next' },
   '2026-07-21': { title: 'Dear Zindagi', story: 'Her birthday, miles apart, and still the best day of the year.', thumb: 's_20260721_145211_1.jpg' },
+  '2026-08-26': { title: 'Red Notice', story: 'Golden hour, a red shirt, and a parking lot that turned into a runway.' },
+  '2026-09-16': { merge: 'next' },
   '2026-09-17': { title: 'Our Planet', story: 'The clearest water in Ontario, and a rare sighting: Shivani on a hike.' },
   '2026-09-23': { title: 'Shivani in Montréal', story: 'Day one of the Québec trip, with the whole city below her.', thumb: 's_20260923_120000_3.jpg' },
   '2026-09-24': { title: 'Shivani in Québec', story: 'Umbrella Street, the Château Frontenac and Montmorency Falls. A wardrobe that belongs on a runway.', thumb: 's_20260924_120000_11.jpg' },

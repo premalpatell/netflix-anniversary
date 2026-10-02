@@ -38,6 +38,10 @@ const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '
 const pic = p => /^(images\/s_|images\/t\/|videos\/p\/).*\.jpg$/i.test(p || '') ? p.replace(/\.jpg$/i, '.webp') : p;
 document.addEventListener('error', e => { const t = e.target; if (t.tagName === 'IMG' && /\.webp$/.test(t.src)) t.src = t.src.replace(/\.webp$/, '.jpg'); }, true);
 document.addEventListener('load', e => { if (e.target.tagName === 'IMG') e.target.classList.add('ld'); }, true);
+/* photo quality: sharpness score from tools/score_quality.py, boosted for faces and resolution */
+const QUAL = window.QUALITY || {};
+const qOf = m => m && m.k === 'img' ? (QUAL[m.key] || 1) * (m.p ? 1.7 : 1) * (Math.max(m.w || 0, m.h || 0) >= 1400 ? 1.2 : 1) : 0;
+const bestOf = (items, pred = () => true) => items.filter(m => m.k === 'img' && pred(m)).sort((a, b) => qOf(b) - qOf(a))[0];
 const pos = m => m && m.p ? `${Math.round(m.p[0] * 100)}% ${Math.round(m.p[1] * 100)}%` : '50% 30%';
 const amb = m => (m && m.c) || '#5a1016';
 /* title treatment class for a title (see TITLE_LOOKS in data.js and .look-* in app.css) */
@@ -103,7 +107,7 @@ const storyOf = m => (NOTES[(m.d || '').slice(0, 10)] || {}).story || stories[m.
     const title = note.title || (firstStory ? firstStory.replace(/\.$/, '') : (b.day === 'undated' ? 'Lost & Found' : fmtMD(b.day)));
     const photos = b.items.filter(m => m.k === 'img').length, vids = b.items.length - photos;
     const runtime = b.items.reduce((t, m) => t + (m.k === 'vid' ? m.dur * 1000 : PHOTO_MS), 0);
-    const cover = (note.thumb && byKey[note.thumb]) || b.items.find(m => m.k === 'img' && m.p) || b.items.find(m => m.k === 'img') || b.items[0];
+    const cover = (note.thumb && byKey[note.thumb]) || bestOf(b.items, m => m.p) || bestOf(b.items) || b.items[0];
     const days = [...new Set(b.items.map(m => (m.d || '').slice(0, 10)).filter(Boolean))].sort();
     const ep = {
       id: `${b.sn}-${b.day}`, season, n: season.episodes.length + 1, day: b.day, title, named, items: b.items, cover,
@@ -190,7 +194,7 @@ let state = { screen: 'intro' };
 let opener = null;   // element focused before an overlay opened, to restore focus
 function apply(s, fromPop) {
   const prev = state; state = s;
-  if (prev.overlay && prev.overlay !== s.overlay) { if (prev.overlay === 'player') player.close(); if (prev.overlay === 'sheet') sheet.hide(); if (prev.overlay === 'search') search.hide(); if (opener && document.contains(opener)) opener.focus({ preventScroll: true }); opener = null; }
+  if (prev.overlay && prev.overlay !== s.overlay) { if (prev.overlay === 'player') player.close(); if (prev.overlay === 'sheet') sheet.hide(); if (prev.overlay === 'search') search.hide(); if (prev.overlay === 'clips') clips.hide(); if (opener && document.contains(opener)) opener.focus({ preventScroll: true }); opener = null; }
   if (prev.screen === 'finale' && s.screen !== 'finale') finale.stop();
   if (prev.screen === 'intro' && s.screen !== 'intro') intro.stop();
   screens.forEach(n => $('#' + n).classList.toggle('on', n === s.screen));
@@ -198,7 +202,7 @@ function apply(s, fromPop) {
   if (s.screen === 'browse') browse.ensure(); else browse.pause();
   if (s.screen === 'finale' && prev.screen !== 'finale') finale.start();
   if (s.overlay && s.overlay !== prev.overlay) opener = document.activeElement;
-  if (s.overlay === 'sheet') sheet.show(s.season, s.tab); else if (s.overlay === 'search') search.show(); else if (s.overlay === 'player' && !fromPop) player.open(s.ep, s.i);
+  if (s.overlay === 'sheet') sheet.show(s.season, s.tab); else if (s.overlay === 'search') search.show(); else if (s.overlay === 'clips' && !fromPop) clips.show(s.k || 0); else if (s.overlay === 'player' && !fromPop) player.open(s.ep, s.i);
   if (!s.overlay && !fromPop) window.scrollTo({ top: s.scroll || 0 });
   browse.setPaused(!!s.overlay || s.screen !== 'browse');
   jaw.hide(); bell.close();
@@ -218,7 +222,7 @@ const playEp = (id, i) => (state.overlay ? swapOverlay : overlay)('player', { ep
 /* focus stays inside an open overlay */
 document.addEventListener('keydown', e => {
   if (e.key !== 'Tab' || !state.overlay) return;
-  const box = { sheet: $('#sheet'), player: $('#player'), search: $('#search') }[state.overlay]; if (!box) return;
+  const box = { sheet: $('#sheet'), player: $('#player'), search: $('#search'), clips: $('#clips') }[state.overlay]; if (!box) return;
   const f = $$('button:not([disabled]),select,input,[tabindex]:not([tabindex="-1"])', box).filter(el => el.offsetParent !== null);
   if (!f.length) return;
   const first = f[0], last = f[f.length - 1];
@@ -298,7 +302,13 @@ const cardHTML = (ep, opts = {}) => {
 };
 const posterHTML = s => { const m = MEDIA.find(x => x.f === s.hero) || s.episodes[0].cover; return `<button class="poster" type="button" data-season="${s.n}" style="--amb:${amb(m)}" aria-label="Season ${s.n}: ${esc(s.title)}">${imgHTML(m, '', `Season ${s.n}, ${s.title}`)}<span class="poster-num">${s.n}</span><div class="poster-body"><div class="card-ep">Season ${s.n}</div><div class="${titleCls(s.title, 'poster-title')}">${titleHTML(s.title, 'poster')}</div><div class="card-len">${s.episodes.length} episodes · ${esc(s.tag)}</div></div></button>`; };
 const topCardHTML = (m, i) => { const at = epOf.get(m); return `<button class="top-card" type="button" data-ep="${at.ep.id}" data-i="${at.i}" aria-label="Number ${i + 1}: ${esc(at.ep.title)}"><span class="top-num" aria-hidden="true">${i + 1}</span>${imgHTML(m, 'top-img', at.ep.alt)}<div class="card-body"><div class="card-ep">${at.ep.label}</div><div class="${titleCls(at.ep.title, 'card-title')}">${titleHTML(at.ep.title, 'card')}</div></div></button>`; };
-const rowHTML = (id, title, inner, cls = '', act = '') => `<section class="row ${cls}" id="row-${id}" aria-label="${esc(title)}"><div class="row-head"><h2 class="row-title">${esc(title)}</h2>${act}<span class="pager" aria-hidden="true"></span></div><button class="chev l" type="button" aria-label="Scroll left" tabindex="-1">${use('i-left')}</button><div class="strip ${cls === 'top10-row' ? 'top10' : ''}">${inner}</div><button class="chev r" type="button" aria-label="Scroll right" tabindex="-1">${use('i-right')}</button></section>`;
+const shuffleArr = a => { const b = [...a]; for (let k = b.length - 1; k > 0; k--) { const j = Math.floor(Math.random() * (k + 1)); [b[k], b[j]] = [b[j], b[k]]; } return b; };
+const momentHTML = ep => {
+  const m = bestOf(ep.items, x => x.p && isPortrait(x)) || bestOf(ep.items, x => x.p) || ep.cover;
+  return `<button class="moment" type="button" data-ep="${ep.id}" data-i="${Math.max(0, ep.items.indexOf(m))}" aria-label="${esc(`${ep.label}: ${ep.title}`)}">${imgHTML(m, '', ep.alt)}<span class="moment-body"><span class="${titleCls(ep.title, 'moment-title')}">${titleHTML(ep.title, 'moment')}</span><small>${esc(ep.label)} · ${fmtMD(ep.day)}</small></span></button>`;
+};
+const clipCardHTML = (m, k) => { const at = epOf.get(m); return `<button class="clip-card" type="button" data-clip="${k}" aria-label="Clip from ${esc(at.ep.title)}">${imgHTML(m, '', at.ep.alt)}<span class="clip-play">${svgPlay}</span><span class="clip-card-body"><span class="${titleCls(at.ep.title, 'clip-card-title')}">${titleHTML(at.ep.title, 'card')}</span><small>${secs(m.dur)}</small></span></button>`; };
+const rowHTML = (id, title, inner, cls = '', act = '', head = '') => `<section class="row ${cls}" id="row-${id}" aria-label="${esc(title)}"><div class="row-head"><h2 class="row-title">${head || esc(title)}</h2>${act}<span class="pager" aria-hidden="true"></span></div><button class="chev l" type="button" aria-label="Scroll left" tabindex="-1">${use('i-left')}</button><div class="strip ${cls === 'top10-row' ? 'top10' : ''}">${inner}</div><button class="chev r" type="button" aria-label="Scroll right" tabindex="-1">${use('i-right')}</button></section>`;
 
 /* ═══ BROWSE ═════════════════════════════════════════════ */
 const browse = (() => {
@@ -349,15 +359,17 @@ const browse = (() => {
     }
     const ep = epByDay[h.day]; if (!ep) return null;
     // prefer sharp, high-resolution photos with her face; fall back gracefully
-    const photos = ep.items.filter(m => m.k === 'img'), faces = photos.filter(m => m.p), big = faces.filter(m => Math.max(m.w, m.h) >= 1400);
-    const m = big.length ? rnd(big) : faces.length ? rnd(faces) : (photos.length ? rnd(photos) : ep.cover);
+    const top = ep.items.filter(m => m.k === 'img' && m.p).sort((a, b) => qOf(b) - qOf(a)).slice(0, 3);
+    const m = top.length ? rnd(top) : ep.cover;
     return { key: h.day, badge: 'Series', tagNew: isRecent(ep) ? 'Recently Added' : badge, title: ep.title, sub: h.line, filmy: true, m,
       meta: `<span>${ep.label}</span><span>${fmtMD(ep.day)}</span><span>${esc(ep.len)}</span><span class="box hd">HD</span>`,
       play: () => playEp(ep.id, ep.items.indexOf(m) > -1 ? ep.items.indexOf(m) : 0), playLabel: isNew(ep) ? 'Watch Now' : 'Play', info: () => overlay('sheet', { season: ep.season.n }) };
   }
   function pickFeatures() {
     const series = resolveFeatures().find(f => f.logo);
-    const pool = (window.HIGHLIGHTS || []).map(highlight).filter(Boolean);
+    const lines = (window.HIGHLIGHTS || []).filter(h => h.day);
+    const extra = allEpisodes.filter(e => e.named && e.story && e.photos && !lines.some(h => h.day === e.day)).map(e => ({ day: e.day, line: e.story }));
+    const pool = [...lines, ...extra].map(highlight).filter(Boolean);
     let seen = store.get('bbSeen', []);
     let fresh = pool.filter(f => !seen.includes(f.key));
     if (fresh.length < 5) { seen = []; fresh = pool; }
@@ -370,7 +382,8 @@ const browse = (() => {
   function showFeature(k, first) {
     const f = feats[fi = k], L = layers[li = 1 - li], old = layers[1 - li];
     const useVideo = f.video && (window.innerHeight > window.innerWidth || window.innerWidth < 720) && !reduced;
-    const lowres = Math.max(f.m.w || 0, f.m.h || 0) < 1400 && window.innerWidth >= 900;   // don't stretch small photos across a wide screen
+    const wide = window.innerWidth >= 900 && window.innerWidth > window.innerHeight;
+    const lowres = wide && (Math.max(f.m.w || 0, f.m.h || 0) < 1400 || isPortrait(f.m));   // tall or small photos sit beside a blurred backdrop   // don't stretch small photos across a wide screen
     L.classList.toggle('lowres', lowres);
     L.innerHTML = `${lowres ? `<img class="bb-back" src="${pic(f.m.t)}" alt="">` : ''}<img src="${pic(f.m.f)}" alt="" style="object-position:${pos(f.m)}" decoding="async">${useVideo ? `<video muted playsinline loop preload="auto" src="${f.video}"></video>` : ''}`;
     L.style.setProperty('--ox', pos(f.m).split(' ')[0]); L.style.setProperty('--oy', pos(f.m).split(' ')[1]);
@@ -413,12 +426,18 @@ const browse = (() => {
     const otd = onThisDay();
     if (otd.length) rows.push(rowHTML('today', 'On This Day in Earlier Years', otd.slice(0, 10).map(x => cardHTML(x.e, { ep: `${x.years} year${x.years > 1 ? 's' : ''} ago`, badge: false })).join('')));
     rows.push(rowHTML('top10', 'Top 10 Moments, Ranked by Premal', TOP10.map(k => byKey[k]).filter(m => m && epOf.get(m)).map(topCardHTML).join(''), 'top10-row'));
+    // Big Moments: tall posters of standout episodes, a fresh order every visit
+    const standouts = allEpisodes.filter(e => e.photos && e.named && bestOf(e.items, x => x.p)).sort((a, b) => qOf(bestOf(b.items, x => x.p)) - qOf(bestOf(a.items, x => x.p))).slice(0, 18);
+    rows.push(rowHTML('moments', 'Big Moments', shuffleArr(standouts).map(momentHTML).join(''), 'moments-row'));
     const fresh = allEpisodes.filter(isNew).reverse().slice(0, 12);
     if (fresh.length) rows.push(rowHTML('new', 'New Episodes', fresh.map(e => cardHTML(e, { badge: false })).join('')));
     if (myList.length) rows.push(rowHTML('list', 'My List', myList.map(id => cardHTML(epById[id], { badge: false })).join(''), '', `<button class="row-act" type="button" data-act="send">Send to Premal</button>`));
+    rows.push(rowHTML('videos', 'Clips', clips.list().map(clipCardHTML).join(''), 'clips-row', `<button class="row-act" type="button" data-act="clips">Watch all</button>`));
+    // every episode, season by season, under the season's own title design
+    realSeasons().forEach(se => rows.push(rowHTML(`s${se.n}`, `Season ${se.n}: ${se.title}`,
+      se.episodes.map(e => cardHTML(e, { ep: `E${e.n} · ${e.sub || e.len}`, len: '' })).join(''), 'season-eps', '',
+      `<span class="row-season">Season ${se.n}</span><span class="${titleCls(se.title, 'row-logo')}">${titleHTML(se.title, 'row')}</span>`)));
     rows.push(rowHTML('seasons', 'Seasons', realSeasons().map(posterHTML).join(''), 'season-row'));
-    const vids = MEDIA.filter(m => m.k === 'vid' && epOf.get(m));
-    rows.push(rowHTML('videos', 'Videos', vids.map(m => { const at = epOf.get(m); return cardHTML(at.ep, { i: at.i, m, vid: true, title: at.ep.title, len: at.ep.sub, prog: false, badge: false }); }).join('')));
     const remind = store.get('remind', false);
     rows.push(rowHTML('soon', 'Coming Soon', (window.COMING_SOON || []).map(c => { const m = MEDIA.find(x => x.f === c.still) || allEpisodes[allEpisodes.length - 1].cover; return `<div class="soon">${ART.comingSoon ? `<img src="${ART.comingSoon}" alt="" loading="lazy" decoding="async">` : imgHTML(m, '', c.title)}<div class="soon-body"><small>${esc(c.tag)}</small><b>${esc(c.title)} · ${esc(c.name)}</b><p>${esc(c.blurb)}</p><button class="remind ${remind ? 'on' : ''}" type="button" data-act="remind">${use(remind ? 'i-check' : 'i-bell')}${remind ? 'Reminder set' : 'Remind Me'}</button></div></div>`; }).join('')));
     const ex = seasons.find(s => s.n === EXTRAS.n);
@@ -438,7 +457,7 @@ const browse = (() => {
 
   /* cached row offsets so the scroll handler never forces layout */
   let marks = [], navBtns = $$('.nav-links button'), navCur = '', ticking = false, bbH = 600;
-  function measure() { marks = ['videos', 'list', 'seasons'].map(id => ({ id, el: $('#row-' + id) })).filter(m => m.el).map(m => ({ id: m.id, top: m.el.offsetTop })).sort((a, b) => b.top - a.top); bbH = bb.offsetHeight || 600; $$('.row').forEach(pager); }
+  function measure() { marks = [['list', 'list'], ['s0', 'seasons'], ['seasons', 'seasons']].map(([row, id]) => ({ id, el: $('#row-' + row) })).filter(m => m.el).map(m => ({ id: m.id, top: m.el.offsetTop })).sort((a, b) => b.top - a.top); bbH = bb.offsetHeight || 600; $$('.row').forEach(pager); }
   window.addEventListener('resize', measure, { passive: true });
   window.addEventListener('scroll', () => {
     if (state.screen !== 'browse' || ticking) return;
@@ -459,6 +478,8 @@ const browse = (() => {
     if (chev) { const s = $('.strip', chev.parentElement); s.scrollBy({ left: (chev.classList.contains('l') ? -1 : 1) * s.clientWidth * 0.9, behavior: reduced ? 'auto' : 'smooth' }); return; }
     const act = e.target.closest('[data-act]');
     if (act && act.dataset.act === 'send') return sendFavourites();
+    if (act && act.dataset.act === 'clips') return overlay('clips', { k: 0 });
+    const clip = e.target.closest('[data-clip]'); if (clip) return overlay('clips', { k: +clip.dataset.clip });
     if (act && act.dataset.act === 'remind') { const on = !store.get('remind', false); store.set('remind', on); toast(on ? 'We’ll remind you when Season 6 starts' : 'Reminder removed'); renderRows(); return; }
     const c = e.target.closest('[data-ep],[data-season]'); if (!c) return;
     if (c.dataset.season != null) return overlay('sheet', { season: +c.dataset.season });
@@ -475,13 +496,14 @@ const browse = (() => {
   $('#bb-mute').addEventListener('click', () => { if (!curVideo) return; curVideo.muted = !curVideo.muted; $('#bb-mute').setAttribute('aria-label', curVideo.muted ? 'Unmute' : 'Mute'); $('#bb-mute').style.opacity = curVideo.muted ? '' : '.55'; });
   navBtns.forEach(b => b.addEventListener('click', () => {
     const t = b.dataset.nav; if (t === 'finale') return go('finale');
+    if (t === 'videos') return overlay('clips', { k: 0 });
     if (t === 'list' && !myList.length) return toast('Tap + on any episode to add it to My List');
-    const el = t === 'top' ? null : $('#row-' + t);
+    const el = t === 'top' ? null : $('#row-' + (t === 'seasons' ? 's0' : t)) || $('#row-' + t);
     window.scrollTo({ top: el ? el.offsetTop - 70 : 0, behavior: reduced ? 'auto' : 'smooth' });
   }));
   document.addEventListener('visibilitychange', () => { if (document.hidden) { clearTimeout(rotT); if (curVideo) curVideo.pause(); } else if (!paused) { if (curVideo) curVideo.play().catch(() => {}); rotate(); } });
   return {
-    ensure() { if (!built) { build(); built = true; } else renderRows(); $('#nav-avatar').src = pic(PROFILES[profile].photo); bell.refreshDot(); },
+    ensure() { if (!built) { build(); built = true; installHint.maybe(); } else renderRows(); $('#nav-avatar').src = pic(PROFILES[profile].photo); bell.refreshDot(); },
     refresh() { if (built && state.screen === 'browse') { const y = window.scrollY; renderRows(); window.scrollTo(0, y); } },
     setPaused(p) { paused = p; if (p) { clearTimeout(rotT); if (curVideo) curVideo.pause(); } else { if (curVideo) curVideo.play().catch(() => {}); rotate(); } },
     pause() { if (curVideo) curVideo.pause(); },
@@ -915,11 +937,52 @@ Object.assign(player, (() => {
       if (e.key === ' ' || e.key === 'k') { e.preventDefault(); toggle(); }
       else if (e.key === 'ArrowRight') skip(1); else if (e.key === 'ArrowLeft') skip(-1);
       else if (e.key === 'Escape') back();
-    } else if ((state.overlay === 'sheet' || state.overlay === 'search') && e.key === 'Escape') back();
+    } else if ((state.overlay === 'sheet' || state.overlay === 'search' || state.overlay === 'clips') && e.key === 'Escape') back();
     else if (!state.overlay && state.screen === 'browse' && e.key === '/' ) { e.preventDefault(); overlay('search'); }
   });
   return { open, close };
 })());
+
+/* ═══ CLIPS: a vertical, swipeable feed of every video (like Netflix's mobile Clips) ═══ */
+const clips = (() => {
+  const el = $('#clips'), feed = $('#clips-feed');
+  const all = MEDIA.filter(m => m.k === 'vid' && m.dur >= 2 && epOf.get(m)).sort((a, b) => (b.d || '').localeCompare(a.d || ''));
+  let built = false, muted = true, io = null;
+  const slide = (m, k) => { const at = epOf.get(m), ep = at.ep;
+    return `<section class="clip" data-k="${k}" aria-label="${esc(ep.title)}"><video playsinline loop muted preload="none" data-src="${m.f}" poster="${pic(m.t)}"></video>
+      <div class="clip-shade"></div>
+      <div class="clip-body"><span class="${titleCls(ep.title, 'clip-title')}">${titleHTML(ep.title, 'clip')}</span>
+        <small>${esc(ep.label)} · ${fmtMD(m.d || ep.day)}</small>${ep.story ? `<p>${esc(ep.story)}</p>` : ''}
+        <div class="clip-act"><button class="btn primary" type="button" data-watch="${ep.id}" data-i="${at.i}">${svgPlay}Watch Episode</button>
+        <button class="round" type="button" data-add="${ep.id}" aria-label="${inList(ep.id) ? 'Remove from' : 'Add to'} My List">${use(inList(ep.id) ? 'i-check' : 'i-plus')}</button></div></div></section>`; };
+  function build() {
+    feed.innerHTML = all.map(slide).join('');
+    io = new IntersectionObserver(es => es.forEach(en => {
+      const v = $('video', en.target);
+      if (en.isIntersecting && en.intersectionRatio > 0.6) {
+        if (!v.src) v.src = v.dataset.src;
+        v.muted = muted; v.play().catch(() => { v.muted = true; v.play().catch(() => {}); });
+        const nx = en.target.nextElementSibling && $('video', en.target.nextElementSibling); if (nx && !nx.src) { nx.preload = 'metadata'; nx.src = nx.dataset.src; }
+      } else v.pause();
+    }), { root: feed, threshold: [0, 0.6, 1] });
+    $$('.clip', feed).forEach(c => io.observe(c));
+    built = true;
+  }
+  feed.addEventListener('click', e => {
+    const w = e.target.closest('[data-watch]'); if (w) return playEp(w.dataset.watch, +w.dataset.i);
+    const a = e.target.closest('[data-add]'); if (a) { toggleList(a.dataset.add); $('use', a).setAttribute('href', inList(a.dataset.add) ? '#i-check' : '#i-plus'); return; }
+    const v = e.target.closest('.clip') && $('video', e.target.closest('.clip')); if (!v) return;
+    muted = !muted; $$('video', feed).forEach(x => { x.muted = muted; }); $('#clips-sound').classList.toggle('on', !muted);
+    $('#clips-sound').setAttribute('aria-label', muted ? 'Unmute' : 'Mute');
+  });
+  $('#clips-sound').addEventListener('click', () => { muted = !muted; $$('video', feed).forEach(x => { x.muted = muted; }); $('#clips-sound').classList.toggle('on', !muted); });
+  $('#clips-back').addEventListener('click', back);
+  return {
+    list: () => all,
+    show(k) { if (!built) build(); el.classList.add('on'); const c = $$('.clip', feed)[k] || $('.clip', feed); if (c) feed.scrollTo({ top: c.offsetTop }); setTimeout(() => $('#clips-back').focus({ preventScroll: true }), 60); },
+    hide() { el.classList.remove('on'); $$('video', feed).forEach(v => v.pause()); },
+  };
+})();
 
 /* ═══ FINALE ═════════════════════════════════════════════ */
 const finale = (() => {
@@ -947,6 +1010,15 @@ const finale = (() => {
   $('#watch-again').addEventListener('click', () => go('profiles'));
   $('#closing-browse').addEventListener('click', () => go('browse'));
   return { start, stop };
+})();
+
+/* ═══ INSTALL HINT: on an iPhone in Safari, show once how to add the app to the home screen ═══ */
+const installHint = (() => {
+  const ios = /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  const standalone = navigator.standalone || matchMedia('(display-mode: standalone)').matches;
+  const el = $('#install');
+  $('#install-close').addEventListener('click', () => { el.classList.remove('on'); store.set('installHint', 1); });
+  return { maybe() { if (ios && !standalone && !store.get('installHint', 0)) setTimeout(() => el.classList.add('on'), 2500); } };
 })();
 
 /* ═══ INIT ═══════════════════════════════════════════════ */

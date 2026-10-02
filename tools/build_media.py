@@ -25,6 +25,8 @@ pillow_heif.register_heif_opener()
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 RAW = sys.argv[1] if len(sys.argv) > 1 else None
+# Optional folder of full-resolution originals for the photos already in the repo (same file names)
+ORIG = os.environ.get('ORIG')
 TOR = ZoneInfo('America/Toronto')
 FULL, THUMB = 1920, 720
 
@@ -178,7 +180,10 @@ SNAP_DATES.update(USER_DATES)
 
 SKIP = {'netflix-n.png', 'Snapchat-1493094235.jpg', 'Snapchat-918357969.jpg'}  # not of Shivani
 # Raw files left out on purpose: 18 near-identical car selfies trimmed to 4 (keep 4850, 4856, 4862, 4867)
-SKIP_RAW = {f'IMG_{n}.JPG' for n in (4851, 4852, 4853, 4855, 4857, 4858, 4859, 4860, 4861, 4863, 4864, 4865, 4866)} | {'IMG_4854.jpg'}
+SKIP_RAW = {f'IMG_{n}.JPG' for n in (4851, 4852, 4853, 4855, 4857, 4858, 4859, 4860, 4861, 4863, 4864, 4865, 4866)} | {'IMG_4854.jpg', 'Valentines Letter.jpg',
+    # photos of Premal on his own (kept out at his request)
+    '20230804_045834_IMG_3756.JPG', '20240203_090841_IMG_4971.HEIC', '20240217_083940_IMG_5089.HEIC',
+    '20240301_070444_IMG_5357.HEIC', 'IMG_20240813_185214_450.webp', 'IMG_20240813_185643_851.webp'}
 
 import base64, io
 try:
@@ -229,6 +234,15 @@ def enrich(it, im):
     if p:
         it['p'] = p
     it['b'] = tiny(im); it['c'] = colour(im)
+
+
+def sharpness(im):
+    """Variance of the Laplacian on a 640px greyscale copy, plus a bonus for a visible face."""
+    g = ImageOps.exif_transpose(im).convert('L'); g.thumbnail((640, 640))
+    a = np.asarray(g, dtype=np.float32)
+    lap = a[1:-1, 1:-1] * 4 - a[:-2, 1:-1] - a[2:, 1:-1] - a[1:-1, :-2] - a[1:-1, 2:]
+    v = float(lap.var())
+    return v * (1.5 if face_area(ImageOps.exif_transpose(im).convert('RGB')) else 1)
 
 
 def dhash(im):
@@ -350,6 +364,12 @@ def main():
         fn = os.path.basename(p)
         if fn in SKIP or fn.startswith('s_'):
             continue
+        hi = ORIG and os.path.join(ORIG, fn)
+        if hi and os.path.exists(hi):
+            src = ImageOps.exif_transpose(Image.open(hi)).convert('RGB')
+            if max(src.size) > max(Image.open(p).size):
+                src.thumbnail((FULL, FULL), Image.LANCZOS)
+                src.save(p, 'JPEG', quality=86, optimize=True, progressive=True)   # metadata stripped
         im = Image.open(p)
         d = SNAP_DATES.get(fn)
         d = d + 'T12:00:00' if d else name_date(fn)
@@ -401,7 +421,8 @@ def add_raw(items, hashes):
         n = re.match(r'IMG_(\d+)', title)
         if d and model and n:
             anchors.setdefault(model, []).append((int(n[1]), d))
-        imgs.append((p, title, im, d, int(n[1]) if n else None))
+        im.close()
+        imgs.append((p, title, d, int(n[1]) if n else None))
 
     def estimate(num):
         best = None
@@ -429,7 +450,8 @@ def add_raw(items, hashes):
         seq[base] = seq.get(base, 0) + 1
         return f'{base}_{seq[base]}.{ext}'
 
-    for p, title, im, d, num in imgs:
+    cands = []
+    for p, title, d, num in imgs:
         est = False
         if title in SNAP_DATES:
             d = SNAP_DATES[title] + (d[10:] if d else 'T12:00:00')
@@ -437,7 +459,9 @@ def add_raw(items, hashes):
             d = name_date(title)
         if not d and num:
             d = estimate(num); est = bool(d)
-        h = dhash(ImageOps.exif_transpose(im))
+        im = Image.open(p); im.draft('RGB', (1024, 1024))
+        small = ImageOps.exif_transpose(im).convert('RGB'); small.thumbnail((1024, 1024)); im.close()
+        h = dhash(small)
         dup = False
         for oh, od in hashes:
             close = not od or not d or abs((datetime.fromisoformat(od) - datetime.fromisoformat(d)).days) <= 2
@@ -445,6 +469,29 @@ def add_raw(items, hashes):
                 dup = True; break
         if dup:
             print('dup ', title); continue
+        cands.append((p, title, sharpness(small), d, est, h))
+
+    # Bursts: shots taken seconds apart that look alike keep only the sharpest one
+    cands.sort(key=lambda c: c[3] or '9999')
+    keep, group = [], []
+    def flush():
+        if group:
+            keep.append(max(group, key=lambda c: c[2]))
+    for c in cands:
+        if group and c[3] and group[-1][3] and \
+           abs((datetime.fromisoformat(c[3]) - datetime.fromisoformat(group[-1][3])).total_seconds()) <= 8 and \
+           bin(c[5] ^ group[-1][5]).count('1') <= 18:
+            group.append(c); continue
+        flush(); group = [c]
+    flush()
+    print(f'bursts: {len(cands)} -> {len(keep)}')
+
+    for p, title, _, d, est, h in keep:
+        if not d:
+            print('undated', title); continue          # can't be placed in the story
+        if any(bin(h ^ oh).count('1') <= 6 for oh, _ in hashes):
+            print('dup ', title); continue             # same photo from another upload
+        im = Image.open(p)
         hashes.append((h, d))
         name = slug(d, 'jpg')
         w, hh = save_img(im, f'{ROOT}/images/{name}', f'{ROOT}/images/t/{name}')
@@ -452,7 +499,7 @@ def add_raw(items, hashes):
         SOURCES[name] = title
         if est:
             it['est'] = 1
-        enrich(it, im); items.append(it)
+        enrich(it, im); items.append(it); im.close()
 
     seen = set()
     for p, title, ext in raw:

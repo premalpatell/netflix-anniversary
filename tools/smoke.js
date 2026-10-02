@@ -29,6 +29,7 @@ require('fs').mkdirSync(OUT, { recursive: true });
     await p.evaluate(() => window.scrollTo(0, 800)); await p.waitForTimeout(800); await shot('rows');
 
     if (!mobile) {   // hover card + row arrows
+      await p.$eval('#row-new', e => e.scrollIntoView({ block: 'center' })); await p.waitForTimeout(700);
       await p.hover('#row-new .card'); await p.waitForTimeout(900);
       log('jawbone open:', await p.$eval('#jaw', e => !e.hidden)); await shot('jawbone');
       await p.click('#jaw [data-act="list"]'); await p.waitForTimeout(300);

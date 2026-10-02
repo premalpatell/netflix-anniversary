@@ -299,3 +299,19 @@ Title logo lettering that reads exactly "Yeh Jawaani Hai Deewani". Style: bold w
 **S5:E11 · Kabhi Alvida Naa Kehna · `p-kabhi-alvida-naa-kehna.png`**
 
 Title logo lettering that reads exactly "Kabhi Alvida Naa Kehna". Style: glowing golden Bollywood serif, like Kabhi Alvida Naa Kehna. Personal details woven into the design: a bouquet of red roses rests across the bottom, a small airplane flying away from a Toronto skyline, and a single glowing heart where the plane began. Centered on a solid pure black background, no other words or letters, no people, no frame or border, crisp clean edges, high resolution, 16:9.
+
+## New episodes (from the latest photos)
+
+These three episodes are new, so they have no logo yet. Same settings: 16:9, plain black background, check the spelling.
+
+**S0 · Om Shanti Om · `p-om-shanti-om.png`**
+
+Title logo lettering that reads exactly "Om Shanti Om". Style: glamorous 2007 Bollywood film lettering in polished gold with a soft film-studio spotlight glow. Personal details woven into the design: a golden cocktail bar with glowing shelves behind the letters, a small vintage film-reel motif under the title. Centered on a solid pure black background, no other words or letters, no people, no frame or border, crisp clean edges, high resolution, 16:9.
+
+**S3 · Happy New Year · `p-happy-new-year.png`**
+
+Title logo lettering that reads exactly "Happy New Year". Style: bold glossy 2014 Bollywood heist-comedy lettering in gold and silver, with confetti. Personal details woven into the design: a sparkly party hat and a glittery gold party cup beside the letters, fireworks bursting above. Centered on a solid pure black background, no other words or letters, no people, no frame or border, crisp clean edges, high resolution, 16:9.
+
+**S5 · Red Notice · `p-red-notice.png`**
+
+Title logo lettering that reads exactly "Red Notice". Style: sleek bold red-and-silver heist-thriller capitals like the Netflix film Red Notice. Personal details woven into the design: a soft golden-hour sun flare across the letters and a single red button-down shirt silhouette folded into the "N". Centered on a solid pure black background, no other words or letters, no people, no frame or border, crisp clean edges, high resolution, 16:9.
