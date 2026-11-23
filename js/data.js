@@ -30,7 +30,7 @@ window.SHOW = {
    `video` plays muted when its orientation matches the screen; otherwise the still is shown. */
 window.FEATURES = [
   { kind: 'series',  tag: 'Series', trailer: true, still: 'images/s_20260924_120000_15.jpg', video: 'videos/s_20260924_114730_1.mp4' },
-  { kind: 'episode', tag: 'New Episode', day: '2026-09-26' },
+  { kind: 'episode', tag: 'New Episode', day: '2026-11-08' },
   { kind: 'top',     tag: '#1 in Top 10', key: '20260423_171132.jpg' },
   { kind: 'season',  tag: 'Prequel', n: 0 },
 ];
@@ -81,6 +81,10 @@ window.HIGHLIGHTS = [
   { day: '2026-09-24',  line: 'Umbrella Street, old stone lanes, and a leading lady.' },
   { day: '2026-09-25',  line: 'The last day of the trip, with a first-class view.' },
   { day: '2026-09-26',  line: 'Roses again, goodbye again. The story isn\'t over.' },
+  { day: '2026-11-04',  line: 'One golden night, one brown lace top, zero bad photos.' },
+  { day: '2026-11-08',  line: 'Sparklers in her hands, Diwali in her smile.' },
+  { day: '2026-10-10',  line: 'Comedy gold, filmed in one take.' },
+  { season: 6,          line: 'Two cities, one story.' },
 ];
 
 /* Title treatments — each episode title borrows the lettering of the show it riffs on.
@@ -90,6 +94,12 @@ window.TITLE_LOOKS = {
   'Om Shanti Om': 'bolly',
   'Happy New Year': 'bollymod',
   'Red Notice': 'heist',
+  'Pardes': 'bolly',
+  'Hera Pheri': 'bollymod',
+  'Dangal': 'bolly',
+  'Raat Akeli Hai': 'heist',
+  'The Golden Hour': 'crown',
+  'Diwali Nights': 'bolly',
   'Stranger Things Have Happened': 'stranger',
   'Squid Game: CNE Edition': 'squid',
   'Money Heist': 'heist',
@@ -168,8 +178,8 @@ window.LOVE_NOTES = {
 
 /* "Coming Soon" row */
 window.COMING_SOON = [
-  { title: 'Season 6', name: 'Long Distance', tag: 'Coming soon',
-    blurb: 'Two cities, one story. The next season starts the day Premal leaves Canada.',
+  { title: 'Season 7', name: 'Together Again', tag: 'Coming soon',
+    blurb: 'The season where the distance ends. Release date: as soon as possible.',
     still: 'images/20260423_171132.jpg' },
 ];
 
@@ -197,9 +207,12 @@ window.SEASONS = [
   { n: 4, slug: 's4', title: 'Kal Ho Naa Ho',      from: '2025-07-01', to: '2026-04-23',
     tag: 'Jul 2025 – Apr 2026', blurb: 'Her birthday, Crystal Beach, Navratri again, a letter, a haircut, and the hardest goodbye.',
     hero: 'images/20250803_194808.jpg' },
-  { n: 5, slug: 's5', title: 'To Be Continued…',           from: '2026-04-24', to: '2027-12-31',
-    tag: 'Apr 2026 →', blurb: 'Different time zones, a summer back together, her Québec trip, and one more goodbye. Distance is just geography.',
-    hero: 'images/s_20260721_145211_1.jpg', toBeContinued: true },
+  { n: 5, slug: 's5', title: 'To Be Continued…',           from: '2026-04-24', to: '2026-09-26',
+    tag: 'Apr – Sep 2026', blurb: 'Different time zones, a summer back together, her Québec trip, and one more goodbye. Distance is just geography.',
+    hero: 'images/s_20260721_145211_1.jpg' },
+  { n: 6, slug: 's6', title: 'Long Distance',           from: '2026-09-27', to: '2027-12-31',
+    tag: 'Sep 2026 →', blurb: 'Two cities, one story. Video calls, a white blazer, a golden night at Loux Louis and Diwali sparklers, all from nine and a half hours away.',
+    hero: 'images/s_20261108_200300_1.jpg', toBeContinued: true },
 ];
 
 /* Per-photo captions, keyed by the media file name, written in Netflix's synopsis voice
@@ -397,6 +410,18 @@ window.EPISODE_NOTES = {
   '2026-06-23': { title: 'Love Aaj Kal', story: 'Long distance, one flying kiss at a time.' },
   '2026-06-24': { title: 'Veer-Zaara', story: 'A pink shirt and a quiet day, sent across the miles.' },
   '2026-09-22': { title: 'Zindagi Na Milegi Dobara', story: 'Window seat, open road, and the start of a road trip she will never forget.', thumb: 's_20260922_191542_1.jpg' },
+  // ── Season 6 · Long Distance
+  '2026-09-27': { title: 'Pardes', story: 'Toronto from the window seat. Season 6 begins the day Premal leaves Canada.', thumb: 's_20260927_175600_1.jpg' },
+  '2026-10-03': { merge: 'next' },
+  '2026-10-07': { title: 'Dil Dhadakne Do', story: 'Video calls across nine and a half hours. Still the best part of his day.', thumb: 's_20261003_170320_1.jpg' },
+  '2026-10-10': { title: 'Hera Pheri', story: 'A one-woman comedy show: "whatever", a pushed-up nose, a yawn and a crown of hearts.', thumb: 's_20261010_200400_1.jpg' },
+  '2026-10-13': { title: 'Dangal', story: 'Locker-room selfies after the workout. Sweat, a gold "S" and that smile.', thumb: 's_20261013_180100_1.jpg' },
+  '2026-10-16': { title: 'Raat Akeli Hai', story: 'From a "Morning" glare to "Midnight\'s like this": one whole day, sent to him in two snaps.', thumb: 's_20261016_080000_1.jpg' },
+  '2026-10-25': { title: 'Black Mirror', story: 'A black top, a white wall and a smile the camera got to keep.', thumb: 's_20261025_190000_1.jpg' },
+  '2026-11-03': { title: 'Suits', story: 'A new white blazer, tried on at home and taken out for a drive.', thumb: 's_20261103_093000_1.jpg' },
+  '2026-11-04': { title: 'The Golden Hour', story: 'A gold-tiled wall at Loux Louis, a bar lit like a jewellery box, and the brown lace top that stole the night.', thumb: 's_20261104_191000_1.jpg' },
+  '2026-11-08': { title: 'Diwali Nights', story: 'A navy suit, gold jhumkas and a fistful of sparklers. The brightest thing in every photo is still her smile.', thumb: 's_20261108_200300_1.jpg' },
+  '2026-11-22': { title: 'Presenting… Shivani', story: 'Presenting at work, while Premal watched from the other side of the world.' },
 };
 
 /* Top 10 Moments — in order. Media keys (file names). */
